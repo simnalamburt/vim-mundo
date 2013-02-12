@@ -117,6 +117,7 @@ function! s:GundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> gg            gg:call <sid>GundoMove(1)<CR>
     nnoremap <script> <silent> <buffer> P             :call <sid>GundoPlayTo()<CR>
     nnoremap <script> <silent> <buffer> p             :call <sid>GundoRenderChangePreview()<CR>
+    nnoremap <script> <silent> <buffer> d             :call <sid>GundoRenderPatchdiff()<CR>
     nnoremap <script> <silent> <buffer> r             :call <sid>GundoRenderPreview()<CR>
     nnoremap <script> <silent> <buffer> q             :call <sid>GundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>GundoClose()
@@ -404,6 +405,14 @@ function! s:GundoRenderGraph()"{{{
         python3 GundoRenderGraph()
     else
         python GundoRenderGraph()
+    endif
+endfunction"}}}
+
+function! s:GundoRenderPatchdiff()"{{{
+    if s:has_supported_python == 2 && g:gundo_prefer_python3
+        python3 GundoRenderPatchdiff()
+    else
+        python GundoRenderPatchdiff()
     endif
 endfunction"}}}
 
