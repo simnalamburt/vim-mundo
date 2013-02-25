@@ -21,6 +21,7 @@ CONTENTS                                                      *Gundo-contents*
              gundo_tree_statusline ..... |gundo_tree_statusline|
         3.10 gundo_auto_preview ........ |gundo_auto_preview|
         3.11 gundo_playback_delay ...... |gundo_playback_delay|
+        3.12 gundo_verbose_graph ....... |gundo_verbose_graph|
     4. License ......................... |GundoLicense|
     5. Bugs ............................ |GundoBugs|
     6. Contributing .................... |GundoContributing|
@@ -226,6 +227,15 @@ mode. Set this to a higher number for a slower playback or to a lower number
 for a faster playback.
 
 Default: 60
+
+------------------------------------------------------------------------------
+3.12 g:gundo_verbose_graph                               *gundo_verbose_graph*
+
+Set this to 0 to create shorter graphs: the 'o' characters will only be used
+when multiple branches exist, and extra lines of '|' are suppressed making for
+a graph half as long.
+
+Default: 1 (verbose graphs)
 
 ==============================================================================
 4. License                                                      *GundoLicense*
