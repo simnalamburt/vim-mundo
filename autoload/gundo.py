@@ -281,9 +281,10 @@ def _undo_to(n):
 
 INLINE_HELP = '''\
 " Gundo for %s (%d):
-" j/k  - Move between undo states.
+" j/k  - Next/Prev undo state.
+" J/K  - Next/Prev write state.
 " /    - Find changes that match string.
-" n/N  - Next/previous undo that matches search.
+" n/N  - Next/Prev undo that matches search.
 " P    - Play current state to selected undo.
 " d    - Vert diff of undo with current state.
 " p    - Diff of selected undo and current state.
@@ -504,7 +505,7 @@ def GundoGetTargetState():
     target_line = vim.eval("getline('.')")
     return int(re.match('^.* \[([0-9]+)\] .*$',target_line).group(1))
 
-def GetNextLine(direction,move_count,start="line('.')"):
+def GetNextLine(direction,move_count,write,start="line('.')"):
     start_line_no = int(vim.eval(start))
     start_line = vim.eval(start)
     gundo_verbose_graph = vim.eval('g:gundo_verbose_graph')
@@ -517,20 +518,28 @@ def GetNextLine(direction,move_count,start="line('.')"):
     else:
       distance = 1
       nextline = vim.eval("getline(%d)" % (start_line_no+direction))
-      idx1 = nextline.find('@')
-      idx2 = nextline.find('o')
-      idx3 = nextline.find('w')
+      idx1 = nextline.find(' @ ')
+      idx2 = nextline.find(' o ')
+      idx3 = nextline.find(' w ')
       # if the next line is not a revision - then go down one more.
       if (idx1+idx2+idx3) == -3:
           distance = distance + 1
 
     next_line = start_line_no + distance*direction
     if move_count > 1:
-        return GetNextLine(direction,move_count-1,str(next_line))
-    else:
-        return next_line
+        return GetNextLine(direction,move_count-1,write,str(next_line))
+    elif write:
+        newline = vim.eval("getline(%d)" % (next_line))
+        if newline.find(' w ') == -1:
+            # make sure that if we can't go up/down anymore that we quit out.
+            if direction < 0 and next_line == 1:
+                return next_line
+            if direction > 0 and next_line >= len(vim.current.window.buffer):
+                return next_line
+            return GetNextLine(direction,1,write,str(next_line))
+    return next_line
 
-def GundoMove(direction,move_count=1,relative=True):
+def GundoMove(direction,move_count=1,relative=True,write=False):
     """
     Move within the undo graph in the direction specified (or to the specific
     undo node specified).
@@ -542,15 +551,16 @@ def GundoMove(direction,move_count=1,relative=True):
       move_count - how many times to perform the operation (irrelevent for
                    relative == False). 
       relative   - whether to move up/down, or to jump to a specific undo node.
+
+      write      - If True, move to the next written undo.
     """
     if relative:
-        target_n = GetNextLine(direction,move_count)
+        target_n = GetNextLine(direction,move_count,write)
     else:
-        #target_n = GetNextLine(GundoGetTargetState()-direction,1)
         updown = 1
         if GundoGetTargetState() < direction:
             updown = -1
-        target_n = GetNextLine(updown,abs(GundoGetTargetState()-direction))
+        target_n = GetNextLine(updown,abs(GundoGetTargetState()-direction),write)
 
     # Bound the movement to the graph.
     if target_n <= INLINE_HELP_LINES - 1:
@@ -561,9 +571,9 @@ def GundoMove(direction,move_count=1,relative=True):
     line = vim.eval("getline('.')")
 
     # Move to the node, whether it's an @, o, or w
-    idx1 = line.find('@')
-    idx2 = line.find('o')
-    idx3 = line.find('w')
+    idx1 = line.find(' @ ')
+    idx2 = line.find(' o ')
+    idx3 = line.find(' w ')
     idxs = []
     if idx1 != -1:
         idxs.append(idx1)
@@ -573,11 +583,11 @@ def GundoMove(direction,move_count=1,relative=True):
         idxs.append(idx3)
     minidx = min(idxs)
     if idx1 == minidx:
-        vim.command("call cursor(0, %d + 1)" % idx1)
+        vim.command("call cursor(0, %d + 2)" % idx1)
     elif idx2 == minidx:
-        vim.command("call cursor(0, %d + 1)" % idx2)
+        vim.command("call cursor(0, %d + 2)" % idx2)
     else:
-        vim.command("call cursor(0, %d + 1)" % idx3)
+        vim.command("call cursor(0, %d + 2)" % idx3)
 
     if vim.eval('g:gundo_auto_preview') == '1':
         GundoRenderPreview()
