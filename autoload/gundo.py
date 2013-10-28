@@ -330,6 +330,7 @@ def _make_nodes(alts, nodes, parent=None):
             p = node
 
 def make_nodes():
+    _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
     ut = vim.eval('undotree()')
     entries = ut['entries']
 
@@ -673,12 +674,7 @@ def GundoRenderPatchdiff():
         vim.command('quit')
         # diff the temp file
         vim.command('silent! keepalt vert diffpatch %s' % (filename))
-
-        # TODO set the buftype to temp or nonwritable or...
-        # move out of the patch file and into the original file.
-        #vim.command('normal il')
-        # TODO also the file should not be considered for alternate (#) or
-        # primary (%) status.
+        vim.command('set buftype=nofile')
         return True
     return False
 
