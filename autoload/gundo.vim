@@ -76,11 +76,6 @@ let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
 
 "{{{ Gundo utility functions
 
-function! s:GundoGetTargetState()"{{{
-    let target_line = matchstr(getline("."), '\v\[[0-9]+\]')
-    return matchstr(target_line, '\v[0-9]+')
-endfunction"}}}
-
 function! s:GundoGoToWindowForBufferName(name)"{{{
     if bufwinnr(bufnr(a:name)) != -1
         exe bufwinnr(bufnr(a:name)) . "wincmd w"
@@ -119,8 +114,10 @@ function! s:GundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> <up>          :call <sid>GundoMove(-1)<CR>
     nnoremap <script> <silent> <buffer> gg            gg:call <sid>GundoMove(1)<CR>
     nnoremap <script> <silent> <buffer> P             :call <sid>GundoPlayTo()<CR>
-    nnoremap <script> <silent> <buffer> p             :call <sid>GundoRenderChangePreview()<CR>
     nnoremap <script> <silent> <buffer> d             :call <sid>GundoRenderPatchdiff()<CR>
+    nnoremap <script> <silent> <buffer> /             :call <sid>GundoPython('GundoSearch')<CR>
+    nnoremap <script> <silent> <buffer> n             :call <sid>GundoPython('GundoNextMatch')<CR>
+    nnoremap <script> <silent> <buffer> N             :call <sid>GundoPython('GundoPrevMatch')<CR>
     nnoremap <script> <silent> <buffer> r             :call <sid>GundoRenderPreview()<CR>
     nnoremap <script> <silent> <buffer> q             :call <sid>GundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>GundoClose()
@@ -298,7 +295,7 @@ function! s:GundoOpen()"{{{
             command! -nargs=0 GundoToggle call s:GundoDidNotLoad()
             call s:GundoDidNotLoad()
             return
-        endif"
+        endif
 
         let g:gundo_py_loaded = 1
     endif
@@ -361,61 +358,10 @@ endfunction"}}}
 "{{{ Gundo movement
 
 function! s:GundoMove(direction) range"{{{
-    let start_line = getline('.')
-    if v:count1 == 0
-        let move_count = 1
+    if s:has_supported_python == 2 && g:gundo_prefer_python3
+        exec "python3 GundoMove(". a:direction .",". v:count1 .")"
     else
-        let move_count = v:count1
-    endif
-    if g:gundo_verbose_graph
-      let distance = 2 * move_count
-
-      " If we're in between two nodes we move by one less to get back on track.
-      if stridx(start_line, '[') == -1
-          let distance = distance - 1
-      endif
-    else
-      let distance = move_count
-      let nextline = getline(line('.')+distance*a:direction)
-      let idx1 = stridx(nextline, '@')
-      let idx2 = stridx(nextline, 'o')
-      let idx3 = stridx(nextline, 'w')
-      " if the next line is not a revision - then go down one more.
-      if (idx1+idx2+idx3) == -3
-        let distance = distance + move_count
-      endif
-    endif
-
-    let target_n = line('.') + (distance * a:direction)
-
-    " Bound the movement to the graph.
-    if target_n <= s:GundoInlineHelpLength() - 1
-        call cursor(s:GundoInlineHelpLength(), 0)
-    else
-        call cursor(target_n, 0)
-    endif
-
-    let line = getline('.')
-
-    " Move to the node, whether it's an @, o, or w
-    let idx1 = stridx(line, '@')
-    let idx2 = stridx(line, 'o')
-    let idx3 = stridx(line, 'w')
-    let idxs = []
-    if idx1 != -1 | let idxs += [idx1] | endif
-    if idx2 != -1 | let idxs += [idx2] | endif
-    if idx3 != -1 | let idxs += [idx3] | endif
-    let minidx = min(idxs)
-    if idx1 == minidx
-        call cursor(0, idx1 + 1)
-    elseif idx2 == minidx
-        call cursor(0, idx2 + 1)
-    else
-        call cursor(0, idx3 + 1)
-    endif
-
-    if g:gundo_auto_preview == 1
-        call s:GundoRenderPreview()
+        exec "python GundoMove(". a:direction .",". v:count1 .")"
     endif
 endfunction"}}}
 
@@ -436,6 +382,14 @@ function! s:GundoRenderPatchdiff()"{{{
         python3 GundoRenderPatchdiff()
     else
         python GundoRenderPatchdiff()
+    endif
+endfunction"}}}
+
+function! s:GundoPython(fn)"{{{
+    if s:has_supported_python == 2 && g:gundo_prefer_python3
+        exec "python3 ". a:fn ."()"
+    else
+        exec "python ". a:fn ."()"
     endif
 endfunction"}}}
 
