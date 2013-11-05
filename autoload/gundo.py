@@ -4,7 +4,7 @@
 # Description: vim global plugin to visualize your undo tree
 # Maintainer:  Steve Losh <steve@stevelosh.com>
 # License:     GPLv2+ -- look it up.
-# Notes:       Much of this code was thiefed from Mercurial, and the rest was
+# Notes:       Much of this code was thieved from Mercurial, and the rest was
 #              heavily inspired by scratch.vim and histwin.vim.
 #
 # ============================================================================
@@ -14,9 +14,78 @@ import itertools
 import re
 import sys
 import time
-import vim
 import tempfile
 
+try:
+    import vim
+except:
+    # vim isn't needed and isn't in the classpath when doing unit tests.
+    pass
+
+# one line diff functions.#{{{
+def one_line_diff_str(before,after,mx=15):
+  """
+  Return a summary of the differences between two strings, concatenated.
+
+  Returns a string no longer than 'mx'.
+  """
+  old = one_line_diff(before,after)
+  result = ''
+  firstEl = True
+  for v in old:
+      # if the first element doesn't have a change, then don't include it.
+      if firstEl:
+          firstEl = False
+          if not (v.startswith('+') or v.startswith('-')):
+              continue
+      result += v.replace('\n','\\n').replace('\r','\\r').replace('\t','\\t')
+  if len(result) > mx:
+    return "%s..."% result[:mx-3]
+  return result
+
+def one_line_diff(before,after):
+  """
+  Return a summary of the differences between two arbitrary strings.
+
+  Returns a list of strings, summarizing all the changes.
+  """
+  s = difflib.SequenceMatcher(None,before,after)
+  results = []
+  for tag, i1, i2, j1, j2 in s.get_opcodes():
+    #print ("%7s a[%d:%d] (%s) b[%d:%d] (%s)" % (tag, i1, i2, before[i1:i2], j1, j2, after[j1:j2]))
+    if tag == 'equal':
+      _append_result(results,{
+        'equal': after[j1:j2]
+      })
+    if tag == 'insert':
+      _append_result(results,{
+        'plus': after[j1:j2]
+      })
+    elif tag == 'delete':
+      _append_result(results,{
+        'minus': before[i1:i2]
+      })
+    elif tag == 'replace':
+      _append_result(results,{
+        'minus': before[j1:j2],
+        'plus': after[j1:j2]
+      })
+  final_results = []
+  # finally, create a human readable string of information.
+  for v in results:
+    if 'minus' in v and 'plus' in v and len(v['minus']) > 0 and len(v['plus']) > 0:
+      final_results.append("-%s+%s"% (v['minus'],v['plus']))
+    elif 'minus' in v and len(v['minus']) > 0:
+      final_results.append("-%s"% (v['minus']))
+    elif 'plus' in v and len(v['plus']) > 0:
+      final_results.append("+%s"% (v['plus']))
+    elif 'equal' in v:
+      final_results.append("%s"% (v['equal']))
+  return final_results
+
+def _append_result(results,val):
+  results.append(val)
+#}}}
 # Mercurial's graphlog code --------------------------------------------------------#{{{
 def asciiedges(seen, rev, parents):
     """adds edge info to changelog DAG walk suitable for ascii()"""
@@ -186,7 +255,8 @@ def ascii(buf, state, type, char, text, coldata, verbose):
 def generate(dag, edgefn, current, verbose):
     seen, state = [], [0, 0]
     buf = Buffer()
-    for node, parents in list(dag):
+    for idx, part in list(enumerate(dag)):
+        node, parents = part
         if node.time:
             age_label = age(int(node.time))
         else:
@@ -198,9 +268,10 @@ def generate(dag, edgefn, current, verbose):
             char = 'w'
         else:
             char = 'o'
+        preview_diff = nodesData.preview_diff(node.parent, node,unified=False)
+        line = '[%s] %10s %10s' % (node.n, age_label, preview_diff)
         ascii(buf, state, 'C', char, [line], edgefn(seen, node, parents), verbose)
     return buf.b
-
 
 # Mercurial age function -----------------------------------------------------------
 agescales = [("year", 3600 * 24 * 365),
@@ -250,6 +321,9 @@ def _check_sanity():
 
         * Make sure the target buffer still exists.
     '''
+    global nodesData
+    if not nodesData:
+        nodesData = Nodes()
     b = int(vim.eval('g:gundo_target_n'))
 
     if not vim.eval('bufloaded(%d)' % b):
@@ -316,121 +390,184 @@ class Node(object):
         return "[n=%s,parent=%s,time=%s,curhead=%s,saved=%s]" % \
             (self.n,self.parent,self.time,self.curhead,self.saved)
 
-def _make_nodes(alts, nodes, parent=None):
-    p = parent
+class Nodes(object):
+    def __init__(self):
+        self._clear_cache()
 
-    for alt in alts:
-        if alt:
-            curhead = 'curhead' in alt
-            saved = 'save' in alt
-            node = Node(n=alt['seq'], parent=p, time=alt['time'], curhead=curhead, saved=saved)
-            nodes.append(node)
-            if alt.get('alt'):
-                _make_nodes(alt['alt'], nodes, p)
-            p = node
+    def _clear_cache(self):
+        self.nodes_made = None
+        self.target_f = None
+        self.seq_last = None
+        self.lines = {}
+        self.diffs = {}
 
-def make_nodes():
-    _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
-    ut = vim.eval('undotree()')
-    entries = ut['entries']
+    def _check_version_location(self):
+        _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+        target_f = vim.eval('g:gundo_target_f')
+        if target_f != self.target_f:
+            self._clear_cache()
 
-    root = Node(0, None, False, 0, 0)
-    nodes = []
-    _make_nodes(entries, nodes, root)
-    nodes.append(root)
-    nmap = dict((node.n, node) for node in nodes)
-    return nodes, nmap
+    def _make_nodes(self,alts, nodes, parent=None):
+        p = parent
 
-def changenr(nodes):
-    """ Return the number of the most recent change. """
-    _curhead_l = list(itertools.dropwhile(lambda n: not n.curhead, nodes))
-    if _curhead_l:
-        current = _curhead_l[0].parent.n
-    else:
-        current = int(vim.eval('changenr()'))
-    return current
+        for alt in alts:
+            if alt:
+                curhead = 'curhead' in alt
+                saved = 'save' in alt
+                node = Node(n=alt['seq'], parent=p, time=alt['time'], curhead=curhead, saved=saved)
+                nodes.append(node)
+                if alt.get('alt'):
+                    self._make_nodes(alt['alt'], nodes, p)
+                p = node
+
+    def make_nodes(self):
+        self._check_version_location()
+        target_f = vim.eval('g:gundo_target_f')
+        ut = vim.eval('undotree()')
+        entries = ut['entries']
+        seq_last = ut['seq_last']
+
+        # if the current seq_last and file are the same as last time, use the
+        # cached values.
+        if self.seq_last != seq_last:
+            vim.command('let s:has_supported_python = 0')
+            root = Node(0, None, False, 0, 0)
+            nodes = []
+            self._make_nodes(entries, nodes, root)
+            nodes.append(root)
+            nmap = dict((node.n, node) for node in nodes)
+
+            # cache values for later use
+            self.target_f = target_f
+            self.seq_last = seq_last
+            self.nodes_made = (nodes, nmap)
+
+        return self.nodes_made
+
+    def current(self):
+        """ Return the number of the current change. """
+        self._check_version_location()
+        nodes, nmap = self.make_nodes()
+        _curhead_l = list(itertools.dropwhile(lambda n: not n.curhead, nodes))
+        if _curhead_l:
+            current = _curhead_l[0].parent.n
+        else:
+            current = int(vim.eval('changenr()'))
+        return current
+
+    def _fmt_time(self,t):
+        return time.strftime('%Y-%m-%d %I:%M:%S %p', time.localtime(float(t)))
+
+    def _get_lines(self,node):
+        n = 0
+        if node:
+            n = node.n
+        if n not in self.lines:
+            _undo_to(n)
+            self.lines[n] = vim.current.buffer[:]
+        return self.lines[n]
+
+    def change_preview_diff(self,before,after):
+        self._check_version_location()
+        key = "%s-%s-cpd"%(before.n,after.n)
+        if key in self.diffs:
+            return self.diffs[key]
+
+        _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+        before_lines = self._get_lines(before)
+        after_lines = self._get_lines(after)
+
+        before_name = before.n or 'Original'
+        before_time = before.time and self._fmt_time(before.time) or ''
+        after_name = after.n or 'Original'
+        after_time = after.time and self._fmt_time(after.time) or ''
+
+        _undo_to(self.current())
+
+        self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
+                                         before_name, after_name,
+                                         before_time, after_time))
+        return self.diffs[key]
+
+    def preview_diff(self, before, after, unified=True):
+        """
+        Generate a diff comparing two versions of a file.
+
+        Parameters:
+
+          current - ?
+          before
+          after
+          unified - If True, generate a unified diff, otherwise generate a summary
+                    line.
+        """
+        self._check_version_location()
+        bn = 0
+        an = 0
+        if not after.n:    # we're at the original file
+            pass
+        elif not before.n: # we're at a pseudo-root state
+            an = after.n
+        else:
+            bn = before.n
+            an = after.n
+        key = "%s-%s-pd-%s"%(bn,an,unified)
+        if key in self.diffs:
+            return self.diffs[key]
+
+        if not after.n:    # we're at the original file
+            before_lines = []
+            after_lines = self._get_lines(None)
+
+            before_name = 'n/a'
+            before_time = ''
+            after_name = 'Original'
+            after_time = ''
+        elif not before.n: # we're at a pseudo-root state
+            before_lines = self._get_lines(None)
+            after_lines = self._get_lines(after)
+
+            before_name = 'Original'
+            before_time = ''
+            after_name = after.n
+            after_time = self._fmt_time(after.time)
+        else:
+            before_lines = self._get_lines(before)
+            after_lines = self._get_lines(after)
+
+            before_name = before.n
+            before_time = self._fmt_time(before.time)
+            after_name = after.n
+            after_time = self._fmt_time(after.time)
+
+        _undo_to(self.current())
+
+        if unified:
+            self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
+                                             before_name, after_name,
+                                             before_time, after_time))
+        else:
+            self.diffs[key] = one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines))
+
+        return self.diffs[key]
+
 
 #}}}
-# Gundo rendering ------------------------------------------------------------------#{{{
+
+nodesData = Nodes()
 
 # Rendering utility functions
-def _fmt_time(t):
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(t)))
-
 def _output_preview_text(lines):
     _goto_window_for_buffer_name('__Gundo_Preview__')
     vim.command('setlocal modifiable')
     vim.current.buffer[:] = [line.rstrip() for line in lines]
     vim.command('setlocal nomodifiable')
 
-def _generate_preview_diff(current, node_before, node_after):
-    _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
-
-    if not node_after.n:    # we're at the original file
-        before_lines = []
-
-        _undo_to(0)
-        after_lines = vim.current.buffer[:]
-
-        before_name = 'n/a'
-        before_time = ''
-        after_name = 'Original'
-        after_time = ''
-    elif not node_before.n: # we're at a pseudo-root state
-        _undo_to(0)
-        before_lines = vim.current.buffer[:]
-
-        _undo_to(node_after.n)
-        after_lines = vim.current.buffer[:]
-
-        before_name = 'Original'
-        before_time = ''
-        after_name = node_after.n
-        after_time = _fmt_time(node_after.time)
-    else:
-        _undo_to(node_before.n)
-        before_lines = vim.current.buffer[:]
-
-        _undo_to(node_after.n)
-        after_lines = vim.current.buffer[:]
-
-        before_name = node_before.n
-        before_time = _fmt_time(node_before.time)
-        after_name = node_after.n
-        after_time = _fmt_time(node_after.time)
-
-    _undo_to(current)
-
-    return list(difflib.unified_diff(before_lines, after_lines,
-                                     before_name, after_name,
-                                     before_time, after_time))
-
-def _generate_change_preview_diff(current, node_before, node_after):
-    _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
-
-    _undo_to(node_before.n)
-    before_lines = vim.current.buffer[:]
-
-    _undo_to(node_after.n)
-    after_lines = vim.current.buffer[:]
-
-    before_name = node_before.n or 'Original'
-    before_time = node_before.time and _fmt_time(node_before.time) or ''
-    after_name = node_after.n or 'Original'
-    after_time = node_after.time and _fmt_time(node_after.time) or ''
-
-    _undo_to(current)
-
-    return list(difflib.unified_diff(before_lines, after_lines,
-                                     before_name, after_name,
-                                     before_time, after_time))
-#}}}
-
 def GundoRenderGraph():
     if not _check_sanity():
         return
 
-    nodes, nmap = make_nodes()
+    nodes, nmap = nodesData.make_nodes()
 
     for node in nodes:
         node.children = [n for n in nodes if n.parent == node]
@@ -443,10 +580,9 @@ def GundoRenderGraph():
                 yield (node, [])
 
     dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
-    current = changenr(nodes)
 
     verbose = vim.eval('g:gundo_verbose_graph') == 1
-    result = generate(walk_nodes(dag), asciiedges, current, verbose).rstrip().splitlines()
+    result = generate(walk_nodes(dag), asciiedges, nodesData.current(), verbose).rstrip().splitlines()
     result = [' ' + l for l in result]
 
     target = (vim.eval('g:gundo_target_f'), int(vim.eval('g:gundo_target_n')))
@@ -491,14 +627,13 @@ def GundoRenderPreview():
 
     _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
 
-    nodes, nmap = make_nodes()
-    current = changenr(nodes)
+    nodes, nmap = nodesData.make_nodes()
 
     node_after = nmap[target_state]
     node_before = node_after.parent
 
     vim.command('call s:GundoOpenPreview()')
-    _output_preview_text(_generate_preview_diff(current, node_before, node_after))
+    _output_preview_text(nodesData.preview_diff(node_before, node_after))
 
     _goto_window_for_buffer_name('__Gundo__')
 
@@ -617,9 +752,8 @@ def GundoMatch(down):
     # then generate the undo nodes, and then go back to the current window.
     _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
 
-    nodes, nmap = make_nodes()
+    nodes, nmap = nodesData.make_nodes()
     total = len(nodes) - 1
-    orig_changenr = changenr(nodes)
 
     _goto_window_for_buffer_name('__Gundo__')
     curline = int(vim.eval("line('.')")) 
@@ -632,10 +766,7 @@ def GundoMatch(down):
             therange = range(gundo_node+1,total+1)
         for version in therange:
             _goto_window_for_buffer_name('__Gundo__')
-            before = Node(0, None, False, 0, 0)
-            if version-1 >= 0:
-                before = nmap[version-1]
-            undochanges = _generate_preview_diff(orig_changenr, before, nmap[version])
+            undochanges = nodesData.preview_diff(nmap[version].parent, nmap[version])
             # Look thru all of the changes, ignore the first two b/c those are the
             # diff timestamp fields (not relevent):
             for change in undochanges[3:]:
@@ -680,7 +811,7 @@ def GundoRenderPatchdiff():
         return True
     return False
 
-def GundoGetChangesForLine(current,nodesandnmap=make_nodes()):
+def GundoGetChangesForLine():
     if not _check_sanity():
         return False
 
@@ -696,21 +827,22 @@ def GundoGetChangesForLine(current,nodesandnmap=make_nodes()):
 
     _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
 
-    nodes, nmap = nodesandnmap
+    nodes, nmap = nodesData.make_nodes()
 
     node_after = nmap[target_state]
-    node_before = nmap[current]
-    return _generate_change_preview_diff(current, node_before, node_after)
+    node_before = nmap[nodesData.current()]
+    return nodesData.change_preview_diff(node_before, node_after)
 
 def GundoRenderChangePreview():
     """ Render the selected undo level with the current file.
     Return True on success, False on failure. """
+    if not _check_sanity():
+        return
 
-    nodes, nmap = make_nodes()
-    current = changenr(nodes)
+    nodes, nmap = nodesData.make_nodes()
 
     vim.command('call s:GundoOpenPreview()')
-    _output_preview_text(GundoGetChangesForLine(current,(nodes,nmap)))
+    _output_preview_text(GundoGetChangesForLine())
 
     _goto_window_for_buffer_name('__Gundo__')
 
@@ -747,9 +879,9 @@ def GundoPlayTo():
     _goto_window_for_buffer(back)
     normal('zR')
 
-    nodes, nmap = make_nodes()
+    nodes, nmap = nodesData.make_nodes()
 
-    start = nmap[changenr(nodes)]
+    start = nmap[nodesData.current()]
     end = nmap[target_n]
 
     def _walk_branch(origin, dest):
