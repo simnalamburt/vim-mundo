@@ -32,7 +32,7 @@ if !exists('g:gundo_right')"{{{
     let g:gundo_right = 0
 endif"}}}
 if !exists('g:gundo_help')"{{{
-    let g:gundo_help = 1
+    let g:gundo_help = 0
 endif"}}}
 if !exists("g:gundo_map_move_older")"{{{
     let g:gundo_map_move_older = 'j'
@@ -121,6 +121,7 @@ function! s:GundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> n             :call <sid>GundoPython('GundoNextMatch()')<CR>
     nnoremap <script> <silent> <buffer> N             :call <sid>GundoPython('GundoPrevMatch()')<CR>
     nnoremap <script> <silent> <buffer> r             :call <sid>GundoPython('GundoRenderPreview()')<CR>
+    nnoremap <script> <silent> <buffer> ?             :call <sid>GundoPython('GundoToggleHelp()')<CR>
     nnoremap <script> <silent> <buffer> q             :call <sid>GundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>GundoClose()
     cabbrev  <script> <silent> <buffer> quit          call <sid>GundoClose()

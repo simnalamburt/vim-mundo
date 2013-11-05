@@ -354,8 +354,8 @@ def _undo_to(n):
 
 
 INLINE_HELP = '''\
-" Gundo for %s (%d):
-" j/k  - Next/Prev undo state.
+" Gundo (%d) - Press ? for Help:
+" %s/%s  - Next/Prev undo state.
 " J/K  - Next/Prev write state.
 " /    - Find changes that match string.
 " n/N  - Next/Prev undo that matches search.
@@ -367,7 +367,7 @@ INLINE_HELP = '''\
 " <cr> - Revert to selected state.
 
 '''
-INLINE_HELP_LINES = len(INLINE_HELP.split('\n'))
+
 #}}}
 # Python undo tree data structures and functions -----------------------------------#{{{
 class Buffer(object):
@@ -592,7 +592,7 @@ def GundoRenderGraph():
     if int(vim.eval('g:gundo_help')):
         header = (INLINE_HELP % (target + mappings)).splitlines()
     else:
-        header = []
+        header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
     vim.command('call s:GundoOpenGraph()')
     vim.command('setlocal modifiable')
@@ -701,8 +701,11 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
         target_n = GetNextLine(updown,abs(GundoGetTargetState()-direction),write)
 
     # Bound the movement to the graph.
-    if target_n <= INLINE_HELP_LINES - 1:
-        vim.command("call cursor(%d, 0)" % INLINE_HELP_LINES)
+    help_lines = 2
+    if int(vim.eval('g:gundo_help')):
+        help_lines = len(INLINE_HELP.split('\n'))
+    if target_n <= help_lines - 1:
+        vim.command("call cursor(%d, 0)" % help_lines)
     else:
         vim.command("call cursor(%d, 0)" % target_n)
 
@@ -848,6 +851,15 @@ def GundoRenderChangePreview():
 
     return True
 
+def GundoToggleHelp():
+    show_help = int(vim.eval('g:gundo_help'))
+    if show_help == 0:
+        vim.command("let g:gundo_help=1")
+        vim.command("call cursor(getline('.') + %d)" % (len(INLINE_HELP.split('\n')) - 2))
+    else:
+        vim.command("let g:gundo_help=0")
+        vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
+    GundoRenderGraph()
 
 # Gundo undo/redo
 def GundoRevert():
