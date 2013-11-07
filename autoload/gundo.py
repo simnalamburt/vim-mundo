@@ -74,11 +74,11 @@ def one_line_diff(before,after):
   # finally, create a human readable string of information.
   for v in results:
     if 'minus' in v and 'plus' in v and len(v['minus']) > 0 and len(v['plus']) > 0:
-      final_results.append("-%s+%s"% (v['minus'],v['plus']))
+      final_results.append("-%s-+%s+"% (v['minus'],v['plus']))
     elif 'minus' in v and len(v['minus']) > 0:
-      final_results.append("-%s"% (v['minus']))
+      final_results.append("-%s-"% (v['minus']))
     elif 'plus' in v and len(v['plus']) > 0:
-      final_results.append("+%s"% (v['plus']))
+      final_results.append("+%s+"% (v['plus']))
     elif 'equal' in v:
       final_results.append("%s"% (v['equal']))
   return final_results
@@ -148,7 +148,7 @@ def fix_long_right_edges(edges):
         if end > start:
             edges[i] = (start, end + 1)
 
-def ascii(buf, state, type, char, text, coldata, verbose):
+def ascii(state, type, char, text, coldata, verbose):
     """prints an ASCII graph of the DAG
 
     takes the following arguments (one call per node in the graph):
@@ -168,6 +168,8 @@ def ascii(buf, state, type, char, text, coldata, verbose):
         0 means no columns added or removed; 1 means one column added.
       - Verbosity: if enabled then the graph prints an extra '|' 
         between each line of information.
+
+    Returns a string representing the output.
     """
 
     idx, edges, ncols, coldiff = coldata
@@ -244,17 +246,21 @@ def ascii(buf, state, type, char, text, coldata, verbose):
             lines.append(extra_interline)
 
     indentation_level = max(ncols, ncols + coldiff)
+    result = []
     for (line, logstr) in zip(lines, text):
-        ln = "%-*s %s" % (2 * indentation_level, "".join(line), logstr)
-        buf.write(ln.rstrip() + '\n')
+        result.append(["%-*s" % (2 * indentation_level, "".join(line)), logstr])
 
     # ... and start over
     state[0] = coldiff
     state[1] = idx
+    return result
 
 def generate(dag, edgefn, current, verbose):
+    """
+    Generate an array of the graph, and text describing the node of the graph.
+    """
     seen, state = [], [0, 0]
-    buf = Buffer()
+    result = []
     for idx, part in list(enumerate(dag)):
         node, parents = part
         if node.time:
@@ -269,18 +275,18 @@ def generate(dag, edgefn, current, verbose):
         else:
             char = 'o'
         preview_diff = nodesData.preview_diff(node.parent, node,unified=False)
-        line = '[%s] %10s %10s' % (node.n, age_label, preview_diff)
-        ascii(buf, state, 'C', char, [line], edgefn(seen, node, parents), verbose)
-    return buf.b
+        line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
+        result.extend(ascii(state, 'C', char, [line], edgefn(seen, node, parents), verbose))
+    return result
 
 # Mercurial age function -----------------------------------------------------------
-agescales = [("year", 3600 * 24 * 365),
-             ("month", 3600 * 24 * 30),
-             ("week", 3600 * 24 * 7),
-             ("day", 3600 * 24),
-             ("hour", 3600),
-             ("minute", 60),
-             ("second", 1)]
+agescales = [("yr", 3600 * 24 * 365),
+             ("mon", 3600 * 24 * 30),
+             ("wk", 3600 * 24 * 7),
+             ("dy", 3600 * 24),
+             ("hr", 3600),
+             ("min", 60),
+             ("sec", 1)]
 
 def age(ts):
     '''turn a timestamp into an age string.'''
@@ -370,13 +376,6 @@ INLINE_HELP = '''\
 
 #}}}
 # Python undo tree data structures and functions -----------------------------------#{{{
-class Buffer(object):
-    def __init__(self):
-        self.b = ''
-
-    def write(self, s):
-        self.b += s
-
 class Node(object):
     def __init__(self, n, parent, time, curhead, saved):
         self.n = int(n)
@@ -547,7 +546,8 @@ class Nodes(object):
                                              before_name, after_name,
                                              before_time, after_time))
         else:
-            self.diffs[key] = one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines))
+            maxwidth = vim.eval("col('$')")
+            self.diffs[key] = one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
 
         return self.diffs[key]
 
@@ -582,8 +582,21 @@ def GundoRenderGraph():
     dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
 
     verbose = vim.eval('g:gundo_verbose_graph') == 1
-    result = generate(walk_nodes(dag), asciiedges, nodesData.current(), verbose).rstrip().splitlines()
-    result = [' ' + l for l in result]
+    result = generate(walk_nodes(dag), asciiedges, nodesData.current(), verbose)
+    output = []
+    # right align the dag and flip over the y axis:
+    flip_dag = int(vim.eval("g:gundo_mirror_graph")) == 1
+    dag_width = 1
+    maxwidth = int(vim.eval("g:gundo_width"))
+    for line in result:
+        if len(line[0]) > dag_width:
+            dag_width = len(line[0])
+    for line in result:
+        if flip_dag:
+            dag_line = (line[0][::-1]).replace("/","\\")
+            output.append("%*s %s"% (dag_width,dag_line,line[1][:maxwidth-dag_width-2]))
+        else:
+            output.append("%-*s %s"% (dag_width,line[0],line[1][:maxwidth-dag_width-2]))
 
     target = (vim.eval('g:gundo_target_f'), int(vim.eval('g:gundo_target_n')))
     mappings = (vim.eval('g:gundo_map_move_older'),
@@ -596,13 +609,13 @@ def GundoRenderGraph():
 
     vim.command('call s:GundoOpenGraph()')
     vim.command('setlocal modifiable')
-    lines = (header + result)
+    lines = (header + output)
     lines = [line.rstrip() for line in lines]
     vim.current.buffer[:] = lines
     vim.command('setlocal nomodifiable')
 
     i = 1
-    for line in result:
+    for line in output:
         try:
             line.split('[')[0].index('@')
             i += 1
@@ -656,9 +669,9 @@ def GetNextLine(direction,move_count,write,start="line('.')"):
     else:
       distance = 1
       nextline = vim.eval("getline(%d)" % (start_line_no+direction))
-      idx1 = nextline.find(' @ ')
-      idx2 = nextline.find(' o ')
-      idx3 = nextline.find(' w ')
+      idx1 = nextline.find('@ ')
+      idx2 = nextline.find('o ')
+      idx3 = nextline.find('w ')
       # if the next line is not a revision - then go down one more.
       if (idx1+idx2+idx3) == -3:
           distance = distance + 1
@@ -712,9 +725,9 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
     line = vim.eval("getline('.')")
 
     # Move to the node, whether it's an @, o, or w
-    idx1 = line.find(' @ ')
-    idx2 = line.find(' o ')
-    idx3 = line.find(' w ')
+    idx1 = line.find('@ ')
+    idx2 = line.find('o ')
+    idx3 = line.find('w ')
     idxs = []
     if idx1 != -1:
         idxs.append(idx1)
@@ -724,11 +737,11 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
         idxs.append(idx3)
     minidx = min(idxs)
     if idx1 == minidx:
-        vim.command("call cursor(0, %d + 2)" % idx1)
+        vim.command("call cursor(0, %d + 1)" % idx1)
     elif idx2 == minidx:
-        vim.command("call cursor(0, %d + 2)" % idx2)
+        vim.command("call cursor(0, %d + 1)" % idx2)
     else:
-        vim.command("call cursor(0, %d + 2)" % idx3)
+        vim.command("call cursor(0, %d + 1)" % idx3)
 
     if vim.eval('g:gundo_auto_preview') == '1':
         GundoRenderPreview()
