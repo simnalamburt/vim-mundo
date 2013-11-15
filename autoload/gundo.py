@@ -261,6 +261,8 @@ def generate(dag, edgefn, current, verbose):
     """
     seen, state = [], [0, 0]
     result = []
+    current = nodesData.current()
+
     for idx, part in list(enumerate(dag)):
         node, parents = part
         if node.time:
@@ -277,6 +279,7 @@ def generate(dag, edgefn, current, verbose):
         preview_diff = nodesData.preview_diff(node.parent, node,unified=False)
         line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
         result.extend(ascii(state, 'C', char, [line], edgefn(seen, node, parents), verbose))
+    _undo_to(current)
     return result
 
 # Mercurial age function -----------------------------------------------------------
@@ -426,12 +429,13 @@ class Nodes(object):
         entries = ut['entries']
         seq_last = ut['seq_last']
 
-        # if the current seq_last and file are the same as last time, use the
-        # cached values.
+        # if the current seq_last and file are different, compute the new
+        # values:
         if self.seq_last != seq_last:
             vim.command('let s:has_supported_python = 0')
             root = Node(0, None, False, 0, 0)
             nodes = []
+            # TODO only compute new values (not all values)
             self._make_nodes(entries, nodes, root)
             nodes.append(root)
             nmap = dict((node.n, node) for node in nodes)
@@ -538,8 +542,6 @@ class Nodes(object):
             before_time = self._fmt_time(before.time)
             after_name = after.n
             after_time = self._fmt_time(after.time)
-
-        _undo_to(self.current())
 
         if unified:
             self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
