@@ -669,9 +669,9 @@ def GetNextLine(direction,move_count,write,start="line('.')"):
     else:
       distance = 1
       nextline = vim.eval("getline(%d)" % (start_line_no+direction))
-      idx1 = nextline.find('@ ')
-      idx2 = nextline.find('o ')
-      idx3 = nextline.find('w ')
+      idx1 = nextline.find('@')
+      idx2 = nextline.find('o')
+      idx3 = nextline.find('w')
       # if the next line is not a revision - then go down one more.
       if (idx1+idx2+idx3) == -3:
           distance = distance + 1
@@ -681,7 +681,7 @@ def GetNextLine(direction,move_count,write,start="line('.')"):
         return GetNextLine(direction,move_count-1,write,str(next_line))
     elif write:
         newline = vim.eval("getline(%d)" % (next_line))
-        if newline.find(' w ') == -1:
+        if newline.find('w') == -1:
             # make sure that if we can't go up/down anymore that we quit out.
             if direction < 0 and next_line == 1:
                 return next_line
@@ -725,9 +725,9 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
     line = vim.eval("getline('.')")
 
     # Move to the node, whether it's an @, o, or w
-    idx1 = line.find('@ ')
-    idx2 = line.find('o ')
-    idx3 = line.find('w ')
+    idx1 = line.find('@')
+    idx2 = line.find('o')
+    idx3 = line.find('w')
     idxs = []
     if idx1 != -1:
         idxs.append(idx1)
@@ -748,7 +748,7 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
 
 def GundoSearch():
     search = vim.eval("input('/')");
-    vim.command("let @/='%s'"% search.replace("'","\\'"))
+    vim.command('let @/="%s"'% search.replace("\\","\\\\").replace('"','\\"'))
     GundoNextMatch()
 
 def GundoPrevMatch():
@@ -786,7 +786,7 @@ def GundoMatch(down):
             # Look thru all of the changes, ignore the first two b/c those are the
             # diff timestamp fields (not relevent):
             for change in undochanges[3:]:
-                match_index = vim.eval('match("%s",@/)'% change.replace('"','\\"'))
+                match_index = vim.eval('match("%s",@/)'% change.replace("\\","\\\\").replace('"','\\"'))
                 # only consider the matches that are actual additions or
                 # subtractions
                 if int(match_index) >= 0 and (change.startswith('-') or change.startswith('+')):
