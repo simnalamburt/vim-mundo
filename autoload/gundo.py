@@ -23,25 +23,42 @@ except:
     pass
 
 # one line diff functions.#{{{
-def one_line_diff_str(before,after,mx=15):
-  """
-  Return a summary of the differences between two strings, concatenated.
+def one_line_diff_str(before,after,mx=15,pre=2):
+    """
+    Return a summary of the differences between two strings, concatenated.
+    
+    Parameters:
+    
+      before - string before.
+      after  - after string.
+      mx     - the max number of strings.
+      pre    - number of characters to show before diff (context)
+    
+    Returns a string no longer than 'mx'.
+    """
+    old = one_line_diff(before,after)
+    result = ''
+    firstEl = True
+    for v in old:
+        # if the first element doesn't have a change, then don't include it.
+        v = escape_returns(v)
+        if firstEl:
+            firstEl = False
+            # add in pre character context:
+            if not (v.startswith('+') or v.startswith('-')) and result == '':
+                v = v[-pre:]
+        # when we're going to be bigger than our max limit, lets ensure that the
+        # trailing +/- appears in the text:
+        if len(result) + len(v) > mx:
+            if v.startswith('+') or v.startswith('-'):
+                result += v[:mx - len(result) - 1]
+                result += v[0]
+            break
+        result += v
+    return result
 
-  Returns a string no longer than 'mx'.
-  """
-  old = one_line_diff(before,after)
-  result = ''
-  firstEl = True
-  for v in old:
-      # if the first element doesn't have a change, then don't include it.
-      if firstEl:
-          firstEl = False
-          if not (v.startswith('+') or v.startswith('-')):
-              continue
-      result += v.replace('\n','\\n').replace('\r','\\r').replace('\t','\\t')
-  if len(result) > mx:
-    return "%s..."% result[:mx-3]
-  return result
+def escape_returns(result):
+    return result.replace('\n','\\n').replace('\r','\\r').replace('\t','\\t')
 
 def one_line_diff(before,after):
   """
@@ -596,9 +613,9 @@ def GundoRenderGraph():
     for line in result:
         if flip_dag:
             dag_line = (line[0][::-1]).replace("/","\\")
-            output.append("%*s %s"% (dag_width,dag_line,line[1][:maxwidth-dag_width-2]))
+            output.append("%*s %s"% (dag_width,dag_line,line[1]))
         else:
-            output.append("%-*s %s"% (dag_width,line[0],line[1][:maxwidth-dag_width-2]))
+            output.append("%-*s %s"% (dag_width,line[0],line[1]))
 
     target = (vim.eval('g:gundo_target_f'), int(vim.eval('g:gundo_target_n')))
     mappings = (vim.eval('g:gundo_map_move_older'),
