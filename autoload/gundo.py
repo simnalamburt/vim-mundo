@@ -734,6 +734,7 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
 
     # Bound the movement to the graph.
     help_lines = 2
+    # TODO jumping up too many lines causes this to die :(
     if int(vim.eval('g:gundo_help')):
         help_lines = len(INLINE_HELP.split('\n'))
     if target_n <= help_lines - 1:
