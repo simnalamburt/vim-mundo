@@ -6,7 +6,7 @@ vim-mundo
 Maintainer of **[Gundo.vim](https://github.com/sjl/gundo.vim)** looks tired.
 This is my own fork of it.
 
-![screenshot][]
+<img src="https://simnalamburt.github.io/vim-mundo/dist/screenshot.jpg" height="500">
 
 * [Introduction Video][video]
 * [Project Site][site]
@@ -23,8 +23,7 @@ This is my own fork of it.
 
 [GPLv2+][]
 
-[screenshot]: https://simnalamburt.github.io/vim-mundo/screenshot.jpg
 [video]: http://screenr.com/M9l
-[site]: http://sjl.bitbucket.org/gundo.vim
+[site]: //simnalamburt.github.io/vim-mundo
 [Neovim]: //neovim.org/
 [GPLv2+]: http://opensource.org/licenses/gpl-2.0
