@@ -700,7 +700,7 @@ def GetNextLine(direction,move_count,write,start="line('.')"):
         return GetNextLine(direction,move_count-1,write,str(next_line))
     elif write:
         newline = vim.eval("getline(%d)" % (next_line))
-        if newline.find('w') == -1:
+        if newline.find('w ') == -1:
             # make sure that if we can't go up/down anymore that we quit out.
             if direction < 0 and next_line == 1:
                 return next_line
