@@ -316,7 +316,7 @@ def age(ts):
             return t
         return t + "s"
     def fmt(t, c):
-        return "%d %s" % (c, plural(t, c))
+        return "%d %s" % (int(c), plural(t, c))
 
     now = time.time()
     then = ts
@@ -352,11 +352,11 @@ def _check_sanity():
         nodesData = Nodes()
     b = int(vim.eval('g:gundo_target_n'))
 
-    if not vim.eval('bufloaded(%d)' % b):
+    if not vim.eval('bufloaded(%d)' % int(b)):
         vim.command('echo "%s"' % (MISSING_BUFFER % b))
         return False
 
-    w = int(vim.eval('bufwinnr(%d)' % b))
+    w = int(vim.eval('bufwinnr(%d)' % int(b)))
     if w == -1:
         vim.command('echo "%s"' % (MISSING_WINDOW % (w, b)))
         return False
@@ -365,7 +365,7 @@ def _check_sanity():
 
 def _goto_window_for_buffer(b):
     w = int(vim.eval('bufwinnr(%d)' % int(b)))
-    vim.command('%dwincmd w' % w)
+    vim.command('%dwincmd w' % int(w))
 
 def _goto_window_for_buffer_name(bn):
     b = vim.eval('bufnr("%s")' % bn)
@@ -376,7 +376,7 @@ def _undo_to(n):
     if n == 0:
         vim.command('silent earlier %s' % (int(vim.eval('&undolevels')) + 1))
     else:
-        vim.command('silent undo %d' % n)
+        vim.command('silent undo %d' % int(n))
 
 
 INLINE_HELP = '''\
@@ -617,12 +617,12 @@ def GundoRenderGraph():
         else:
             output.append("%-*s %s"% (dag_width,line[0],line[1]))
 
-    target = (vim.eval('g:gundo_target_f'), int(vim.eval('g:gundo_target_n')))
-    mappings = (vim.eval('g:gundo_map_move_older'),
+    target = (int(vim.eval('g:gundo_target_n')),
+                vim.eval('g:gundo_map_move_older'),
                 vim.eval('g:gundo_map_move_newer'))
 
     if int(vim.eval('g:gundo_help')):
-        header = (INLINE_HELP % (target + mappings)).splitlines()
+        header = (INLINE_HELP % target).splitlines()
     else:
         header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
