@@ -460,7 +460,9 @@ def GundoRenderGraph():
 
     vim.command('call s:GundoOpenGraph()')
     vim.command('setlocal modifiable')
-    vim.current.buffer[:] = (header + result)
+    lines = (header + result)
+    lines = [line.rstrip() for line in lines]
+    vim.current.buffer[:] = lines
     vim.command('setlocal nomodifiable')
 
     i = 1
