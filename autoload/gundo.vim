@@ -49,6 +49,9 @@ endif"}}}
 if !exists("g:gundo_auto_preview")"{{{
     let g:gundo_auto_preview = 1
 endif"}}}
+if !exists("g:gundo_verbose_graph")"{{{
+    let g:gundo_verbose_graph = 1
+endif"}}}
 if !exists("g:gundo_playback_delay")"{{{
     let g:gundo_playback_delay = 60
 endif"}}}

@@ -615,7 +615,7 @@ def GundoRenderGraph():
 
     dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
 
-    verbose = vim.eval('g:gundo_verbose_graph') == 1
+    verbose = vim.eval('g:gundo_verbose_graph') == "1"
     target = (int(vim.eval('g:gundo_target_n')),
                 vim.eval('g:gundo_map_move_older'),
                 vim.eval('g:gundo_map_move_newer'))
@@ -693,7 +693,7 @@ def GundoGetTargetState():
 
 def GetNextLine(direction,move_count,write,start="line('.')"):
     start_line_no = int(vim.eval(start))
-    start_line = vim.eval(start)
+    start_line = vim.eval("getline('.')")
     gundo_verbose_graph = vim.eval('g:gundo_verbose_graph')
     if gundo_verbose_graph != "0":
         distance = 2
