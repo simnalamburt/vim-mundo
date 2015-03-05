@@ -733,11 +733,10 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
         target_n = GetNextLine(updown,abs(GundoGetTargetState()-direction),write)
 
     # Bound the movement to the graph.
-    help_lines = 2
-    # TODO jumping up too many lines causes this to die :(
+    help_lines = 3
     if int(vim.eval('g:gundo_help')):
         help_lines = len(INLINE_HELP.split('\n'))
-    if target_n <= help_lines - 1:
+    if target_n <= help_lines:
         vim.command("call cursor(%d, 0)" % help_lines)
     else:
         vim.command("call cursor(%d, 0)" % target_n)
@@ -745,9 +744,9 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
     line = vim.eval("getline('.')")
 
     # Move to the node, whether it's an @, o, or w
-    idx1 = line.find('@')
-    idx2 = line.find('o')
-    idx3 = line.find('w')
+    idx1 = line.find('@ ')
+    idx2 = line.find('o ')
+    idx3 = line.find('w ')
     idxs = []
     if idx1 != -1:
         idxs.append(idx1)
