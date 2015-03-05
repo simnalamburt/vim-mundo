@@ -39,6 +39,8 @@ def one_line_diff_str(before,after,mx=15,pre=2):
     old = one_line_diff(before,after)
     result = ''
     firstEl = True
+    # TODO instead of using +addition+ and -subtraction- it'd be nice to be able
+    # to highlight the change w/o requiring the +/- chars.
     for v in old:
         # if the first element doesn't have a change, then don't include it.
         v = escape_returns(v)
@@ -272,7 +274,7 @@ def ascii(state, type, char, text, coldata, verbose):
     state[1] = idx
     return result
 
-def generate(dag, edgefn, current, verbose):
+def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line, last_visible_line):
     """
     Generate an array of the graph, and text describing the node of the graph.
     """
@@ -280,6 +282,9 @@ def generate(dag, edgefn, current, verbose):
     result = []
     current = nodesData.current()
 
+    inline_graph = int(vim.eval("g:gundo_inline_graph")) == 1
+
+    line_number = num_header_lines
     for idx, part in list(enumerate(dag)):
         node, parents = part
         if node.time:
@@ -293,9 +298,12 @@ def generate(dag, edgefn, current, verbose):
             char = 'w'
         else:
             char = 'o'
-        preview_diff = nodesData.preview_diff(node.parent, node,unified=False)
+        show_inine_diff = inline_graph and line_number >= first_visible_line and line_number <= last_visible_line
+        preview_diff = nodesData.preview_diff(node.parent, node,False,show_inine_diff)
         line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
-        result.extend(ascii(state, 'C', char, [line], edgefn(seen, node, parents), verbose))
+        new_lines = ascii(state, 'C', char, [line], edgefn(seen, node, parents), verbose)
+        line_number += len(new_lines)
+        result.extend(new_lines)
     _undo_to(current)
     return result
 
@@ -419,6 +427,7 @@ class Nodes(object):
         self.seq_last = None
         self.lines = {}
         self.diffs = {}
+        self.diff_has_oneline = {}
 
     def _check_version_location(self):
         _goto_window_for_buffer(vim.eval('g:gundo_target_n'))
@@ -509,7 +518,7 @@ class Nodes(object):
                                          before_time, after_time))
         return self.diffs[key]
 
-    def preview_diff(self, before, after, unified=True):
+    def preview_diff(self, before, after, unified=True, inline=False):
         """
         Generate a diff comparing two versions of a file.
 
@@ -518,8 +527,8 @@ class Nodes(object):
           current - ?
           before
           after
-          unified - If True, generate a unified diff, otherwise generate a summary
-                    line.
+          unified - If True, generate a unified diff
+          inline - Generate a one line summary line.
         """
         self._check_version_location()
         bn = 0
@@ -532,7 +541,8 @@ class Nodes(object):
             bn = before.n
             an = after.n
         key = "%s-%s-pd-%s"%(bn,an,unified)
-        if key in self.diffs:
+        needs_oneline = inline and key not in self.diff_has_oneline
+        if key in self.diffs and not needs_oneline:
             return self.diffs[key]
 
         if not after.n:    # we're at the original file
@@ -564,9 +574,12 @@ class Nodes(object):
             self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
                                              before_name, after_name,
                                              before_time, after_time))
-        else:
+        elif inline:
             maxwidth = vim.eval("col('$')")
             self.diffs[key] = one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
+            self.diff_has_oneline[key] = True
+        else:
+            self.diffs[key] = ""
 
         return self.diffs[key]
 
@@ -586,6 +599,8 @@ def GundoRenderGraph():
     if not _check_sanity():
         return
 
+    first_visible_line = int(vim.eval("line('w0')"))
+    last_visible_line = int(vim.eval("line('w$')"))
     nodes, nmap = nodesData.make_nodes()
 
     for node in nodes:
@@ -601,7 +616,17 @@ def GundoRenderGraph():
     dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
 
     verbose = vim.eval('g:gundo_verbose_graph') == 1
-    result = generate(walk_nodes(dag), asciiedges, nodesData.current(), verbose)
+    target = (int(vim.eval('g:gundo_target_n')),
+                vim.eval('g:gundo_map_move_older'),
+                vim.eval('g:gundo_map_move_newer'))
+
+    if int(vim.eval('g:gundo_help')):
+        header = (INLINE_HELP % target).splitlines()
+    else:
+        header = [(INLINE_HELP % target).splitlines()[0], '\n']
+
+    result = generate(walk_nodes(dag), asciiedges, nodesData.current(), verbose, len(header)+1, first_visible_line, last_visible_line)
+
     output = []
     # right align the dag and flip over the y axis:
     flip_dag = int(vim.eval("g:gundo_mirror_graph")) == 1
@@ -616,15 +641,6 @@ def GundoRenderGraph():
             output.append("%*s %s"% (dag_width,dag_line,line[1]))
         else:
             output.append("%-*s %s"% (dag_width,line[0],line[1]))
-
-    target = (int(vim.eval('g:gundo_target_n')),
-                vim.eval('g:gundo_map_move_older'),
-                vim.eval('g:gundo_map_move_newer'))
-
-    if int(vim.eval('g:gundo_help')):
-        header = (INLINE_HELP % target).splitlines()
-    else:
-        header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
     vim.command('call s:GundoOpenGraph()')
     vim.command('setlocal modifiable')

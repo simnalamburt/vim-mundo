@@ -55,6 +55,9 @@ endif"}}}
 if !exists('g:gundo_mirror_graph')"{{{
     let g:gundo_mirror_graph = 0
 endif"}}}
+if !exists('g:gundo_inline_graph')"{{{
+    let g:gundo_inline_graph = 1
+endif"}}}
 
 let s:has_supported_python = 0
 if g:gundo_prefer_python3 && has('python3')"{{{
@@ -203,6 +206,7 @@ function! s:GundoOpenGraph()"{{{
     if existing_gundo_buffer == -1
         call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
         exe "new __Gundo__"
+        set fdm=manual
         if g:gundo_preview_bottom
             if g:gundo_right
                 wincmd L
@@ -402,22 +406,36 @@ function! s:GundoRefresh()"{{{
     return
   endif
 
-  if b:gundoChangedtick == b:changedtick | return | endif
+  let topLine = line('w0')
+  let bottomLine = line('w$')
+  if !exists('b:gundoTopLine')
+      let b:gundoTopLine = topLine
+  endif
+  if !exists('b:gundoBottomLine')
+      let b:gundoBottomLine = bottomLine
+  endif
+  let linesChanged = b:gundoBottomLine != bottomLine && b:gundoTopLine != topLine
+
+  if b:gundoChangedtick == b:changedtick && !linesChanged | return | endif
   let b:gundoChangedtick = b:changedtick
+  let b:gundoTopLine = topLine
+  let b:gundoBottomLine = bottomLine
 
   let gundoWin    = bufwinnr('__Gundo__')
   let gundoPreWin = bufwinnr('__Gundo_Preview__')
   let currentWin  = bufwinnr('%')
 
   " abort if Gundo is closed or is current window
-  if (gundoWin == -1) || (gundoPreWin == -1) || (gundoWin == currentWin) || (gundoPreWin == currentWin)
+  if ((gundoWin == -1) || (gundoPreWin == -1) || (gundoWin == currentWin) || (gundoPreWin == currentWin)) && !linesChanged
     return
   endif
 
+  let winView = winsaveview()
   :GundoRenderGraph
 
   " switch back to previous window
-  execute currentWin . 'wincmd w'
+  execute currentWin .'wincmd w'
+  call winrestview(winView)
 endfunction"}}}
 
 augroup GundoAug
@@ -425,6 +443,7 @@ augroup GundoAug
     autocmd BufNewFile __Gundo__ call s:GundoSettingsGraph()
     autocmd BufNewFile __Gundo_Preview__ call s:GundoSettingsPreview()
     autocmd CursorHold * call s:GundoRefresh()
+    autocmd CursorMoved * call s:GundoRefresh()
     autocmd BufEnter * let b:gundoChangedtick = 0
 augroup END
 
