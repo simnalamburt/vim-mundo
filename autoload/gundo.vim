@@ -123,6 +123,7 @@ function! s:GundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> /             :call <sid>GundoPython('GundoSearch()')<CR>
     nnoremap <script> <silent> <buffer> n             :call <sid>GundoPython('GundoNextMatch()')<CR>
     nnoremap <script> <silent> <buffer> N             :call <sid>GundoPython('GundoPrevMatch()')<CR>
+    nnoremap <script> <silent> <buffer> p             :call <sid>GundoPython('GundoRenderChangePreview()')<CR>
     nnoremap <script> <silent> <buffer> r             :call <sid>GundoPython('GundoRenderPreview()')<CR>
     nnoremap <script> <silent> <buffer> ?             :call <sid>GundoPython('GundoToggleHelp()')<CR>
     nnoremap <script> <silent> <buffer> q             :call <sid>GundoClose()<CR>
