@@ -446,8 +446,8 @@ augroup GundoAug
     autocmd!
     autocmd BufNewFile __Gundo__ call s:GundoSettingsGraph()
     autocmd BufNewFile __Gundo_Preview__ call s:GundoSettingsPreview()
-    autocmd CursorHold * call s:GundoRefresh()
-    autocmd CursorMoved * call s:GundoRefresh()
+    autocmd CursorHold __Gundo__ call s:GundoRefresh()
+    autocmd CursorMoved __Gundo__ call s:GundoRefresh()
     autocmd BufEnter * let b:gundoChangedtick = 0
 augroup END
 
