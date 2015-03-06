@@ -282,7 +282,7 @@ def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line
     result = []
     current = nodesData.current()
 
-    inline_graph = int(vim.eval("g:gundo_inline_graph")) == 1
+    inline_graph = int(vim.eval("g:gundo_inline_undo")) == 1
 
     line_number = num_header_lines
     for idx, part in list(enumerate(dag)):

@@ -22,8 +22,8 @@ CONTENTS                                                      *Gundo-contents*
         3.10 gundo_auto_preview ........ |gundo_auto_preview|
         3.11 gundo_verbose_graph ....... |gundo_verbose_graph|
         3.12 gundo_playback_delay ...... |gundo_playback_delay|
-        3.13 gundo_mirror_graph  ....... |gundo_mirror_graph|
-        3.14 gundo_inline_graph  ....... |gundo_inline_graph|
+        3.13 gundo_mirror_graph ........ |gundo_mirror_graph|
+        3.14 gundo_inline_undo ......... |gundo_inline_undo|
     4. License ......................... |GundoLicense|
     5. Bugs ............................ |GundoBugs|
     6. Contributing .................... |GundoContributing|
@@ -247,7 +247,7 @@ Set this to 0 to align the graph to the left; set to 1 to align to the right.
 Default: 1 (mirror graph)
 
 ------------------------------------------------------------------------------
-3.14 g:gundo_inline_graph                                *gundo_inline_graph*
+3.14 g:gundo_inline_graph                                *gundo_inline_undo*
 
 When enabled, a small one line diff is displayed to the right of the graph undo.
 Although not as detailed as a full diff provided in the preview window, it

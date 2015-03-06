@@ -58,8 +58,8 @@ endif"}}}
 if !exists('g:gundo_mirror_graph')"{{{
     let g:gundo_mirror_graph = 0
 endif"}}}
-if !exists('g:gundo_inline_graph')"{{{
-    let g:gundo_inline_graph = 1
+if !exists('g:gundo_inline_undo')"{{{
+    let g:gundo_inline_undo = 1
 endif"}}}
 
 let s:has_supported_python = 0
