@@ -313,8 +313,7 @@ agescales = [("yr", 3600 * 24 * 365),
              ("wk", 3600 * 24 * 7),
              ("dy", 3600 * 24),
              ("hr", 3600),
-             ("min", 60),
-             ("sec", 1)]
+             ("min", 60)]
 
 def age(ts):
     '''turn a timestamp into an age string.'''
@@ -339,6 +338,8 @@ def age(ts):
         n = delta // s
         if n >= 2 or s == 1:
             return '%s ago' % fmt(t, n)
+
+    return "<1 min ago"
 
 #}}}
 # Python Vim utility functions -----------------------------------------------------#{{{
