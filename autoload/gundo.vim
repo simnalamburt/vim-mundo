@@ -410,29 +410,31 @@ function! s:GundoRefresh()"{{{
     return
   endif
 
-  let topLine = line('w0')
-  let bottomLine = line('w$')
-  if !exists('b:gundoTopLine')
-      let b:gundoTopLine = topLine
-  endif
-  if !exists('b:gundoBottomLine')
-      let b:gundoBottomLine = bottomLine
-  endif
-  let linesChanged = b:gundoBottomLine != bottomLine && b:gundoTopLine != topLine
-
-  if b:gundoChangedtick == b:changedtick && !linesChanged | return | endif
-  let b:gundoChangedtick = b:changedtick
-  let b:gundoTopLine = topLine
-  let b:gundoBottomLine = bottomLine
-
   let gundoWin    = bufwinnr('__Gundo__')
   let gundoPreWin = bufwinnr('__Gundo_Preview__')
   let currentWin  = bufwinnr('%')
 
   " abort if Gundo is closed or is current window
-  if ((gundoWin == -1) || (gundoPreWin == -1) || (gundoWin == currentWin) || (gundoPreWin == currentWin)) && !linesChanged
+  if (gundoWin == -1) || (gundoPreWin == -1) || (gundoPreWin == currentWin)
     return
   endif
+
+  if gundoWin == currentWin
+    let topLine = line('w0')
+    let b:gundoTopLine = topLine
+
+    if !exists('b:gundoTopLine')
+        let b:gundoTopLine = topLine
+    endif
+    let linesChanged = b:gundoTopLine != topLine
+    echom "linesChanged = ". linesChanged ." ". b:gundoTopLine ." ". topLine
+    " only repaint when __Gundo__ if the lines have changed (for one-line diffs)
+    if !linesChanged && b:gundoChangedtick == b:changedtick
+      return
+    end
+  endif
+
+  let b:gundoChangedtick = b:changedtick
 
   let winView = winsaveview()
   :GundoRenderGraph
@@ -446,8 +448,8 @@ augroup GundoAug
     autocmd!
     autocmd BufNewFile __Gundo__ call s:GundoSettingsGraph()
     autocmd BufNewFile __Gundo_Preview__ call s:GundoSettingsPreview()
-    autocmd CursorHold __Gundo__ call s:GundoRefresh()
-    autocmd CursorMoved __Gundo__ call s:GundoRefresh()
+    autocmd CursorHold * call s:GundoRefresh()
+    autocmd CursorMoved * call s:GundoRefresh()
     autocmd BufEnter * let b:gundoChangedtick = 0
 augroup END
 
