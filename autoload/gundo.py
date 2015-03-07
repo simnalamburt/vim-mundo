@@ -267,7 +267,9 @@ def ascii(state, type, char, text, coldata, verbose):
     indentation_level = max(ncols, ncols + coldiff)
     result = []
     for (line, logstr) in zip(lines, text):
-        result.append(["%-*s" % (2 * indentation_level, "".join(line)), logstr])
+        graph = "%-*s" % (2 * indentation_level, "".join(line))
+        if not graph.isspace():
+            result.append([graph, logstr])
 
     # ... and start over
     state[0] = coldiff
