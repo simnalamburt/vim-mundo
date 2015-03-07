@@ -26,14 +26,14 @@ except:
 def one_line_diff_str(before,after,mx=15,pre=2):
     """
     Return a summary of the differences between two strings, concatenated.
-    
+
     Parameters:
-    
+
       before - string before.
       after  - after string.
       mx     - the max number of strings.
       pre    - number of characters to show before diff (context)
-    
+
     Returns a string no longer than 'mx'.
     """
     old = one_line_diff(before,after)
@@ -185,7 +185,7 @@ def ascii(state, type, char, text, coldata, verbose):
         in the next revision and the number of columns (ongoing edges)
         in the current revision. That is: -1 means one column removed;
         0 means no columns added or removed; 1 means one column added.
-      - Verbosity: if enabled then the graph prints an extra '|' 
+      - Verbosity: if enabled then the graph prints an extra '|'
         between each line of information.
 
     Returns a string representing the output.
@@ -736,7 +736,7 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
       direction  - -1/1 (up/down). when 'relative' if False, the undo node to
                    move to.
       move_count - how many times to perform the operation (irrelevent for
-                   relative == False). 
+                   relative == False).
       relative   - whether to move up/down, or to jump to a specific undo node.
 
       write      - If True, move to the next written undo.
@@ -808,7 +808,7 @@ def GundoMatch(down):
     total = len(nodes) - 1
 
     _goto_window_for_buffer_name('__Gundo__')
-    curline = int(vim.eval("line('.')")) 
+    curline = int(vim.eval("line('.')"))
     gundo_node = GundoGetTargetState()
 
     found_version = -1
