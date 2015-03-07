@@ -427,7 +427,6 @@ function! s:GundoRefresh()"{{{
         let b:gundoTopLine = topLine
     endif
     let linesChanged = b:gundoTopLine != topLine
-    echom "linesChanged = ". linesChanged ." ". b:gundoTopLine ." ". topLine
     " only repaint when __Gundo__ if the lines have changed (for one-line diffs)
     if !linesChanged && b:gundoChangedtick == b:changedtick
       return
