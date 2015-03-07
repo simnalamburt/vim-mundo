@@ -32,7 +32,7 @@ if !exists('g:gundo_right')"{{{
     let g:gundo_right = 0
 endif"}}}
 if !exists('g:gundo_help')"{{{
-    let g:gundo_help = 1
+    let g:gundo_help = 0
 endif"}}}
 if !exists("g:gundo_map_move_older")"{{{
     let g:gundo_map_move_older = 'j'
@@ -49,8 +49,17 @@ endif"}}}
 if !exists("g:gundo_auto_preview")"{{{
     let g:gundo_auto_preview = 1
 endif"}}}
+if !exists("g:gundo_verbose_graph")"{{{
+    let g:gundo_verbose_graph = 1
+endif"}}}
 if !exists("g:gundo_playback_delay")"{{{
     let g:gundo_playback_delay = 60
+endif"}}}
+if !exists('g:gundo_mirror_graph')"{{{
+    let g:gundo_mirror_graph = 0
+endif"}}}
+if !exists('g:gundo_inline_undo')"{{{
+    let g:gundo_inline_undo = 1
 endif"}}}
 
 let s:has_supported_python = 0
@@ -73,11 +82,6 @@ let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
 
 "{{{ Gundo utility functions
 
-function! s:GundoGetTargetState()"{{{
-    let target_line = matchstr(getline("."), '\v\[[0-9]+\]')
-    return matchstr(target_line, '\v[0-9]+')
-endfunction"}}}
-
 function! s:GundoGoToWindowForBufferName(name)"{{{
     if bufwinnr(bufnr(a:name)) != -1
         exe bufwinnr(bufnr(a:name)) . "wincmd w"
@@ -97,7 +101,7 @@ endfunction"}}}
 
 function! s:GundoInlineHelpLength()"{{{
     if g:gundo_help
-        return 6
+        return 10
     else
         return 0
     endif
@@ -108,16 +112,23 @@ endfunction"}}}
 "{{{ Gundo buffer settings
 
 function! s:GundoMapGraph()"{{{
-    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_older . " :call <sid>GundoMove(1)<CR>"
-    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_newer . " :call <sid>GundoMove(-1)<CR>"
-    nnoremap <script> <silent> <buffer> <CR>          :call <sid>GundoRevert()<CR>
-    nnoremap <script> <silent> <buffer> o             :call <sid>GundoRevert()<CR>
-    nnoremap <script> <silent> <buffer> <down>        :call <sid>GundoMove(1)<CR>
-    nnoremap <script> <silent> <buffer> <up>          :call <sid>GundoMove(-1)<CR>
-    nnoremap <script> <silent> <buffer> gg            gg:call <sid>GundoMove(1)<CR>
-    nnoremap <script> <silent> <buffer> P             :call <sid>GundoPlayTo()<CR>
-    nnoremap <script> <silent> <buffer> p             :call <sid>GundoRenderChangePreview()<CR>
-    nnoremap <script> <silent> <buffer> r             :call <sid>GundoRenderPreview()<CR>
+    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_older . " :call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>"
+    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_newer . " :call <sid>GundoPython('GundoMove(-1,'. v:count .')')<CR>"
+    nnoremap <script> <silent> <buffer> <CR>          :call <sid>GundoPython('GundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> o             :call <sid>GundoPython('GundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> <down>        :call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>
+    nnoremap <script> <silent> <buffer> <up>          :call <sid>GundoPython('GundoMove(-1,'. v:count .')')<CR>
+    nnoremap <script> <silent> <buffer> J             :call <sid>GundoPython('GundoMove(1,'. v:count .',True,True)')<CR>
+    nnoremap <script> <silent> <buffer> K             :call <sid>GundoPython('GundoMove(-1,'. v:count .',True,True)')<CR>
+    nnoremap <script> <silent> <buffer> gg            gg:call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>
+    nnoremap <script> <silent> <buffer> P             :call <sid>GundoPython('GundoPlayTo()')<CR>
+    nnoremap <script> <silent> <buffer> d             :call <sid>GundoPython('GundoRenderPatchdiff()')<CR>
+    nnoremap <script> <silent> <buffer> /             :call <sid>GundoPython('GundoSearch()')<CR>
+    nnoremap <script> <silent> <buffer> n             :call <sid>GundoPython('GundoNextMatch()')<CR>
+    nnoremap <script> <silent> <buffer> N             :call <sid>GundoPython('GundoPrevMatch()')<CR>
+    nnoremap <script> <silent> <buffer> p             :call <sid>GundoPython('GundoRenderChangePreview()')<CR>
+    nnoremap <script> <silent> <buffer> r             :call <sid>GundoPython('GundoRenderPreview()')<CR>
+    nnoremap <script> <silent> <buffer> ?             :call <sid>GundoPython('GundoToggleHelp()')<CR>
     nnoremap <script> <silent> <buffer> q             :call <sid>GundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>GundoClose()
     cabbrev  <script> <silent> <buffer> quit          call <sid>GundoClose()
@@ -167,11 +178,16 @@ function! s:GundoSyntaxGraph()"{{{
     syn match GundoHelp '\v^".*$'
     syn match GundoNumberField '\v\[[0-9]+\]'
     syn match GundoNumber '\v[0-9]+' contained containedin=GundoNumberField
+    syn region GundoDiff start=/\v<ago> / end=/$/
+    syn match GundoDiffAdd '\v\+[^+-]+\+' contained containedin=GundoDiff
+    syn match GundoDiffDelete '\v-[^+-]+-' contained containedin=GundoDiff
 
     hi def link GundoCurrentLocation Keyword
     hi def link GundoHelp Comment
     hi def link GundoNumberField Comment
     hi def link GundoNumber Identifier
+    hi def link GundoDiffAdd DiffAdd
+    hi def link GundoDiffDelete DiffDelete
 endfunction"}}}
 
 "}}}
@@ -194,6 +210,7 @@ function! s:GundoOpenGraph()"{{{
     if existing_gundo_buffer == -1
         call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
         exe "new __Gundo__"
+        set fdm=manual
         if g:gundo_preview_bottom
             if g:gundo_right
                 wincmd L
@@ -294,7 +311,7 @@ function! s:GundoOpen()"{{{
             command! -nargs=0 GundoToggle call s:GundoDidNotLoad()
             call s:GundoDidNotLoad()
             return
-        endif"
+        endif
 
         let g:gundo_py_loaded = 1
     endif
@@ -307,8 +324,8 @@ function! s:GundoOpen()"{{{
     call s:GundoOpenPreview()
     exe bufwinnr(g:gundo_target_n) . "wincmd w"
 
-    call s:GundoRenderGraph()
-    call s:GundoRenderPreview()
+    call s:GundoPython('GundoRenderGraph()')
+    call s:GundoPython('GundoRenderPreview()')
 
     " Restore `splitbelow` value.
     let &splitbelow = saved_splitbelow
@@ -348,50 +365,7 @@ function! s:GundoMouseDoubleClick()"{{{
     if stridx(start_line, '[') == -1
         return
     else
-        call s:GundoRevert()
-    endif
-endfunction"}}}
-
-"}}}
-
-"{{{ Gundo movement
-
-function! s:GundoMove(direction) range"{{{
-    let start_line = getline('.')
-    if v:count1 == 0
-        let move_count = 1
-    else
-        let move_count = v:count1
-    endif
-    let distance = 2 * move_count
-
-    " If we're in between two nodes we move by one less to get back on track.
-    if stridx(start_line, '[') == -1
-        let distance = distance - 1
-    endif
-
-    let target_n = line('.') + (distance * a:direction)
-
-    " Bound the movement to the graph.
-    if target_n <= s:GundoInlineHelpLength() - 1
-        call cursor(s:GundoInlineHelpLength(), 0)
-    else
-        call cursor(target_n, 0)
-    endif
-
-    let line = getline('.')
-
-    " Move to the node, whether it's an @ or an o
-    let idx1 = stridx(line, '@')
-    let idx2 = stridx(line, 'o')
-    if idx1 != -1
-        call cursor(0, idx1 + 1)
-    else
-        call cursor(0, idx2 + 1)
-    endif
-
-    if g:gundo_auto_preview == 1
-        call s:GundoRenderPreview()
+        call <sid>GundoPython('GundoRevert()')<CR>
     endif
 endfunction"}}}
 
@@ -399,47 +373,11 @@ endfunction"}}}
 
 "{{{ Gundo rendering
 
-function! s:GundoRenderGraph()"{{{
+function! s:GundoPython(fn)"{{{
     if s:has_supported_python == 2 && g:gundo_prefer_python3
-        python3 GundoRenderGraph()
+        exec "python3 ". a:fn
     else
-        python GundoRenderGraph()
-    endif
-endfunction"}}}
-
-function! s:GundoRenderPreview()"{{{
-    if s:has_supported_python == 2 && g:gundo_prefer_python3
-        python3 GundoRenderPreview()
-    else
-        python GundoRenderPreview()
-    endif
-endfunction"}}}
-
-function! s:GundoRenderChangePreview()"{{{
-    if s:has_supported_python == 2 && g:gundo_prefer_python3
-        python3 GundoRenderChangePreview()
-    else
-        python GundoRenderChangePreview()
-    endif
-endfunction"}}}
-
-"}}}
-
-"{{{ Gundo undo/redo
-
-function! s:GundoRevert()"{{{
-    if s:has_supported_python == 2 && g:gundo_prefer_python3
-        python3 GundoRevert()
-    else
-        python GundoRevert()
-    endif
-endfunction"}}}
-
-function! s:GundoPlayTo()"{{{
-    if s:has_supported_python == 2 && g:gundo_prefer_python3
-        python3 GundoPlayTo()
-    else
-        python GundoPlayTo()
+        exec "python ". a:fn
     endif
 endfunction"}}}
 
@@ -460,13 +398,59 @@ function! gundo#GundoHide()"{{{
 endfunction"}}}
 
 function! gundo#GundoRenderGraph()"{{{
-    call s:GundoRenderGraph()
+    call s:GundoPython('GundoRenderGraph()')
+endfunction"}}}
+
+" automatically reload Gundo buffer if open
+function! s:GundoRefresh()"{{{
+  " abort when there were no changes
+
+  " abort if our b:gundoChangedtick doens't exist
+  if !exists('b:gundoChangedtick')
+    return
+  endif
+
+  let gundoWin    = bufwinnr('__Gundo__')
+  let gundoPreWin = bufwinnr('__Gundo_Preview__')
+  let currentWin  = bufwinnr('%')
+
+  " abort if Gundo is closed or is current window
+  if (gundoWin == -1) || (gundoPreWin == -1) || (gundoPreWin == currentWin)
+    return
+  endif
+
+  if gundoWin == currentWin
+    let topLine = line('w0')
+    let b:gundoTopLine = topLine
+
+    if !exists('b:gundoTopLine')
+        let b:gundoTopLine = topLine
+    endif
+    let linesChanged = b:gundoTopLine != topLine
+    echom "linesChanged = ". linesChanged ." ". b:gundoTopLine ." ". topLine
+    " only repaint when __Gundo__ if the lines have changed (for one-line diffs)
+    if !linesChanged && b:gundoChangedtick == b:changedtick
+      return
+    end
+  endif
+
+  let b:gundoChangedtick = b:changedtick
+
+  let winView = winsaveview()
+  :GundoRenderGraph
+
+  " switch back to previous window
+  execute currentWin .'wincmd w'
+  call winrestview(winView)
 endfunction"}}}
 
 augroup GundoAug
     autocmd!
     autocmd BufNewFile __Gundo__ call s:GundoSettingsGraph()
     autocmd BufNewFile __Gundo_Preview__ call s:GundoSettingsPreview()
+    autocmd CursorHold * call s:GundoRefresh()
+    autocmd CursorMoved * call s:GundoRefresh()
+    autocmd BufEnter * let b:gundoChangedtick = 0
 augroup END
 
 "}}}
