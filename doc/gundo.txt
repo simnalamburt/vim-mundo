@@ -24,6 +24,7 @@ CONTENTS                                                      *Gundo-contents*
         3.12 gundo_playback_delay ...... |gundo_playback_delay|
         3.13 gundo_mirror_graph ........ |gundo_mirror_graph|
         3.14 gundo_inline_undo ......... |gundo_inline_undo|
+        3.15 gundo_return_on_revert .... |gundo_return_on_revert|
     4. License ......................... |GundoLicense|
     5. Bugs ............................ |GundoBugs|
     6. Contributing .................... |GundoContributing|
@@ -255,6 +256,13 @@ provides a quick summary of the diff w/o having to navigate.
 
 Default: 1 (inline graph)
 
+------------------------------------------------------------------------------
+3.15 g:gundo_return_on_revert                         *gundo_return_on_revert*
+
+Set this to 0 to keep focus in the Gundo window after a revert.
+
+Default: 1
+
 ==============================================================================
 4. License                                                      *GundoLicense*
 
@@ -281,6 +289,7 @@ GitHub: http://github.com/sjl/gundo.vim/
 v3.X - WIP
     * Add one line diff in __Gundo__ window.
     * Adds g:gundo_mirror_graph setting.
+    * Adds g:gundo_return_on_revert setting.
     * Adds ability to toggle help on/off in __Gundo__ window.
     * Adds J and K commands (navigate between written undos)
     * Adds /, n and N commands (search undos)
