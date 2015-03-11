@@ -61,6 +61,9 @@ endif"}}}
 if !exists('g:gundo_inline_undo')"{{{
     let g:gundo_inline_undo = 1
 endif"}}}
+if !exists("g:gundo_return_on_revert")"{{{
+    let g:gundo_return_on_revert = 1
+endif"}}}
 
 let s:has_supported_python = 0
 if g:gundo_prefer_python3 && has('python3')"{{{
