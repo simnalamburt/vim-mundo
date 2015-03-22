@@ -461,7 +461,6 @@ class Nodes(object):
         # if the current seq_last and file are different, compute the new
         # values:
         if self.seq_last != seq_last:
-            vim.command('let s:has_supported_python = 0')
             root = Node(0, None, False, 0, 0)
             nodes = []
             # TODO only compute new values (not all values)
@@ -578,7 +577,7 @@ class Nodes(object):
                                              before_name, after_name,
                                              before_time, after_time))
         elif inline:
-            maxwidth = vim.eval("col('$')")
+            maxwidth = int(vim.eval("col('$')"))
             self.diffs[key] = one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
             self.diff_has_oneline[key] = True
         else:
