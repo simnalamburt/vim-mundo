@@ -59,7 +59,7 @@ if !exists('g:gundo_mirror_graph')"{{{
     let g:gundo_mirror_graph = 0
 endif"}}}
 if !exists('g:gundo_inline_undo')"{{{
-    let g:gundo_inline_undo = 1
+    let g:gundo_inline_undo = 0
 endif"}}}
 if !exists("g:gundo_return_on_revert")"{{{
     let g:gundo_return_on_revert = 1

@@ -254,7 +254,7 @@ When enabled, a small one line diff is displayed to the right of the graph undo.
 Although not as detailed as a full diff provided in the preview window, it
 provides a quick summary of the diff w/o having to navigate.
 
-Default: 1 (inline graph)
+Default: 0 (no inline graph)
 
 ------------------------------------------------------------------------------
 3.15 g:gundo_return_on_revert                         *gundo_return_on_revert*
