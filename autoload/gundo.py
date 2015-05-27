@@ -83,19 +83,6 @@ def GundoRenderGraph():
 
     first_visible_line = int(vim.eval("line('w0')"))
     last_visible_line = int(vim.eval("line('w$')"))
-    nodes, nmap = nodesData.make_nodes()
-
-    for node in nodes:
-        node.children = [n for n in nodes if n.parent == node]
-
-    def walk_nodes(nodes):
-        for node in nodes:
-            if node.parent:
-                yield (node, [node.parent])
-            else:
-                yield (node, [])
-
-    dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
 
     verbose = vim.eval('g:gundo_verbose_graph') == "1"
     target = (int(vim.eval('g:gundo_target_n')),
@@ -107,9 +94,7 @@ def GundoRenderGraph():
     else:
         header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
-    result = graphlog.generate(walk_nodes(dag),
-            graphlog.asciiedges,
-            nodesData.current(),
+    result = graphlog.generate(
             verbose,
             len(header)+1,
             first_visible_line,
@@ -380,8 +365,6 @@ def GundoRenderChangePreview():
     Return True on success, False on failure. """
     if not _check_sanity():
         return
-
-    nodes, nmap = nodesData.make_nodes()
 
     vim.command('call s:GundoOpenPreview()')
     util._output_preview_text(GundoGetChangesForLine())

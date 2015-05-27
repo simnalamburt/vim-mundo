@@ -1,7 +1,7 @@
 import time
 import util
 
-# Mercurial's graphlog code --------------------------------------------------------#{{{
+# Mercurial's graphlog code -------------------------------------------------------
 def asciiedges(seen, rev, parents):
     """adds edge info to changelog DAG walk suitable for ascii()"""
     if rev not in seen:
@@ -172,13 +172,28 @@ def ascii(state, type, char, text, coldata, verbose):
     state[1] = idx
     return result
 
-def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line, last_visible_line, inline_graph, nodesData):
+def generate(verbose, num_header_lines, first_visible_line, last_visible_line, inline_graph, nodesData):
     """
     Generate an array of the graph, and text describing the node of the graph.
     """
     seen, state = [], [0, 0]
     result = []
     current = nodesData.current()
+
+    nodes, nmap = nodesData.make_nodes()
+
+    for node in nodes:
+        node.children = [n for n in nodes if n.parent == node]
+
+    def walk_nodes(nodes):
+        for node in nodes:
+            if node.parent:
+                yield (node, [node.parent])
+            else:
+                yield (node, [])
+
+    dag = sorted(nodes, key=lambda n: int(n.n), reverse=True)
+    dag = walk_nodes(dag)
 
     line_number = num_header_lines
     for idx, part in list(enumerate(dag)):
@@ -197,7 +212,7 @@ def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line
         show_inine_diff = inline_graph and line_number >= first_visible_line and line_number <= last_visible_line
         preview_diff = nodesData.preview_diff(node.parent, node,False,show_inine_diff)
         line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
-        new_lines = ascii(state, 'C', char, [line], edgefn(seen, node, parents), verbose)
+        new_lines = ascii(state, 'C', char, [line], asciiedges(seen, node, parents), verbose)
         line_number += len(new_lines)
         result.extend(new_lines)
     util._undo_to(current)
@@ -236,5 +251,3 @@ def age(ts):
             return '%s ago' % fmt(t, n)
 
     return "<1 min ago"
-
-#}}}
