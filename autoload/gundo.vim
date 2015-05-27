@@ -19,6 +19,12 @@ if v:version < '703'"{{{
     finish
 endif"}}}
 
+if !exists('g:gundo_first_visible_line')"{{{
+    let g:gundo_first_visible_line = 0
+endif"}}}
+if !exists('g:gundo_last_visible_line')"{{{
+    let g:gundo_last_visible_line = 0
+endif"}}}
 if !exists('g:gundo_width')"{{{
     let g:gundo_width = 45
 endif"}}}
@@ -408,11 +414,6 @@ endfunction"}}}
 function! s:GundoRefresh()"{{{
   " abort when there were no changes
 
-  " abort if our b:gundoChangedtick doens't exist
-  if !exists('b:gundoChangedtick')
-    return
-  endif
-
   let gundoWin    = bufwinnr('__Gundo__')
   let gundoPreWin = bufwinnr('__Gundo_Preview__')
   let currentWin  = bufwinnr('%')
@@ -421,22 +422,6 @@ function! s:GundoRefresh()"{{{
   if (gundoWin == -1) || (gundoPreWin == -1) || (gundoPreWin == currentWin)
     return
   endif
-
-  if gundoWin == currentWin
-    let topLine = line('w0')
-    let b:gundoTopLine = topLine
-
-    if !exists('b:gundoTopLine')
-        let b:gundoTopLine = topLine
-    endif
-    let linesChanged = b:gundoTopLine != topLine
-    " only repaint when __Gundo__ if the lines have changed (for one-line diffs)
-    if !linesChanged && b:gundoChangedtick == b:changedtick
-      return
-    end
-  endif
-
-  let b:gundoChangedtick = b:changedtick
 
   let winView = winsaveview()
   :GundoRenderGraph

@@ -5,7 +5,7 @@ import time
 import util
 import vim
 
-# Python undo tree data structures and functions -----------------------------------#{{{
+# Python undo tree data structures and functions ----------------------------------
 class Node(object):
     def __init__(self, n, parent, time, curhead, saved):
         self.n = int(n)
@@ -26,7 +26,7 @@ class Nodes(object):
     def _clear_cache(self):
         self.nodes_made = None
         self.target_f = None
-        self.seq_last = None
+        self.changedtick = None
         self.lines = {}
         self.diffs = {}
         self.diff_has_oneline = {}
@@ -50,27 +50,36 @@ class Nodes(object):
                     self._make_nodes(alt['alt'], nodes, p)
                 p = node
 
+    def is_outdated(self):
+        util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+        current_changedtick = vim.eval('b:changedtick')
+        return self.changedtick != current_changedtick
+
     def make_nodes(self):
+        # If the current changedtick is unchanged, we don't need to do
+        # anything:
+        if not self.is_outdated():
+            return self.nodes_made
+
         self._check_version_location()
         target_f = vim.eval('g:gundo_target_f')
         ut = vim.eval('undotree()')
         entries = ut['entries']
         seq_last = ut['seq_last']
+        current_changedtick = vim.eval('b:changedtick')
 
-        # if the current seq_last and file are different, compute the new
-        # values:
-        if self.seq_last != seq_last:
-            root = Node(0, None, False, 0, 0)
-            nodes = []
-            # TODO only compute new values (not all values)
-            self._make_nodes(entries, nodes, root)
-            nodes.append(root)
-            nmap = dict((node.n, node) for node in nodes)
+        root = Node(0, None, False, 0, 0)
+        nodes = []
+        # TODO only compute new values (not all values)
+        self._make_nodes(entries, nodes, root)
+        nodes.append(root)
+        nmap = dict((node.n, node) for node in nodes)
 
-            # cache values for later use
-            self.target_f = target_f
-            self.seq_last = seq_last
-            self.nodes_made = (nodes, nmap)
+        # cache values for later use
+        self.target_f = target_f
+        self.seq_last = seq_last
+        self.nodes_made = (nodes, nmap)
+        self.changedtick = current_changedtick
 
         return self.nodes_made
 
@@ -183,5 +192,3 @@ class Nodes(object):
             self.diffs[key] = ""
 
         return self.diffs[key]
-
-#}}}

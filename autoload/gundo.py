@@ -94,14 +94,29 @@ def GundoRenderGraph():
     else:
         header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
+    show_inline_undo = int(vim.eval("g:gundo_inline_undo")) == 1
+    gundo_last_visible_line = int(vim.eval("g:gundo_last_visible_line"))
+    gundo_first_visible_line = int(vim.eval("g:gundo_first_visible_line"))
+
+    if not nodesData.is_outdated() and (
+                not show_inline_undo or 
+                (
+                    gundo_first_visible_line == first_visible_line and
+                    gundo_last_visible_line == last_visible_line
+                )
+            ):
+        return
+
     result = graphlog.generate(
             verbose,
             len(header)+1,
             first_visible_line,
             last_visible_line,
-            int(vim.eval("g:gundo_inline_undo")) == 1,
+            show_inline_undo,
             nodesData
     )
+    vim.command("let g:gundo_last_visible_line=%s"%last_visible_line)
+    vim.command("let g:gundo_first_visible_line=%s"%first_visible_line)
 
     output = []
     # right align the dag and flip over the y axis:
