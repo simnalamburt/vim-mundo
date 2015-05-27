@@ -1,6 +1,5 @@
 import time
 import util
-import vim
 
 # Mercurial's graphlog code --------------------------------------------------------#{{{
 def asciiedges(seen, rev, parents):
@@ -173,15 +172,13 @@ def ascii(state, type, char, text, coldata, verbose):
     state[1] = idx
     return result
 
-def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line, last_visible_line, nodesData):
+def generate(dag, edgefn, current, verbose, num_header_lines, first_visible_line, last_visible_line, inline_graph, nodesData):
     """
     Generate an array of the graph, and text describing the node of the graph.
     """
     seen, state = [], [0, 0]
     result = []
     current = nodesData.current()
-
-    inline_graph = int(vim.eval("g:gundo_inline_undo")) == 1
 
     line_number = num_header_lines
     for idx, part in list(enumerate(dag)):

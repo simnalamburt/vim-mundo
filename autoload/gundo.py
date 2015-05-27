@@ -31,8 +31,6 @@ import mundo.util as util
 import mundo.graphlog as graphlog
 
 # Python Vim utility functions -----------------------------------------------------#{{{
-normal = lambda s: vim.command('normal %s' % s)
-normal_silent = lambda s: vim.command('silent! normal %s' % s)
 
 MISSING_BUFFER = "Cannot find Gundo's target buffer (%s)"
 MISSING_WINDOW = "Cannot find window (%s) for Gundo's target buffer (%s)"
@@ -79,13 +77,6 @@ INLINE_HELP = '''\
 
 nodesData = Nodes()
 
-# Rendering utility functions
-def _output_preview_text(lines):
-    util._goto_window_for_buffer_name('__Gundo_Preview__')
-    vim.command('setlocal modifiable')
-    vim.current.buffer[:] = [line.rstrip() for line in lines]
-    vim.command('setlocal nomodifiable')
-
 def GundoRenderGraph():
     if not _check_sanity():
         return
@@ -123,6 +114,7 @@ def GundoRenderGraph():
             len(header)+1,
             first_visible_line,
             last_visible_line,
+            int(vim.eval("g:gundo_inline_undo")) == 1,
             nodesData
     )
 
@@ -180,7 +172,7 @@ def GundoRenderPreview():
     node_before = node_after.parent
 
     vim.command('call s:GundoOpenPreview()')
-    _output_preview_text(nodesData.preview_diff(node_before, node_after))
+    util._output_preview_text(nodesData.preview_diff(node_before, node_after))
 
     util._goto_window_for_buffer_name('__Gundo__')
 
@@ -392,7 +384,7 @@ def GundoRenderChangePreview():
     nodes, nmap = nodesData.make_nodes()
 
     vim.command('call s:GundoOpenPreview()')
-    _output_preview_text(GundoGetChangesForLine())
+    util._output_preview_text(GundoGetChangesForLine())
 
     util._goto_window_for_buffer_name('__Gundo__')
 
@@ -437,7 +429,7 @@ def GundoPlayTo():
     vim.command('echo "%s"' % back)
 
     util._goto_window_for_buffer(back)
-    normal('zR')
+    util.normal('zR')
 
     nodes, nmap = nodesData.make_nodes()
 
@@ -476,7 +468,7 @@ def GundoPlayTo():
     for node in branch:
         util._undo_to(node.n)
         vim.command('GundoRenderGraph')
-        normal('zz')
+        util.normal('zz')
         util._goto_window_for_buffer(back)
         vim.command('redraw')
         vim.command('sleep %dm' % delay)
