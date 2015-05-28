@@ -12,19 +12,7 @@
 import re
 import sys
 import tempfile
-
-try:
-    import vim
-    # Add the library to the Python path.
-    for p in vim.eval("&runtimepath").split(','):
-        plugin_dir = os.path.join(p, "autoload")
-        if os.path.exists(os.path.join(plugin_dir, "mundo")):
-           if plugin_dir not in sys.path:
-              sys.path.append(plugin_dir)
-           break
-except:
-    # vim isn't needed and isn't in the classpath when doing unit tests.
-    pass
+import vim
 
 from mundo.node import Nodes
 import mundo.util as util

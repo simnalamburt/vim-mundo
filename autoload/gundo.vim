@@ -19,6 +19,9 @@ if v:version < '703'"{{{
     finish
 endif"}}}
 
+if !exists('g:gundo_python_path_setup')"{{{
+    let g:gundo_python_path_setup = 0
+endif"}}}
 if !exists('g:gundo_first_visible_line')"{{{
     let g:gundo_first_visible_line = 0
 endif"}}}
@@ -340,7 +343,14 @@ function! s:GundoOpen()"{{{
     let &splitbelow = saved_splitbelow
 endfunction"}}}
 
+" This has to be outside of a function otherwise it just picks up the CWD
+let s:gundo_path = escape( expand( '<sfile>:p:h' ), '\' )
+
 function! s:GundoToggle()"{{{
+    if g:gundo_python_path_setup == 0
+        let g:gundo_python_path_setup = 1
+        call s:GundoPython('sys.path.insert(0, "'. s:gundo_path .'")')
+    end
     if s:GundoIsVisible()
         call s:GundoClose()
     else
