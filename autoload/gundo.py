@@ -65,6 +65,8 @@ INLINE_HELP = '''\
 
 nodesData = Nodes()
 
+# from profilehooks import profile
+# @profile(immediate=True)
 def GundoRenderGraph():
     if not _check_sanity():
         return
@@ -168,7 +170,10 @@ def GundoGetTargetState():
     """ Get the current undo number that gundo is at.  """
     util._goto_window_for_buffer_name('__Gundo__')
     target_line = vim.eval("getline('.')")
-    return int(re.match('^.* \[([0-9]+)\] .*$',target_line).group(1))
+    matches = re.match('^.* \[([0-9]+)\] .*$',target_line)
+    if matches:
+        return int(matches.group(1))
+    return 0
 
 def GetNextLine(direction,move_count,write,start="line('.')"):
     start_line_no = int(vim.eval(start))

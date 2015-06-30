@@ -1,6 +1,6 @@
 import difflib
 
-# one line diff functions.#{{{
+# one line diff functions.
 def one_line_diff_str(before,after,mx=15,pre=2):
     """
     Return a summary of the differences between two strings, concatenated.
@@ -82,4 +82,3 @@ def one_line_diff(before,after):
 
 def _append_result(results,val):
   results.append(val)
-#}}}

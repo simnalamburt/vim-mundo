@@ -349,7 +349,8 @@ let s:gundo_path = escape( expand( '<sfile>:p:h' ), '\' )
 function! s:GundoToggle()"{{{
     if g:gundo_python_path_setup == 0
         let g:gundo_python_path_setup = 1
-        call s:GundoPython('sys.path.insert(0, "'. s:gundo_path .'")')
+        call s:GundoPython('sys.path.insert(1, "'. s:gundo_path .'")')
+        call s:GundoPython('sys.path.insert(1, "'. s:gundo_path .'/mundo")')
     end
     if s:GundoIsVisible()
         call s:GundoClose()
