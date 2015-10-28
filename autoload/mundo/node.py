@@ -3,7 +3,6 @@ import difflib
 import itertools
 import time
 import util
-import vim
 
 # Python undo tree data structures and functions ----------------------------------
 class Node(object):
@@ -32,8 +31,8 @@ class Nodes(object):
         self.diff_has_oneline = {}
 
     def _check_version_location(self):
-        util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
-        target_f = vim.eval('g:gundo_target_f')
+        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
+        target_f = util.vim().eval('g:gundo_target_f')
         if target_f != self.target_f:
             self._clear_cache()
 
@@ -51,8 +50,8 @@ class Nodes(object):
                 p = node
 
     def is_outdated(self):
-        util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
-        current_changedtick = vim.eval('b:changedtick')
+        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
+        current_changedtick = util.vim().eval('b:changedtick')
         return self.changedtick != current_changedtick
 
     def make_nodes(self):
@@ -62,11 +61,11 @@ class Nodes(object):
             return self.nodes_made
 
         self._check_version_location()
-        target_f = vim.eval('g:gundo_target_f')
-        ut = vim.eval('undotree()')
+        target_f = util.vim().eval('g:gundo_target_f')
+        ut = util.vim().eval('undotree()')
         entries = ut['entries']
         seq_last = ut['seq_last']
-        current_changedtick = vim.eval('b:changedtick')
+        current_changedtick = util.vim().eval('b:changedtick')
 
         root = Node(0, None, False, 0, 0)
         nodes = []
@@ -91,7 +90,7 @@ class Nodes(object):
         if _curhead_l:
             current = _curhead_l[0].parent.n
         else:
-            current = int(vim.eval('changenr()'))
+            current = int(util.vim().eval('changenr()'))
         return current
 
     def _fmt_time(self,t):
@@ -103,7 +102,7 @@ class Nodes(object):
             n = node.n
         if n not in self.lines:
             util._undo_to(n)
-            self.lines[n] = vim.current.buffer[:]
+            self.lines[n] = util.vim().current.buffer[:]
         return self.lines[n]
 
     def change_preview_diff(self,before,after):
@@ -112,7 +111,7 @@ class Nodes(object):
         if key in self.diffs:
             return self.diffs[key]
 
-        util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
         before_lines = self._get_lines(before)
         after_lines = self._get_lines(after)
 
@@ -185,7 +184,7 @@ class Nodes(object):
                                              before_name, after_name,
                                              before_time, after_time))
         elif inline:
-            maxwidth = int(vim.eval("col('$')"))
+            maxwidth = int(util.vim().eval("col('$')"))
             self.diffs[key] = diff.one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
             self.diff_has_oneline[key] = True
         else:
