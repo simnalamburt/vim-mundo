@@ -335,6 +335,7 @@ function! s:GundoOpen()"{{{
 
     call s:GundoOpenPreview()
     exe bufwinnr(g:gundo_target_n) . "wincmd w"
+    call s:GundoOpenGraph()
 
     call s:GundoPython('GundoRenderGraph()')
     call s:GundoPython('GundoRenderPreview()')
