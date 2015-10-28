@@ -67,7 +67,7 @@ nodesData = Nodes()
 
 # from profilehooks import profile
 # @profile(immediate=True)
-def GundoRenderGraph():
+def GundoRenderGraph(force=False):
     if not _check_sanity():
         return
 
@@ -88,9 +88,9 @@ def GundoRenderGraph():
     gundo_last_visible_line = int(vim.eval("g:gundo_last_visible_line"))
     gundo_first_visible_line = int(vim.eval("g:gundo_first_visible_line"))
 
-    if not nodesData.is_outdated() and (
+    if not force and not nodesData.is_outdated() and (
                 not show_inline_undo or 
-                (
+                not (
                     gundo_first_visible_line == first_visible_line and
                     gundo_last_visible_line == last_visible_line
                 )
@@ -389,7 +389,7 @@ def GundoToggleHelp():
     else:
         vim.command("let g:gundo_help=0")
         vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
-    GundoRenderGraph()
+    GundoRenderGraph(True)
 
 # Gundo undo/redo
 def GundoRevert():
