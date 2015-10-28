@@ -262,12 +262,12 @@ function! s:GundoOpenPreview()"{{{
 
     if existing_preview_buffer == -1
         if g:gundo_preview_bottom
-            exe "botright new __Gundo_Preview__"
+            exe "botright keepalt new __Gundo_Preview__"
         else
             if g:gundo_right
-                exe "botright vnew __Gundo_Preview__"
+                exe "botright keepalt vnew __Gundo_Preview__"
             else
-                exe "topleft vnew __Gundo_Preview__"
+                exe "topleft keepalt vnew __Gundo_Preview__"
             endif
         endif
     else
@@ -279,12 +279,12 @@ function! s:GundoOpenPreview()"{{{
             endif
         else
             if g:gundo_preview_bottom
-                exe "botright split +buffer" . existing_preview_buffer
+                exe "botright keepalt split +buffer" . existing_preview_buffer
             else
                 if g:gundo_right
-                    exe "botright vsplit +buffer" . existing_preview_buffer
+                    exe "botright keepalt vsplit +buffer" . existing_preview_buffer
                 else
-                    exe "topleft vsplit +buffer" . existing_preview_buffer
+                    exe "topleft keepalt vsplit +buffer" . existing_preview_buffer
                 endif
             endif
         endif

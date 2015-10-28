@@ -339,7 +339,7 @@ def GundoRenderPatchdiff():
         (handle,filename) = tempfile.mkstemp()
         vim.command('silent! w %s' % (filename))
         # exit the __Gundo_Preview__ window
-        vim.command('quit')
+        vim.command('bdelete')
         # diff the temp file
         vim.command('silent! keepalt vert diffpatch %s' % (filename))
         vim.command('set buftype=nofile bufhidden=delete')
