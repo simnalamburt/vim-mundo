@@ -135,6 +135,7 @@ function! s:GundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> gg            gg:call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>
     nnoremap <script> <silent> <buffer> P             :call <sid>GundoPython('GundoPlayTo()')<CR>
     nnoremap <script> <silent> <buffer> d             :call <sid>GundoPython('GundoRenderPatchdiff()')<CR>
+    nnoremap <script> <silent> <buffer> i             :call <sid>GundoPython('GundoRenderToggleInlineDiff()')<CR>
     nnoremap <script> <silent> <buffer> /             :call <sid>GundoPython('GundoSearch()')<CR>
     nnoremap <script> <silent> <buffer> n             :call <sid>GundoPython('GundoNextMatch()')<CR>
     nnoremap <script> <silent> <buffer> N             :call <sid>GundoPython('GundoPrevMatch()')<CR>

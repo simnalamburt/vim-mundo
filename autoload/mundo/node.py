@@ -27,6 +27,9 @@ class Nodes(object):
         self.target_f = None
         self.changedtick = None
         self.lines = {}
+        self.clear_oneline_diffs()
+
+    def clear_oneline_diffs(self):
         self.diffs = {}
         self.diff_has_oneline = {}
 
@@ -184,7 +187,7 @@ class Nodes(object):
                                              before_name, after_name,
                                              before_time, after_time))
         elif inline:
-            maxwidth = int(util.vim().eval("col('$')"))
+            maxwidth = int(util.vim().eval("winwidth(0)"))
             self.diffs[key] = diff.one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
             self.diff_has_oneline[key] = True
         else:

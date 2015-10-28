@@ -50,6 +50,7 @@ INLINE_HELP = '''\
 " Gundo (%d) - Press ? for Help:
 " %s/%s  - Next/Prev undo state.
 " J/K  - Next/Prev write state.
+" i    - Toggle 'inline diff' mode.
 " /    - Find changes that match string.
 " n/N  - Next/Prev undo that matches search.
 " P    - Play current state to selected undo.
@@ -381,14 +382,24 @@ def GundoRenderChangePreview():
 
     return True
 
+def GundoRenderToggleInlineDiff():
+    show_inline = int(vim.eval('g:gundo_inline_undo'))
+    if show_inline == 0:
+        vim.command("let g:gundo_inline_undo=1")
+    else:
+        vim.command("let g:gundo_inline_undo=0")
+    line = int(vim.eval("line('.')"))
+    nodesData.clear_oneline_diffs()
+    GundoRenderGraph(True)
+    vim.command("call cursor(%d,0)" % line)
+
 def GundoToggleHelp():
     show_help = int(vim.eval('g:gundo_help'))
     if show_help == 0:
         vim.command("let g:gundo_help=1")
-        vim.command("call cursor(getline('.') + %d)" % (len(INLINE_HELP.split('\n')) - 2))
     else:
         vim.command("let g:gundo_help=0")
-        vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
+    vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
     GundoRenderGraph(True)
 
 # Gundo undo/redo

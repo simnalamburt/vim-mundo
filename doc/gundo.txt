@@ -272,7 +272,8 @@ GPLv2+. Look it up.
 5. Bugs                                                            *GundoBugs*
 
 If you find a bug please post it on the issue tracker:
-http://bitbucket.org/sjl/gundo.vim/issues?status=new&status=open
+
+https://github.com/simnalamburt/vim-mundo/issues
 
 ==============================================================================
 6. Contributing                                            *GundoContributing*
@@ -280,8 +281,7 @@ http://bitbucket.org/sjl/gundo.vim/issues?status=new&status=open
 Think you can make this plugin better? Awesome. Fork it on BitBucket or GitHub
 and send a pull request.
 
-BitBucket: http://bitbucket.org/sjl/gundo.vim/
-GitHub: http://github.com/sjl/gundo.vim/
+GitHub: https://github.com/simnalamburt/vim-mundo
 
 ==============================================================================
 7. Changelog                                                  *GundoChangelog*
