@@ -342,7 +342,7 @@ def GundoRenderPatchdiff():
         vim.command('quit')
         # diff the temp file
         vim.command('silent! keepalt vert diffpatch %s' % (filename))
-        vim.command('set buftype=nofile')
+        vim.command('set buftype=nofile bufhidden=delete')
         return True
     return False
 
