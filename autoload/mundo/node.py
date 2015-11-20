@@ -171,15 +171,15 @@ class Nodes(object):
 
             before_name = 'Original'
             before_time = ''
-            after_name = after.n
+            after_name = str(after.n)
             after_time = self._fmt_time(after.time)
         else:
             before_lines = self._get_lines(before)
             after_lines = self._get_lines(after)
 
-            before_name = before.n
+            before_name = str(before.n)
             before_time = self._fmt_time(before.time)
-            after_name = after.n
+            after_name = str(after.n)
             after_time = self._fmt_time(after.time)
 
         if unified:
