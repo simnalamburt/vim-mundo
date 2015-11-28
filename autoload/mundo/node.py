@@ -118,9 +118,9 @@ class Nodes(object):
         before_lines = self._get_lines(before)
         after_lines = self._get_lines(after)
 
-        before_name = before.n or 'Original'
+        before_name = str(before.n or 'Original')
         before_time = before.time and self._fmt_time(before.time) or ''
-        after_name = after.n or 'Original'
+        after_name = str(after.n or 'Original')
         after_time = after.time and self._fmt_time(after.time) or ''
 
         util._undo_to(self.current())
