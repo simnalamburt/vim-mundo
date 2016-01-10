@@ -150,7 +150,7 @@ def GundoRenderPreview():
     # Check that there's an undo state. There may not be if we're talking about
     # a buffer with no changes yet.
     if target_state == None:
-        util._goto_window_for_buffer_name('__Gundo__')
+        util._goto_window_for_buffer_name('__Mundo__')
         return
     else:
         target_state = int(target_state)
@@ -165,11 +165,11 @@ def GundoRenderPreview():
     vim.command('call s:GundoOpenPreview()')
     util._output_preview_text(nodesData.preview_diff(node_before, node_after))
 
-    util._goto_window_for_buffer_name('__Gundo__')
+    util._goto_window_for_buffer_name('__Mundo__')
 
 def GundoGetTargetState():
     """ Get the current undo number that gundo is at.  """
-    util._goto_window_for_buffer_name('__Gundo__')
+    util._goto_window_for_buffer_name('__Mundo__')
     target_line = vim.eval("getline('.')")
     matches = re.match('^.* \[([0-9]+)\] .*$',target_line)
     if matches:
@@ -291,7 +291,7 @@ def GundoMatch(down):
     nodes, nmap = nodesData.make_nodes()
     total = len(nodes) - 1
 
-    util._goto_window_for_buffer_name('__Gundo__')
+    util._goto_window_for_buffer_name('__Mundo__')
     curline = int(vim.eval("line('.')"))
     gundo_node = GundoGetTargetState()
 
@@ -301,7 +301,7 @@ def GundoMatch(down):
         if down < 0:
             therange = range(gundo_node+1,total+1)
         for version in therange:
-            util._goto_window_for_buffer_name('__Gundo__')
+            util._goto_window_for_buffer_name('__Mundo__')
             undochanges = nodesData.preview_diff(nmap[version].parent, nmap[version])
             # Look thru all of the changes, ignore the first two b/c those are the
             # diff timestamp fields (not relevent):
@@ -315,7 +315,7 @@ def GundoMatch(down):
             # found something, lets get out of here:
             if found_version != -1:
                 break
-    util._goto_window_for_buffer_name('__Gundo__')
+    util._goto_window_for_buffer_name('__Mundo__')
     if found_version >= 0:
         GundoMove(found_version,1,False)
 
@@ -324,22 +324,22 @@ def GundoRenderPatchdiff():
     current file. """
     if GundoRenderChangePreview():
         # if there are no lines, do nothing (show a warning).
-        util._goto_window_for_buffer_name('__Gundo_Preview__')
+        util._goto_window_for_buffer_name('__Mundo_Preview__')
         if vim.current.buffer[:] == ['']:
             # restore the cursor position before exiting.
-            util._goto_window_for_buffer_name('__Gundo__')
+            util._goto_window_for_buffer_name('__Mundo__')
             vim.command('unsilent echo "No difference between current file and undo number!"')
             return False
 
         # quit out of gundo main screen
-        util._goto_window_for_buffer_name('__Gundo__')
+        util._goto_window_for_buffer_name('__Mundo__')
         vim.command('quit')
 
-        # save the __Gundo_Preview__ buffer to a temp file.
-        util._goto_window_for_buffer_name('__Gundo_Preview__')
+        # save the __Mundo_Preview__ buffer to a temp file.
+        util._goto_window_for_buffer_name('__Mundo_Preview__')
         (handle,filename) = tempfile.mkstemp()
         vim.command('silent! w %s' % (filename))
-        # exit the __Gundo_Preview__ window
+        # exit the __Mundo_Preview__ window
         vim.command('bdelete')
         # diff the temp file
         vim.command('silent! keepalt vert diffpatch %s' % (filename))
@@ -356,7 +356,7 @@ def GundoGetChangesForLine():
     # Check that there's an undo state. There may not be if we're talking about
     # a buffer with no changes yet.
     if target_state == None:
-        util._goto_window_for_buffer_name('__Gundo__')
+        util._goto_window_for_buffer_name('__Mundo__')
         return False
     else:
         target_state = int(target_state)
@@ -378,7 +378,7 @@ def GundoRenderChangePreview():
     vim.command('call s:GundoOpenPreview()')
     util._output_preview_text(GundoGetChangesForLine())
 
-    util._goto_window_for_buffer_name('__Gundo__')
+    util._goto_window_for_buffer_name('__Mundo__')
 
     return True
 

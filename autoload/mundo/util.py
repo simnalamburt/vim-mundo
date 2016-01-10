@@ -21,7 +21,7 @@ def _goto_window_for_buffer_name(bn):
 
 # Rendering utility functions
 def _output_preview_text(lines):
-    _goto_window_for_buffer_name('__Gundo_Preview__')
+    _goto_window_for_buffer_name('__Mundo_Preview__')
     vim().command('setlocal modifiable')
     vim().current.buffer[:] = [line.rstrip() for line in lines]
     vim().command('setlocal nomodifiable')

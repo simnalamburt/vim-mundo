@@ -5,19 +5,19 @@ function! s:Setup()"{{{
     call g:Goto('test')
 endfunction"}}}
 function! s:Teardown()"{{{
-    if bufwinnr(bufnr('__Gundo__')) != -1
-        exec bufwinnr(bufnr('__Gundo__')) . 'wincmd w'
+    if bufwinnr(bufnr('__Mundo__')) != -1
+        exec bufwinnr(bufnr('__Mundo__')) . 'wincmd w'
         quit
     endif
-    if bufwinnr(bufnr('__Gundo_Preview__')) != -1
-        exec bufwinnr(bufnr('__Gundo_Preview__')) . 'wincmd w'
+    if bufwinnr(bufnr('__Mundo_Preview__')) != -1
+        exec bufwinnr(bufnr('__Mundo_Preview__')) . 'wincmd w'
         quit
     endif
-    if bufnr('__Gundo__') != -1
-        exec 'bwipeout ' . bufnr('__Gundo__')
+    if bufnr('__Mundo__') != -1
+        exec 'bwipeout ' . bufnr('__Mundo__')
     endif
-    if bufnr('__Gundo_Preview__') != -1
-        exec 'bwipeout ' . bufnr('__Gundo_Preview__')
+    if bufnr('__Mundo_Preview__') != -1
+        exec 'bwipeout ' . bufnr('__Mundo_Preview__')
     endif
     if bufnr('test') != -1
         exec 'bwipeout ' . bufnr('test')
@@ -29,39 +29,39 @@ endfunction"}}}
 
 function! s:TestToggleBasic()"{{{
     " Make sure we're starting from scratch.
-    Assert bufnr('__Gundo__') == -1
-    Assert bufnr('__Gundo_Preview__') == -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') == -1
+    Assert bufnr('__Mundo_Preview__') == -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
     " Open Gundo
     GundoToggle
 
     " Buffers and windows should exist.
-    Assert bufnr('__Gundo__') != -1
-    Assert bufnr('__Gundo_Preview__') != -1
-    Assert bufwinnr(bufnr('__Gundo__')) != -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) != -1
+    Assert bufnr('__Mundo__') != -1
+    Assert bufnr('__Mundo_Preview__') != -1
+    Assert bufwinnr(bufnr('__Mundo__')) != -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) != -1
 
     " We should be in the Gundo pane.
-    Assert expand('%') == '__Gundo__'
+    Assert expand('%') == '__Mundo__'
 
     " Close Gundo
     GundoToggle
 
     " Windows should have been closed, but buffers should remain.
-    Assert bufnr('__Gundo__') != -1
-    Assert bufnr('__Gundo_Preview__') != -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') != -1
+    Assert bufnr('__Mundo_Preview__') != -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 endfunction"}}}
 
 function! s:TestToggleWhenMoved()"{{{
     " Make sure we're starting from scratch.
-    Assert bufnr('__Gundo__') == -1
-    Assert bufnr('__Gundo_Preview__') == -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') == -1
+    Assert bufnr('__Mundo_Preview__') == -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
     " Open Gundo
     GundoToggle
@@ -73,33 +73,33 @@ function! s:TestToggleWhenMoved()"{{{
     GundoToggle
 
     " Windows should have been closed, but buffers should remain.
-    Assert bufnr('__Gundo__') != -1
-    Assert bufnr('__Gundo_Preview__') != -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') != -1
+    Assert bufnr('__Mundo_Preview__') != -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
     " Open Gundo
     GundoToggle
 
-    call g:Goto('__Gundo_Preview__')
-    Assert expand('%') == '__Gundo_Preview__'
+    call g:Goto('__Mundo_Preview__')
+    Assert expand('%') == '__Mundo_Preview__'
 
     " Close Gundo
     GundoToggle
 
     " Windows should have been closed, but buffers should remain.
-    Assert bufnr('__Gundo__') != -1
-    Assert bufnr('__Gundo_Preview__') != -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') != -1
+    Assert bufnr('__Mundo_Preview__') != -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 endfunction"}}}
 
 function! s:TestToggleReturnToTarget()"{{{
     " Make sure we're starting from scratch.
-    Assert bufnr('__Gundo__') == -1
-    Assert bufnr('__Gundo_Preview__') == -1
-    Assert bufwinnr(bufnr('__Gundo__')) == -1
-    Assert bufwinnr(bufnr('__Gundo_Preview__')) == -1
+    Assert bufnr('__Mundo__') == -1
+    Assert bufnr('__Mundo_Preview__') == -1
+    Assert bufwinnr(bufnr('__Mundo__')) == -1
+    Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
     exec 'new test2'
     call g:Goto('test')
