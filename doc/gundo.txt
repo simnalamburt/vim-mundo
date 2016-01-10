@@ -287,10 +287,10 @@ GitHub: https://github.com/simnalamburt/vim-mundo
 7. Changelog                                                  *GundoChangelog*
 
 v3.X - WIP
-    * Add one line diff in __Gundo__ window.
+    * Add one line diff in __Mundo__ window.
     * Adds g:gundo_mirror_graph setting.
     * Adds g:gundo_return_on_revert setting.
-    * Adds ability to toggle help on/off in __Gundo__ window.
+    * Adds ability to toggle help on/off in __Mundo__ window.
     * Adds J and K commands (navigate between written undos)
     * Adds /, n and N commands (search undos)
     * Adds g:gundo_verbose_graph setting.

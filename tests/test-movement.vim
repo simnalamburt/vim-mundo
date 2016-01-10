@@ -5,19 +5,19 @@ function! s:Setup()"{{{
     call g:Goto('test')
 endfunction"}}}
 function! s:Teardown()"{{{
-    if bufwinnr(bufnr('__Gundo__')) != -1
-        exec bufwinnr(bufnr('__Gundo__')) . 'wincmd w'
+    if bufwinnr(bufnr('__Mundo__')) != -1
+        exec bufwinnr(bufnr('__Mundo__')) . 'wincmd w'
         quit
     endif
-    if bufwinnr(bufnr('__Gundo_Preview__')) != -1
-        exec bufwinnr(bufnr('__Gundo_Preview__')) . 'wincmd w'
+    if bufwinnr(bufnr('__Mundo_Preview__')) != -1
+        exec bufwinnr(bufnr('__Mundo_Preview__')) . 'wincmd w'
         quit
     endif
-    if bufnr('__Gundo__') != -1
-        exec 'bwipeout! ' . bufnr('__Gundo__')
+    if bufnr('__Mundo__') != -1
+        exec 'bwipeout! ' . bufnr('__Mundo__')
     endif
-    if bufnr('__Gundo_Preview__') != -1
-        exec 'bwipeout! ' . bufnr('__Gundo_Preview__')
+    if bufnr('__Mundo_Preview__') != -1
+        exec 'bwipeout! ' . bufnr('__Mundo_Preview__')
     endif
     if bufnr('test') != -1
         exec 'bwipeout! ' . bufnr('test')

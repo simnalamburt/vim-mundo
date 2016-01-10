@@ -54,7 +54,7 @@ function! s:GundoGoToWindowForBufferName(name)"{{{
 endfunction"}}}
 
 function! s:GundoIsVisible()"{{{
-    if bufwinnr(bufnr("__Gundo__")) != -1 || bufwinnr(bufnr("__Gundo_Preview__")) != -1
+    if bufwinnr(bufnr("__Mundo__")) != -1 || bufwinnr(bufnr("__Mundo_Preview__")) != -1
         return 1
     else
         return 0
@@ -158,21 +158,21 @@ endfunction"}}}
 "{{{ Gundo buffer/window management
 
 function! s:GundoResizeBuffers(backto)"{{{
-    call s:GundoGoToWindowForBufferName('__Gundo__')
+    call s:GundoGoToWindowForBufferName('__Mundo__')
     exe "vertical resize " . g:mundo_width
 
-    call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
+    call s:GundoGoToWindowForBufferName('__Mundo_Preview__')
     exe "resize " . g:mundo_preview_height
 
     exe a:backto . "wincmd w"
 endfunction"}}}
 
 function! s:GundoOpenGraph()"{{{
-    let existing_gundo_buffer = bufnr("__Gundo__")
+    let existing_gundo_buffer = bufnr("__Mundo__")
 
     if existing_gundo_buffer == -1
-        call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
-        exe "new __Gundo__"
+        call s:GundoGoToWindowForBufferName('__Mundo_Preview__')
+        exe "new __Mundo__"
         set fdm=manual
         if g:mundo_preview_bottom
             if g:mundo_right
@@ -190,7 +190,7 @@ function! s:GundoOpenGraph()"{{{
                 exe existing_gundo_window . "wincmd w"
             endif
         else
-            call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
+            call s:GundoGoToWindowForBufferName('__Mundo_Preview__')
             if g:mundo_preview_bottom
                 if g:mundo_right
                     exe "botright vsplit +buffer" . existing_gundo_buffer
@@ -209,16 +209,16 @@ function! s:GundoOpenGraph()"{{{
 endfunction"}}}
 
 function! s:GundoOpenPreview()"{{{
-    let existing_preview_buffer = bufnr("__Gundo_Preview__")
+    let existing_preview_buffer = bufnr("__Mundo_Preview__")
 
     if existing_preview_buffer == -1
         if g:mundo_preview_bottom
-            exe "botright keepalt new __Gundo_Preview__"
+            exe "botright keepalt new __Mundo_Preview__"
         else
             if g:mundo_right
-                exe "botright keepalt vnew __Gundo_Preview__"
+                exe "botright keepalt vnew __Mundo_Preview__"
             else
-                exe "topleft keepalt vnew __Gundo_Preview__"
+                exe "topleft keepalt vnew __Mundo_Preview__"
             endif
         endif
     else
@@ -246,11 +246,11 @@ function! s:GundoOpenPreview()"{{{
 endfunction"}}}
 
 function! s:GundoClose()"{{{
-    if s:GundoGoToWindowForBufferName('__Gundo__')
+    if s:GundoGoToWindowForBufferName('__Mundo__')
         quit
     endif
 
-    if s:GundoGoToWindowForBufferName('__Gundo_Preview__')
+    if s:GundoGoToWindowForBufferName('__Mundo_Preview__')
         quit
     endif
 
@@ -377,8 +377,8 @@ endfunction"}}}
 function! s:GundoRefresh()"{{{
   " abort when there were no changes
 
-  let gundoWin    = bufwinnr('__Gundo__')
-  let gundoPreWin = bufwinnr('__Gundo_Preview__')
+  let gundoWin    = bufwinnr('__Mundo__')
+  let gundoPreWin = bufwinnr('__Mundo_Preview__')
   let currentWin  = bufwinnr('%')
 
   " abort if Gundo is closed or is current window
@@ -396,8 +396,8 @@ endfunction"}}}
 
 augroup GundoAug
     autocmd!
-    autocmd BufNewFile __Gundo__ call s:GundoSettingsGraph()
-    autocmd BufNewFile __Gundo_Preview__ call s:GundoSettingsPreview()
+    autocmd BufNewFile __Mundo__ call s:GundoSettingsGraph()
+    autocmd BufNewFile __Mundo_Preview__ call s:GundoSettingsPreview()
     autocmd CursorHold * call s:GundoRefresh()
     autocmd CursorMoved * call s:GundoRefresh()
     autocmd BufEnter * let b:gundoChangedtick = 0
