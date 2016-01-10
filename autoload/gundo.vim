@@ -10,7 +10,8 @@
 
 
 "{{{ Init
-
+let s:save_cpo = &cpo
+set cpo&vim
 if v:version < '703'"{{{
     function! s:GundoDidNotLoad()
         echohl WarningMsg|echomsg "Gundo unavailable: requires Vim 7.3+"|echohl None
@@ -19,63 +20,11 @@ if v:version < '703'"{{{
     finish
 endif"}}}
 
-if !exists('g:gundo_python_path_setup')"{{{
-    let g:gundo_python_path_setup = 0
-endif"}}}
-if !exists('g:gundo_first_visible_line')"{{{
-    let g:gundo_first_visible_line = 0
-endif"}}}
-if !exists('g:gundo_last_visible_line')"{{{
-    let g:gundo_last_visible_line = 0
-endif"}}}
-if !exists('g:gundo_width')"{{{
-    let g:gundo_width = 45
-endif"}}}
-if !exists('g:gundo_preview_height')"{{{
-    let g:gundo_preview_height = 15
-endif"}}}
-if !exists('g:gundo_preview_bottom')"{{{
-    let g:gundo_preview_bottom = 0
-endif"}}}
-if !exists('g:gundo_right')"{{{
-    let g:gundo_right = 0
-endif"}}}
-if !exists('g:gundo_help')"{{{
-    let g:gundo_help = 0
-endif"}}}
-if !exists("g:gundo_map_move_older")"{{{
-    let g:gundo_map_move_older = 'j'
-endif"}}}
-if !exists("g:gundo_map_move_newer")"{{{
-    let g:gundo_map_move_newer = 'k'
-endif"}}}
-if !exists("g:gundo_close_on_revert")"{{{
-    let g:gundo_close_on_revert = 0
-endif"}}}
-if !exists("g:gundo_prefer_python3")"{{{
-    let g:gundo_prefer_python3 = 0
-endif"}}}
-if !exists("g:gundo_auto_preview")"{{{
-    let g:gundo_auto_preview = 1
-endif"}}}
-if !exists("g:gundo_verbose_graph")"{{{
-    let g:gundo_verbose_graph = 1
-endif"}}}
-if !exists("g:gundo_playback_delay")"{{{
-    let g:gundo_playback_delay = 60
-endif"}}}
-if !exists('g:gundo_mirror_graph')"{{{
-    let g:gundo_mirror_graph = 0
-endif"}}}
-if !exists('g:gundo_inline_undo')"{{{
-    let g:gundo_inline_undo = 0
-endif"}}}
-if !exists("g:gundo_return_on_revert")"{{{
-    let g:gundo_return_on_revert = 1
-endif"}}}
+call mundo#util#init()
+
 
 let s:has_supported_python = 0
-if g:gundo_prefer_python3 && has('python3')"{{{
+if g:mundo_prefer_python3 && has('python3')"{{{
     let s:has_supported_python = 2
 elseif has('python')"
     let s:has_supported_python = 1
@@ -88,6 +37,7 @@ if !s:has_supported_python
     command! -nargs=0 GundoToggle call s:GundoDidNotLoad()
     finish
 endif"}}}
+
 
 let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
 "}}}
@@ -112,7 +62,7 @@ function! s:GundoIsVisible()"{{{
 endfunction"}}}
 
 function! s:GundoInlineHelpLength()"{{{
-    if g:gundo_help
+    if g:mundo_help
         return 10
     else
         return 0
@@ -124,8 +74,8 @@ endfunction"}}}
 "{{{ Gundo buffer settings
 
 function! s:GundoMapGraph()"{{{
-    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_older . " :call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>"
-    exec 'nnoremap <script> <silent> <buffer> ' . g:gundo_map_move_newer . " :call <sid>GundoPython('GundoMove(-1,'. v:count .')')<CR>"
+    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_older . " :call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>"
+    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer . " :call <sid>GundoPython('GundoMove(-1,'. v:count .')')<CR>"
     nnoremap <script> <silent> <buffer> <CR>          :call <sid>GundoPython('GundoRevert()')<CR>
     nnoremap <script> <silent> <buffer> o             :call <sid>GundoPython('GundoRevert()')<CR>
     nnoremap <script> <silent> <buffer> <down>        :call <sid>GundoPython('GundoMove(1,'. v:count .')')<CR>
@@ -209,10 +159,10 @@ endfunction"}}}
 
 function! s:GundoResizeBuffers(backto)"{{{
     call s:GundoGoToWindowForBufferName('__Gundo__')
-    exe "vertical resize " . g:gundo_width
+    exe "vertical resize " . g:mundo_width
 
     call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
-    exe "resize " . g:gundo_preview_height
+    exe "resize " . g:mundo_preview_height
 
     exe a:backto . "wincmd w"
 endfunction"}}}
@@ -224,8 +174,8 @@ function! s:GundoOpenGraph()"{{{
         call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
         exe "new __Gundo__"
         set fdm=manual
-        if g:gundo_preview_bottom
-            if g:gundo_right
+        if g:mundo_preview_bottom
+            if g:mundo_right
                 wincmd L
             else
                 wincmd H
@@ -241,8 +191,8 @@ function! s:GundoOpenGraph()"{{{
             endif
         else
             call s:GundoGoToWindowForBufferName('__Gundo_Preview__')
-            if g:gundo_preview_bottom
-                if g:gundo_right
+            if g:mundo_preview_bottom
+                if g:mundo_right
                     exe "botright vsplit +buffer" . existing_gundo_buffer
                 else
                     exe "topleft vsplit +buffer" . existing_gundo_buffer
@@ -253,8 +203,8 @@ function! s:GundoOpenGraph()"{{{
             call s:GundoResizeBuffers(winnr())
         endif
     endif
-    if exists("g:gundo_tree_statusline")
-        let &l:statusline = g:gundo_tree_statusline
+    if exists("g:mundo_tree_statusline")
+        let &l:statusline = g:mundo_tree_statusline
     endif
 endfunction"}}}
 
@@ -262,10 +212,10 @@ function! s:GundoOpenPreview()"{{{
     let existing_preview_buffer = bufnr("__Gundo_Preview__")
 
     if existing_preview_buffer == -1
-        if g:gundo_preview_bottom
+        if g:mundo_preview_bottom
             exe "botright keepalt new __Gundo_Preview__"
         else
-            if g:gundo_right
+            if g:mundo_right
                 exe "botright keepalt vnew __Gundo_Preview__"
             else
                 exe "topleft keepalt vnew __Gundo_Preview__"
@@ -279,10 +229,10 @@ function! s:GundoOpenPreview()"{{{
                 exe existing_preview_window . "wincmd w"
             endif
         else
-            if g:gundo_preview_bottom
+            if g:mundo_preview_bottom
                 exe "botright keepalt split +buffer" . existing_preview_buffer
             else
-                if g:gundo_right
+                if g:mundo_right
                     exe "botright keepalt vsplit +buffer" . existing_preview_buffer
                 else
                     exe "topleft keepalt vsplit +buffer" . existing_preview_buffer
@@ -290,8 +240,8 @@ function! s:GundoOpenPreview()"{{{
             endif
         endif
     endif
-    if exists("g:gundo_preview_statusline")
-        let &l:statusline = g:gundo_preview_statusline
+    if exists("g:mundo_preview_statusline")
+        let &l:statusline = g:mundo_preview_statusline
     endif
 endfunction"}}}
 
@@ -304,12 +254,12 @@ function! s:GundoClose()"{{{
         quit
     endif
 
-    exe bufwinnr(g:gundo_target_n) . "wincmd w"
+    exe bufwinnr(g:mundo_target_n) . "wincmd w"
 endfunction"}}}
 
 function! s:GundoOpen()"{{{
-    if !exists('g:gundo_py_loaded')
-        if s:has_supported_python == 2 && g:gundo_prefer_python3
+    if !exists('g:mundo_py_loaded')
+        if s:has_supported_python == 2 && g:mundo_prefer_python3
             exe 'py3file ' . escape(s:plugin_path, ' ') . '/gundo.py'
             python3 initPythonModule()
         else
@@ -326,7 +276,7 @@ function! s:GundoOpen()"{{{
             return
         endif
 
-        let g:gundo_py_loaded = 1
+        let g:mundo_py_loaded = 1
     endif
 
     " Save `splitbelow` value and set it to default to avoid problems with
@@ -335,7 +285,7 @@ function! s:GundoOpen()"{{{
     let &splitbelow = 0
 
     call s:GundoOpenPreview()
-    exe bufwinnr(g:gundo_target_n) . "wincmd w"
+    exe bufwinnr(g:mundo_target_n) . "wincmd w"
     call s:GundoOpenGraph()
 
     call s:GundoPython('GundoRenderGraph()')
@@ -349,24 +299,24 @@ endfunction"}}}
 let s:gundo_path = escape( expand( '<sfile>:p:h' ), '\' )
 
 function! s:GundoToggle()"{{{
-    if g:gundo_python_path_setup == 0
-        let g:gundo_python_path_setup = 1
+    if g:mundo_python_path_setup == 0
+        let g:mundo_python_path_setup = 1
         call s:GundoPython('sys.path.insert(1, "'. s:gundo_path .'")')
         call s:GundoPython('sys.path.insert(1, "'. s:gundo_path .'/mundo")')
     end
     if s:GundoIsVisible()
         call s:GundoClose()
     else
-        let g:gundo_target_n = bufnr('')
-        let g:gundo_target_f = @%
+        let g:mundo_target_n = bufnr('')
+        let g:mundo_target_f = @%
         call s:GundoOpen()
     endif
 endfunction"}}}
 
 function! s:GundoShow()"{{{
     if !s:GundoIsVisible()
-        let g:gundo_target_n = bufnr('')
-        let g:gundo_target_f = @%
+        let g:mundo_target_n = bufnr('')
+        let g:mundo_target_f = @%
         call s:GundoOpen()
     endif
 endfunction"}}}
@@ -387,7 +337,7 @@ function! s:GundoMouseDoubleClick()"{{{
     if stridx(start_line, '[') == -1
         return
     else
-        call <sid>GundoPython('GundoRevert()')<CR>
+        call <sid>GundoPython('GundoRevert()')
     endif
 endfunction"}}}
 
@@ -396,7 +346,7 @@ endfunction"}}}
 "{{{ Gundo rendering
 
 function! s:GundoPython(fn)"{{{
-    if s:has_supported_python == 2 && g:gundo_prefer_python3
+    if s:has_supported_python == 2 && g:mundo_prefer_python3
         exec "python3 ". a:fn
     else
         exec "python ". a:fn
@@ -454,3 +404,7 @@ augroup GundoAug
 augroup END
 
 "}}}
+
+
+let &cpo = s:save_cpo
+unlet s:save_cpo

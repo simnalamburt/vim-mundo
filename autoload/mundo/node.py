@@ -34,8 +34,8 @@ class Nodes(object):
         self.diff_has_oneline = {}
 
     def _check_version_location(self):
-        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
-        target_f = util.vim().eval('g:gundo_target_f')
+        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
+        target_f = util.vim().eval('g:mundo_target_f')
         if target_f != self.target_f:
             self._clear_cache()
 
@@ -53,7 +53,7 @@ class Nodes(object):
                 p = node
 
     def is_outdated(self):
-        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
+        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
         current_changedtick = util.vim().eval('b:changedtick')
         return self.changedtick != current_changedtick
 
@@ -64,7 +64,7 @@ class Nodes(object):
             return self.nodes_made
 
         self._check_version_location()
-        target_f = util.vim().eval('g:gundo_target_f')
+        target_f = util.vim().eval('g:mundo_target_f')
         ut = util.vim().eval('undotree()')
         entries = ut['entries']
         seq_last = ut['seq_last']
@@ -114,7 +114,7 @@ class Nodes(object):
         if key in self.diffs:
             return self.diffs[key]
 
-        util._goto_window_for_buffer(util.vim().eval('g:gundo_target_n'))
+        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
         before_lines = self._get_lines(before)
         after_lines = self._get_lines(after)
 
