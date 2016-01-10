@@ -33,7 +33,7 @@ def _check_sanity():
     global nodesData
     if not nodesData:
         nodesData = Nodes()
-    b = int(vim.eval('g:gundo_target_n'))
+    b = int(vim.eval('g:mundo_target_n'))
 
     if not vim.eval('bufloaded(%d)' % int(b)):
         vim.command('echo "%s"' % (MISSING_BUFFER % b))
@@ -75,19 +75,19 @@ def GundoRenderGraph(force=False):
     first_visible_line = int(vim.eval("line('w0')"))
     last_visible_line = int(vim.eval("line('w$')"))
 
-    verbose = vim.eval('g:gundo_verbose_graph') == "1"
-    target = (int(vim.eval('g:gundo_target_n')),
-                vim.eval('g:gundo_map_move_older'),
-                vim.eval('g:gundo_map_move_newer'))
+    verbose = vim.eval('g:mundo_verbose_graph') == "1"
+    target = (int(vim.eval('g:mundo_target_n')),
+                vim.eval('g:mundo_map_move_older'),
+                vim.eval('g:mundo_map_move_newer'))
 
-    if int(vim.eval('g:gundo_help')):
+    if int(vim.eval('g:mundo_help')):
         header = (INLINE_HELP % target).splitlines()
     else:
         header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
-    show_inline_undo = int(vim.eval("g:gundo_inline_undo")) == 1
-    gundo_last_visible_line = int(vim.eval("g:gundo_last_visible_line"))
-    gundo_first_visible_line = int(vim.eval("g:gundo_first_visible_line"))
+    show_inline_undo = int(vim.eval("g:mundo_inline_undo")) == 1
+    gundo_last_visible_line = int(vim.eval("g:mundo_last_visible_line"))
+    gundo_first_visible_line = int(vim.eval("g:mundo_first_visible_line"))
 
     if not force and not nodesData.is_outdated() and (
                 not show_inline_undo or 
@@ -106,14 +106,14 @@ def GundoRenderGraph(force=False):
             show_inline_undo,
             nodesData
     )
-    vim.command("let g:gundo_last_visible_line=%s"%last_visible_line)
-    vim.command("let g:gundo_first_visible_line=%s"%first_visible_line)
+    vim.command("let g:mundo_last_visible_line=%s"%last_visible_line)
+    vim.command("let g:mundo_first_visible_line=%s"%first_visible_line)
 
     output = []
     # right align the dag and flip over the y axis:
-    flip_dag = int(vim.eval("g:gundo_mirror_graph")) == 1
+    flip_dag = int(vim.eval("g:mundo_mirror_graph")) == 1
     dag_width = 1
-    maxwidth = int(vim.eval("g:gundo_width"))
+    maxwidth = int(vim.eval("g:mundo_width"))
     for line in result:
         if len(line[0]) > dag_width:
             dag_width = len(line[0])
@@ -155,7 +155,7 @@ def GundoRenderPreview():
     else:
         target_state = int(target_state)
 
-    util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+    util._goto_window_for_buffer(vim.eval('g:mundo_target_n'))
 
     nodes, nmap = nodesData.make_nodes()
 
@@ -179,7 +179,7 @@ def GundoGetTargetState():
 def GetNextLine(direction,move_count,write,start="line('.')"):
     start_line_no = int(vim.eval(start))
     start_line = vim.eval("getline('.')")
-    gundo_verbose_graph = vim.eval('g:gundo_verbose_graph')
+    gundo_verbose_graph = vim.eval('g:mundo_verbose_graph')
     if gundo_verbose_graph != "0":
         distance = 2
 
@@ -235,7 +235,7 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
 
     # Bound the movement to the graph.
     help_lines = 3
-    if int(vim.eval('g:gundo_help')):
+    if int(vim.eval('g:mundo_help')):
         help_lines = len(INLINE_HELP.split('\n'))
     if target_n <= help_lines:
         vim.command("call cursor(%d, 0)" % help_lines)
@@ -263,7 +263,7 @@ def GundoMove(direction,move_count=1,relative=True,write=False):
     else:
         vim.command("call cursor(0, %d + 1)" % idx3)
 
-    if vim.eval('g:gundo_auto_preview') == '1':
+    if vim.eval('g:mundo_auto_preview') == '1':
         GundoRenderPreview()
 
 def GundoSearch():
@@ -286,7 +286,7 @@ def GundoMatch(down):
 
     # save the current window number (should be the navigation window)
     # then generate the undo nodes, and then go back to the current window.
-    util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+    util._goto_window_for_buffer(vim.eval('g:mundo_target_n'))
 
     nodes, nmap = nodesData.make_nodes()
     total = len(nodes) - 1
@@ -361,7 +361,7 @@ def GundoGetChangesForLine():
     else:
         target_state = int(target_state)
 
-    util._goto_window_for_buffer(vim.eval('g:gundo_target_n'))
+    util._goto_window_for_buffer(vim.eval('g:mundo_target_n'))
 
     nodes, nmap = nodesData.make_nodes()
 
@@ -383,22 +383,22 @@ def GundoRenderChangePreview():
     return True
 
 def GundoRenderToggleInlineDiff():
-    show_inline = int(vim.eval('g:gundo_inline_undo'))
+    show_inline = int(vim.eval('g:mundo_inline_undo'))
     if show_inline == 0:
-        vim.command("let g:gundo_inline_undo=1")
+        vim.command("let g:mundo_inline_undo=1")
     else:
-        vim.command("let g:gundo_inline_undo=0")
+        vim.command("let g:mundo_inline_undo=0")
     line = int(vim.eval("line('.')"))
     nodesData.clear_oneline_diffs()
     GundoRenderGraph(True)
     vim.command("call cursor(%d,0)" % line)
 
 def GundoToggleHelp():
-    show_help = int(vim.eval('g:gundo_help'))
+    show_help = int(vim.eval('g:mundo_help'))
     if show_help == 0:
-        vim.command("let g:gundo_help=1")
+        vim.command("let g:mundo_help=1")
     else:
-        vim.command("let g:gundo_help=0")
+        vim.command("let g:mundo_help=0")
     vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
     GundoRenderGraph(True)
 
@@ -408,16 +408,16 @@ def GundoRevert():
         return
 
     target_n = GundoGetTargetState()
-    back = vim.eval('g:gundo_target_n')
+    back = vim.eval('g:mundo_target_n')
 
     util._goto_window_for_buffer(back)
     util._undo_to(target_n)
 
     vim.command('GundoRenderGraph')
-    if int(vim.eval('g:gundo_return_on_revert')):
+    if int(vim.eval('g:mundo_return_on_revert')):
         util._goto_window_for_buffer(back)
 
-    if int(vim.eval('g:gundo_close_on_revert')):
+    if int(vim.eval('g:mundo_close_on_revert')):
         vim.command('GundoToggle')
 
 def GundoPlayTo():
@@ -425,8 +425,8 @@ def GundoPlayTo():
         return
 
     target_n = GundoGetTargetState()
-    back = int(vim.eval('g:gundo_target_n'))
-    delay = int(vim.eval('g:gundo_playback_delay'))
+    back = int(vim.eval('g:mundo_target_n'))
+    delay = int(vim.eval('g:mundo_playback_delay'))
 
     vim.command('echo "%s"' % back)
 
