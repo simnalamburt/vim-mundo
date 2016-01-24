@@ -62,7 +62,7 @@ The tests appear to be broken in tests/. Tests unit tests can be run with
 
 ### Contributing to Mundo
 
-### Tagging in the issue tracker
+**Tagging in the issue tracker**
 
 When submitting pull requests (commonly referred to as "PRs"), include one
 of the following tags prepended to the title:
