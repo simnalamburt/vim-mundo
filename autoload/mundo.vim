@@ -110,7 +110,7 @@ function! s:MundoSettingsGraph()"{{{
     setlocal noswapfile
     setlocal nobuflisted
     setlocal nomodifiable
-    setlocal filetype=gundo
+    setlocal filetype=mundo
     setlocal nolist
     setlocal nonumber
     setlocal norelativenumber
