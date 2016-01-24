@@ -1,4 +1,4 @@
-UTSuite [Gundo] Testing Toggling
+UTSuite [Mundo] Testing Toggling
 
 function! s:Setup()"{{{
     exec 'edit test'
@@ -34,8 +34,8 @@ function! s:TestToggleBasic()"{{{
     Assert bufwinnr(bufnr('__Mundo__')) == -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     " Buffers and windows should exist.
     Assert bufnr('__Mundo__') != -1
@@ -43,11 +43,11 @@ function! s:TestToggleBasic()"{{{
     Assert bufwinnr(bufnr('__Mundo__')) != -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) != -1
 
-    " We should be in the Gundo pane.
+    " We should be in the Mundo pane.
     Assert expand('%') == '__Mundo__'
 
-    " Close Gundo
-    GundoToggle
+    " Close Mundo
+    MundoToggle
 
     " Windows should have been closed, but buffers should remain.
     Assert bufnr('__Mundo__') != -1
@@ -63,14 +63,14 @@ function! s:TestToggleWhenMoved()"{{{
     Assert bufwinnr(bufnr('__Mundo__')) == -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     call g:Goto('test')
     Assert expand('%') == 'test'
 
-    " Close Gundo
-    GundoToggle
+    " Close Mundo
+    MundoToggle
 
     " Windows should have been closed, but buffers should remain.
     Assert bufnr('__Mundo__') != -1
@@ -78,14 +78,14 @@ function! s:TestToggleWhenMoved()"{{{
     Assert bufwinnr(bufnr('__Mundo__')) == -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     call g:Goto('__Mundo_Preview__')
     Assert expand('%') == '__Mundo_Preview__'
 
-    " Close Gundo
-    GundoToggle
+    " Close Mundo
+    MundoToggle
 
     " Windows should have been closed, but buffers should remain.
     Assert bufnr('__Mundo__') != -1
@@ -104,9 +104,9 @@ function! s:TestToggleReturnToTarget()"{{{
     exec 'new test2'
     call g:Goto('test')
 
-    " Toggle Gundo
-    GundoToggle
-    GundoToggle
+    " Toggle Mundo
+    MundoToggle
+    MundoToggle
 
     " We should be returned to test
     Assert expand('%') == 'test'
@@ -114,9 +114,9 @@ function! s:TestToggleReturnToTarget()"{{{
     " Move to test2
     call g:Goto('test2')
 
-    " Toggle Gundo
-    GundoToggle
-    GundoToggle
+    " Toggle Mundo
+    MundoToggle
+    MundoToggle
 
     " We should be returned to test2
     Assert expand('%') == 'test2'

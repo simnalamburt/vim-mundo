@@ -1,4 +1,4 @@
-UTSuite [Gundo] Testing Preview Pane
+UTSuite [Mundo] Testing Preview Pane
 
 function! s:Setup()"{{{
     exec 'edit test'
@@ -35,8 +35,8 @@ function! s:TestPreviewBasic()"{{{
     normal k
     normal dd
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     call g:Goto("__Mundo_Preview__")
     call g:GotoLineContaining("THREE")
@@ -97,8 +97,8 @@ function! s:TestPreviewLinear()"{{{
     silent! undo 2
     call g:TypeLineDone("FOUR")
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     " Check state 4
     call g:Goto("__Mundo_Preview__")
