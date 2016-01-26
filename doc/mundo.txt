@@ -286,7 +286,8 @@ GitHub: https://github.com/simnalamburt/vim-mundo
 ==============================================================================
 7. Changelog                                                  *MundoChangelog*
 
-v3.X - WIP
+v3.0.0
+    * Rename plugin
     * Add one line diff in __Mundo__ window.
     * Adds g:mundo_mirror_graph setting.
     * Adds g:mundo_return_on_revert setting.
