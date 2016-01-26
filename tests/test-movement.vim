@@ -1,4 +1,4 @@
-UTSuite [Gundo] Testing Movement
+UTSuite [Mundo] Testing Movement
 
 function! s:Setup()"{{{
     exec 'edit test'
@@ -33,8 +33,8 @@ function! s:TestMovementBasic()"{{{
     call g:TypeLineDone("TWO")
     call g:TypeLineDone("THREE")
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     " Make sure we're on the newest/current state
     Assert g:CurrentLineContains("[3]")
@@ -110,8 +110,8 @@ function! s:TestMovementLinear()"{{{
     silent! undo 2
     call g:TypeLineDone("FOUR")
 
-    " Open Gundo
-    GundoToggle
+    " Open Mundo
+    MundoToggle
 
     " Make sure we're on the newest/current state
     Assert g:CurrentLineContains("[4]")

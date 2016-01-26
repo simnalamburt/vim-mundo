@@ -1,7 +1,7 @@
-This is Gundo's test suite.  In case you didn't know, unit testing vim plugins
+This is Mundo's test suite.  In case you didn't know, unit testing vim plugins
 is a horrible experience.
 
-Gundo bundles Luc Hermitte's [UT][] framework to make the process less painful.
+Mundo bundles Luc Hermitte's [UT][] framework to make the process less painful.
 
 [UT]: http://code.google.com/p/lh-vim/wiki/UT
 
