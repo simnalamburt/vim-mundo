@@ -6,11 +6,18 @@ if exists('g:Mundo_PluginLoaded')
 endif
 
 function! mundo#util#set_default(var, val, ...)  "{{{
+    if !exists(a:var)
+        let {a:var} = a:val
+    endif
     let old_var = get(a:000, 0, '')
     if exists(old_var)
-        let {a:var} = {old_var}
-    elseif !exists(a:var)
-        let {a:var} = a:val
+        echohl WarningMsg
+        echomsg "{".old_var."}is deprecated! Please change your setting to {"
+                    \.split(old_var,':')[0]
+                    \.':'
+                    \.substitute(split(old_var,':')[1],'gundo_','mundo_','g')
+                    \.'}'
+        echohl None
     endif
 endfunction"}}}
 
@@ -90,6 +97,26 @@ function! mundo#util#init() abort
 
 endfunction
 
+func! mundo#util#MundoToggle()
+    echohl WarningMsg
+    echomsg "GundoToggle commands are deprecated. Please change to their corresponding MundoToggle command"
+    echohl None
+endf
+func! mundo#util#MundoShow()
+    echohl WarningMsg
+    echomsg "GundoShow commands are deprecated. Please change to their corresponding MundoShow command"
+    echohl None
+endf
+func! mundo#util#MundoHide()
+    echohl WarningMsg
+    echomsg "GundoHide commands are deprecated. Please change to their corresponding MundoHide command"
+    echohl None
+endf
+func! mundo#util#MundoRenderGraph()
+    echohl WarningMsg
+    echomsg "GundoRenderGraph commands are deprecated. Please change to their corresponding MundoRenderGraph command"
+    echohl None
+endf
 
 let g:Mundo_PluginLoaded = 1
 

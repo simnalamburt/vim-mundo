@@ -1,4 +1,4 @@
-UTSuite [Gundo] Testing Toggling
+UTSuite [Mundo] Testing Toggling
 
 function! s:Setup()"{{{
     exec 'edit test'
@@ -32,7 +32,7 @@ function! s:TestToggleBasic()"{{{
     call g:TypeLine("ONE")
     call g:TypeLineDone("TWO")
 
-    GundoToggle
+    MundoToggle
 
     Assert g:Contains("o  [0]")
     Assert g:Contains("o  [1]")
@@ -45,7 +45,7 @@ function! s:TestToggleBranches()"{{{
     silent! undo
     call g:TypeLineDone("TWO")
 
-    GundoToggle
+    MundoToggle
 
     " Make sure there is a branch next to state 2
     call g:GotoLineContaining("[1]")
