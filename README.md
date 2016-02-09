@@ -1,18 +1,18 @@
 vim-mundo
-========
+=========
 
-> Gundo.vim is Vim plugin to visualize your Vim undo tree.
-
-Maintainer of [**Gundo.vim**][upstream] looks [tired][upstream-pr].
-This is my own fork of it.
-
-<img src="https://simnalamburt.github.io/vim-mundo/dist/screenshot.jpg" height="500">
+A Vim plugin to visualizes the Vim [undo tree](http://vimdoc.sourceforge.net/htmldoc/undo.html#undo-tree), a fork of
+[Gundo](https://github.com/sjl/gundo.vim).
 
 * [Introductory Video][video]
-* Original [Project Site][site]
+* Website [Project Site][site]
 
-### What's the difference?
+### How is this different than Gundo?
 
+*   Several new features:
+  * Ability to search undo history using <kbd>/</kbd>.
+  * An 'in line' diff mode.
+  * Navigation keys <kbd>J</kbd> and <kbd>K</kbd> to move thru written undos.
 *   [Neovim][neovim] support
 *   Merged upstream [pull requests][upstream-pr]:
   * [Fix paths with spaces][pr-29]
@@ -23,10 +23,6 @@ This is my own fork of it.
   * [open vimdiff of current buffer][i-28]
   * [Add global_disable option][i-33]
   * [Reduce verbosity][i-31]
-*   Several new features:
-  * Ability to search thru gundo history using '/'.
-  * A 'in line' diff.
-  * Navigation keys J/K to move thru written undos.
 
 #### What's your further plan?
 
