@@ -399,8 +399,12 @@ def MundoToggleHelp():
         vim.command("let g:mundo_help=1")
     else:
         vim.command("let g:mundo_help=0")
-    vim.command("call cursor(getline('.') - %d)" % (len(INLINE_HELP.split('\n')) - 2))
+    line = int(vim.eval("line('.')"))
+    column = int(vim.eval("col('.')"))
+    old_line_count = int(vim.eval("line('$')"))
     MundoRenderGraph(True)
+    new_line_count = int(vim.eval("line('$')"))
+    vim.command("call cursor(%d, %d)" % (line + new_line_count - old_line_count, column))
 
 # Mundo undo/redo
 def MundoRevert():
