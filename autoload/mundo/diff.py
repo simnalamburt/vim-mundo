@@ -1,4 +1,5 @@
 import difflib
+import itertools
 
 # one line diff functions.
 def one_line_diff_str(before,after,mx=15,pre=2):
@@ -40,12 +41,32 @@ def one_line_diff_str(before,after,mx=15,pre=2):
 def escape_returns(result):
     return result.replace('\n','\\n').replace('\r','\\r').replace('\t','\\t')
 
-def one_line_diff(before,after):
-  """
-  Return a summary of the differences between two arbitrary strings.
+def one_line_diff(before, after):
+    """
+    Return a summary of the differences between two arbitrary strings.
 
-  Returns a list of strings, summarizing all the changes.
-  """
+    Returns a list of strings, summarizing all the changes.
+    """
+    a, b, result = [], [], []
+    for line in itertools.chain(itertools.islice(
+        difflib.unified_diff(before.splitlines(),
+                             after.splitlines()), 2, None), ['@@']):
+        if line.startswith('@@'):
+            result.extend(one_line_diff_raw('\n'.join(a), '\n'.join(b)))
+            a, b = [], []
+            continue
+        if not line.startswith('+'):
+            a.append(line[1:])
+        if not line.startswith('-'):
+            b.append(line[1:])
+    if after.endswith('\n') and not before.endswith('\n'):
+        if result:
+            result[-1] = result[-1][:-1] + '\n+'
+        else:
+            result = ['+\n+']
+    return result
+
+def one_line_diff_raw(before,after):
   s = difflib.SequenceMatcher(None,before,after)
   results = []
   for tag, i1, i2, j1, j2 in s.get_opcodes():
