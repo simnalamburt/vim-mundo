@@ -91,7 +91,7 @@ def MundoRenderGraph(force=False):
 
     if not force and not nodesData.is_outdated() and (
                 not show_inline_undo or 
-                not (
+                (
                     mundo_first_visible_line == first_visible_line and
                     mundo_last_visible_line == last_visible_line
                 )
