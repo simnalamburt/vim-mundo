@@ -178,7 +178,7 @@ def MundoGetTargetState():
 
 def GetNextLine(direction,move_count,write,start="line('.')"):
     start_line_no = int(vim.eval(start))
-    start_line = vim.eval("getline('.')")
+    start_line = vim.eval("getline(%d)" % start_line_no)
     mundo_verbose_graph = vim.eval('g:mundo_verbose_graph')
     if mundo_verbose_graph != "0":
         distance = 2
