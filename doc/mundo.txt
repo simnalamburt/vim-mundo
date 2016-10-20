@@ -286,6 +286,10 @@ GitHub: https://github.com/simnalamburt/vim-mundo
 ==============================================================================
 7. Changelog                                                  *MundoChangelog*
 
+v3.0.1
+    * Made inline diff mode much faster(e.g. 300x)
+    * Fix inline diffs not updating after scroll.
+    * Fix help toggle mode.
 v3.0.0
     * Rename plugin
     * Add one line diff in __Mundo__ window.
