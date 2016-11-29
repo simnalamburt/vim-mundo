@@ -30,10 +30,6 @@ A Vim plugin to visualizes the Vim [undo tree](http://vimdoc.sourceforge.net/htm
 *   Make faster
 *   Automated test
 
-#### Do you have any plan to diverge from [upstream][]?
-
-*   Not yet. It'll always be downstream of original
-
 ### Requirements
 
 *   Vim ≥ *7.3* with `+python`
@@ -76,7 +72,6 @@ yourself, as opposed to waiting for a contributor to do it for you.
 
 [GPLv2+][]
 
-[upstream]: https://github.com/sjl/gundo.vim
 [upstream-pr]: https://github.com/sjl/gundo.vim/pulls
 [video]: http://screenr.com/M9l
 [site]: //simnalamburt.github.io/vim-mundo
