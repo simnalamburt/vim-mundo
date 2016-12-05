@@ -110,7 +110,7 @@ function! s:MundoSettingsGraph()"{{{
     setlocal noswapfile
     setlocal nobuflisted
     setlocal nomodifiable
-    setlocal filetype=mundo
+    setlocal filetype=Mundo
     setlocal nolist
     setlocal nonumber
     setlocal norelativenumber
@@ -125,7 +125,7 @@ function! s:MundoSettingsPreview()"{{{
     setlocal noswapfile
     setlocal nobuflisted
     setlocal nomodifiable
-    setlocal filetype=diff
+    setlocal filetype=MundoDiff
     setlocal nonumber
     setlocal norelativenumber
     setlocal nowrap
