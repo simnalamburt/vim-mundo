@@ -126,6 +126,7 @@ function! s:MundoSettingsPreview()"{{{
     setlocal nobuflisted
     setlocal nomodifiable
     setlocal filetype=MundoDiff
+    setlocal syntax=diff
     setlocal nonumber
     setlocal norelativenumber
     setlocal nowrap
