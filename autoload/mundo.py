@@ -62,7 +62,7 @@ INLINE_HELP = '''\
 
 '''
 
-#}}}
+# }}}
 
 nodesData = Nodes()
 
@@ -113,7 +113,6 @@ def MundoRenderGraph(force=False):
     # right align the dag and flip over the y axis:
     flip_dag = int(vim.eval("g:mundo_mirror_graph")) == 1
     dag_width = 1
-    maxwidth = int(vim.eval("g:mundo_width"))
     for line in result:
         if len(line[0]) > dag_width:
             dag_width = len(line[0])
@@ -149,7 +148,7 @@ def MundoRenderPreview():
     target_state = MundoGetTargetState()
     # Check that there's an undo state. There may not be if we're talking about
     # a buffer with no changes yet.
-    if target_state == None:
+    if target_state is None:
         util._goto_window_for_buffer_name('__Mundo__')
         return
     else:
@@ -266,13 +265,16 @@ def MundoMove(direction,move_count=1,relative=True,write=False):
     if vim.eval('g:mundo_auto_preview') == '1':
         MundoRenderPreview()
 
+
 def MundoSearch():
-    search = vim.eval("input('/')");
-    vim.command('let @/="%s"'% search.replace("\\","\\\\").replace('"','\\"'))
+    search = vim.eval("input('/')")
+    vim.command('let @/="%s"' % search.replace("\\", "\\\\").replace('"', '\\"'))
     MundoNextMatch()
+
 
 def MundoPrevMatch():
     MundoMatch(-1)
+
 
 def MundoNextMatch():
     MundoMatch(1)
@@ -292,7 +294,6 @@ def MundoMatch(down):
     total = len(nodes) - 1
 
     util._goto_window_for_buffer_name('__Mundo__')
-    curline = int(vim.eval("line('.')"))
     mundo_node = MundoGetTargetState()
 
     found_version = -1
