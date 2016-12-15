@@ -1,6 +1,7 @@
 import time
 import util
 
+
 # Mercurial's graphlog code -------------------------------------------------------
 def asciiedges(seen, rev, parents):
     """adds edge info to changelog DAG walk suitable for ascii()"""
@@ -28,6 +29,7 @@ def asciiedges(seen, rev, parents):
     nmorecols = len(seen) - ncols
     return nodeidx, edges, ncols, nmorecols
 
+
 def get_nodeline_edges_tail(
         node_index, p_node_index, n_columns, n_columns_diff, p_diff, fix_tail):
     if fix_tail and n_columns_diff == p_diff and n_columns_diff != 0:
@@ -41,6 +43,7 @@ def get_nodeline_edges_tail(
             return ["\\", " "] * (n_columns - node_index - 1)
     else:
         return ["|", " "] * (n_columns - node_index - 1)
+
 
 def draw_edges(edges, nodeline, interline):
     for (start, end) in edges:
@@ -58,10 +61,12 @@ def draw_edges(edges, nodeline, interline):
                 if nodeline[i] != "+":
                     nodeline[i] = "-"
 
+
 def fix_long_right_edges(edges):
     for (i, (start, end)) in enumerate(edges):
         if end > start:
             edges[i] = (start, end + 1)
+
 
 def ascii(state, type, char, text, coldata, verbose):
     """prints an ASCII graph of the DAG
@@ -98,17 +103,6 @@ def ascii(state, type, char, text, coldata, verbose):
         #     | |          | |
         fix_long_right_edges(edges)
 
-    # add_padding_line says whether to rewrite
-    #
-    #     | | | |        | | | |
-    #     | o---+  into  | o---+
-    #     |  / /         |   | |  # <--- padding line
-    #     o | |          |  / /
-    #                    o | |
-    add_padding_line = (len(text) > 2 and coldiff == -1 and
-                        [x for (x, y) in edges if x + 1 < y] and
-                        verbose)
-
     # fix_nodeline_tail says whether to rewrite
     #
     #     | | o | |        | | o | |
@@ -116,7 +110,7 @@ def ascii(state, type, char, text, coldata, verbose):
     #     | o | |    into  | o / /   # <--- fixed nodeline tail
     #     | |/ /           | |/ /
     #     o | |            o | |
-    fix_nodeline_tail = len(text) <= 2 and not add_padding_line
+    fix_nodeline_tail = len(text) <= 2
 
     # nodeline is the line containing the node character (typically o)
     nodeline = ["|", " "] * idx
@@ -146,8 +140,6 @@ def ascii(state, type, char, text, coldata, verbose):
 
     # lines is the list of all graph lines to print
     lines = [nodeline]
-    if add_padding_line:
-        lines.append(get_padding_line(idx, ncols, edges))
     lines.append(shift_interline)
 
     # make sure that there are as many graph lines as there are
@@ -171,6 +163,7 @@ def ascii(state, type, char, text, coldata, verbose):
     state[0] = coldiff
     state[1] = idx
     return result
+
 
 def generate(verbose, num_header_lines, first_visible_line, last_visible_line, inline_graph, nodesData):
     """
@@ -210,7 +203,7 @@ def generate(verbose, num_header_lines, first_visible_line, last_visible_line, i
         else:
             char = 'o'
         show_inine_diff = inline_graph and line_number >= first_visible_line and line_number <= last_visible_line
-        preview_diff = nodesData.preview_diff(node.parent, node,False,show_inine_diff)
+        preview_diff = nodesData.preview_diff(node.parent, node, False, show_inine_diff)
         line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
         new_lines = ascii(state, 'C', char, [line], asciiedges(seen, node, parents), verbose)
         line_number += len(new_lines)
@@ -226,6 +219,7 @@ agescales = [("yr", 3600 * 24 * 365),
              ("hr", 3600),
              ("min", 60)]
 
+
 def age(ts):
     '''turn a timestamp into an age string.'''
 
@@ -233,6 +227,7 @@ def age(ts):
         if c == 1:
             return t
         return t + "s"
+
     def fmt(t, c):
         return "%d %s" % (int(c), plural(t, c))
 
