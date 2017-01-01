@@ -248,7 +248,7 @@ Set this to 0 to align the graph to the left; set to 1 to align to the right.
 Default: 1 (mirror graph)
 
 ------------------------------------------------------------------------------
-3.14 g:mundo_inline_graph                                *mundo_inline_undo*
+3.14 g:mundo_inline_undo                                 *mundo_inline_undo*
 
 When enabled, a small one line diff is displayed to the right of the graph undo.
 Although not as detailed as a full diff provided in the preview window, it
