@@ -1,134 +1,130 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Gundo - Visualize your Vim Undo Tree</title>
-    <link href="style.css" rel="stylesheet" type="text/css">
-  </head>
+<html lang=en>
+<head>
+  <meta charset="UTF-8">
+  <title>Mundo - Visualize your Vim Undo Tree</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
+</head>
 
-  <body>
-    <a href="https://github.com/simnalamburt/vim-mundo">
-      <img
-      src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
-      data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
-      style="position: absolute; top: 0; right: 0; border: 0; padding: 0;"
-      alt="Fork me on GitHub">
-    </a>
-
-    <div class="wrap">
-      <header>
-        <h1>Gundo</h1>
-        <h2>Graph your Vim undo tree in style.</h2>
-      </header>
-      <section>
-        <a href="http://www.flickr.com/photos/sjl7678/5093114605/"
-           title="gundo by stevelosh, on Flickr"
-        ><img src="screenshot.jpg" width="234" height="240"></a>
+<body>
 
 
-        <p>
-          You know that Vim lets you undo changes like any text editor. What you might
-          not know is that it doesn't just keep a list of your changes &mdash; it keeps
-          a <a href="http://vim.wikia.com/wiki/Using_undo_branches">tree</a> of them.
-        </p>
+<a href="https://github.com/simnalamburt/vim-mundo" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#b90000; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
-        <p>
-          Say you make a change (call it X), undo that change, and then make another
-          change (call it Y). With most editors, change X is now gone forever. With Vim
-          you can get it back.
-        </p>
 
-        <p>
-          The problem is that trying to do this in the real world is painful. Vim gives
-          you an <code>:undolist</code> command that shows you the leaves of the tree. Good luck
-          finding the change you want in that list.
-        </p>
+<div class="wrap">
+  <header>
+    <h1>Mundo</h1>
+    <h2>Graph your Vim undo tree in style.</h2>
+  </header>
+  <section>
+    <a href="http://www.flickr.com/photos/sjl7678/5093114605/"
+       title="mundo by stevelosh, on Flickr"
+    ><img src="screenshot.jpg" width="234" height="240"></a>
 
-        <p>
-          Gundo is a plugin to make browsing this ridiculously powerful undo tree less
-          painful.
-        </p>
 
-        <p>
-          Check out this
-          <a href="http://screenr.com/M9l">quick screencast</a>
-          if you want to see it in action.
-        </p>
-      </section>
-      <nav>
-        <ol>
-          <li><a href="#requirements">Requirements</a></li>
-          <li><a href="#installation">Installation</a></li>
-          <li><a href="#usage">Usage</a></li>
-          <li>
-            <a href="#configuration">Configuration</a>
-            <ul>
-              <li><a href="#gundo_width">g:gundo_width</a></li>
-              <li><a href="#gundo_preview_height">g:gundo_preview_height</a></li>
-              <li><a href="#gundo_preview_bottom">g:gundo_preview_bottom</a></li>
-              <li><a href="#gundo_right">g:gundo_right</a></li>
-              <li><a href="#gundo_help">g:gundo_help</a></li>
-              <li><a href="#gundo_disable">g:gundo_disable</a></li>
-              <li><a href="#gundo_map_move">g:gundo_map_move_[older/newer]</a></li>
-              <li><a href="#gundo_close_on_revert">g:gundo_close_on_revert</a></li>
-              <li><a href="#gundo_statusline">g:gundo_[preview/tree]_statusline</a></li>
-              <li><a href="#gundo_auto_preview">g:gundo_auto_preview</a></li>
-              <li><a href="#gundo_playback_delay">g:gundo_playback_delay</a></li>
-            </ul>
-          </li>
-          <li><a href="#license">License</a></li>
-          <li><a href="#bugs">Bugs</a></li>
-          <li><a href="#contributing">Contributing</a></li>
-          <li><a href="#changelog">Changelog</a></li>
-          <li><a href="#credits">Credits</a></li>
-        </ol>
-      </nav>
-      <section>
-        <a name="requirements"></a>
-        <h1>Requirements</h1>
+    <p>
+      You know that Vim lets you undo changes like any text editor. What you might
+      not know is that it doesn't just keep a list of your changes &mdash; it keeps
+      a <a href="http://vim.wikia.com/wiki/Using_undo_branches">tree</a> of them.
+    </p>
 
-        <p>
-          Gundo requires Vim 7.3+ compiled with Python support, and Python 2.4+.
-        </p>
-      </section>
-      <section>
-        <a name="installation"></a>
-        <h1>Installation</h1>
+    <p>
+      Say you make a change (call it X), undo that change, and then make another
+      change (call it Y). With most editors, change X is now gone forever. With Vim
+      you can get it back.
+    </p>
 
-        <p>Use Pathogen. Don't use pathogen? Start.</p>
-        <pre>hg clone http://bitbucket.org/sjl/gundo.vim ~/.vim/bundle/gundo</pre>
+    <p>
+      The problem is that trying to do this in the real world is painful. Vim gives
+      you an <code>:undolist</code> command that shows you the leaves of the tree. Good luck
+      finding the change you want in that list.
+    </p>
 
-        <p>There's a git mirror if you prefer:</p>
-        <pre>git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo</pre>
+    <p>
+      Mundo is a plugin to make browsing this ridiculously powerful undo tree less
+      painful.
+    </p>
 
-        <p>Add a mapping to your ~/.vimrc (change the key to suit your taste):</p>
-        <pre>nnoremap &lt;F5&gt; :GundoToggle&lt;CR&gt;</pre>
-      </section>
-      <section>
-        <a name="usage"></a>
-        <h1>Usage</h1>
+    <p>
+      Check out this
+      <a href="http://screenr.com/M9l">quick screencast</a>
+      if you want to see it in action.
+    </p>
+  </section>
+  <nav>
+    <ol>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#usage">Usage</a></li>
+      <li>
+        <a href="#configuration">Configuration</a>
+        <ul>
+          <li><a href="#mundo_width">g:mundo_width</a></li>
+          <li><a href="#mundo_preview_height">g:mundo_preview_height</a></li>
+          <li><a href="#mundo_preview_bottom">g:mundo_preview_bottom</a></li>
+          <li><a href="#mundo_right">g:mundo_right</a></li>
+          <li><a href="#mundo_help">g:mundo_help</a></li>
+          <li><a href="#mundo_disable">g:mundo_disable</a></li>
+          <li><a href="#mundo_map_move">g:mundo_map_move_[older/newer]</a></li>
+          <li><a href="#mundo_close_on_revert">g:mundo_close_on_revert</a></li>
+          <li><a href="#mundo_statusline">g:mundo_[preview/tree]_statusline</a></li>
+          <li><a href="#mundo_auto_preview">g:mundo_auto_preview</a></li>
+          <li><a href="#mundo_playback_delay">g:mundo_playback_delay</a></li>
+        </ul>
+      </li>
+      <li><a href="#license">License</a></li>
+      <li><a href="#bugs">Bugs</a></li>
+      <li><a href="#contributing">Contributing</a></li>
+      <li><a href="#changelog">Changelog</a></li>
+      <li><a href="#credits">Credits</a></li>
+    </ol>
+  </nav>
+  <section>
+    <a name="requirements"></a>
+    <h1>Requirements</h1>
 
-        <p>
-          We'll get to the technical details later, but if you're a human the first
-          thing you need to do is add a mapping to your vimrc file to toggle the undo
-          graph:
-        </p>
+    <p>
+      Mundo requires Vim 7.3+ compiled with Python support, and Python 2.4+.
+    </p>
+  </section>
+  <section>
+    <a name="installation"></a>
+    <h1>Installation</h1>
 
-        <pre>nnoremap &lt;F5&gt; :GundoToggle&lt;CR&gt;</pre>
+    <p>Use Pathogen. Don't use pathogen? Start.</p>
+    <pre>git clone https://github.com/simnalamburt/vim-mundo.git \
+    ~/.vim/bundle/mundo</pre>
 
-        <p>
-          Change the mapped key to suit your taste. We'll stick with <code>&lt;F5&gt;</code> because that's
-          what the author uses.
-        </p>
+    <p>Add a mapping to your ~/.vimrc (change the key to suit your taste):</p>
+    <pre>nnoremap &lt;F5&gt; :MundoToggle&lt;CR&gt;</pre>
+  </section>
+  <section>
+    <a name="usage"></a>
+    <h1>Usage</h1>
 
-        <p>
-          Now you can press <code>&lt;F5&gt;</code> to toggle the undo graph and preview pane, which will
-          look something like this:
-        </p>
+    <p>
+      We'll get to the technical details later, but if you're a human the first
+      thing you need to do is add a mapping to your vimrc file to toggle the undo
+      graph:
+    </p>
+
+    <pre>nnoremap &lt;F5&gt; :MundoToggle&lt;CR&gt;</pre>
+
+    <p>
+      Change the mapped key to suit your taste. We'll stick with <code>&lt;F5&gt;</code> because that's
+      what the author uses.
+    </p>
+
+    <p>
+      Now you can press <code>&lt;F5&gt;</code> to toggle the undo graph and preview pane, which will
+      look something like this:
+    </p>
 
 <pre>
-  Undo graph                          File
+Undo graph                          File
 +-----------------------------------+---------------------------+
-| " Gundo for something.txt [1]     |one                        |
+| " Mundo for something.txt [1]     |one                        |
 | " j/k  - move between undo states |two                        |
 | " &lt;cr&gt; - revert to that state     |three                      |
 |                                   |five                       |
@@ -152,93 +148,93 @@
 |  three                            |                           |
 | +five                             |                           |
 +-----------------------------------+---------------------------+
-  Preview pane
+Preview pane
 </pre>
 
-        <p>
-          Your current position in the undo tree is marked with an <code>@</code> character. Other
-          nodes are marked with an <code>o</code> character.
-        </p>
+    <p>
+      Your current position in the undo tree is marked with an <code>@</code> character. Other
+      nodes are marked with an <code>o</code> character.
+    </p>
 
-        <p>
-          When you toggle open the graph Gundo will put your cursor on your current
-          position in the tree. You can move up and down the graph with the <code>j</code> and
-          <code>k</code> keys.
-        </p>
+    <p>
+      When you toggle open the graph Mundo will put your cursor on your current
+      position in the tree. You can move up and down the graph with the <code>j</code> and
+      <code>k</code> keys.
+    </p>
 
-        <p>
-          You can move to the top of the graph (the newest state) with <code>gg</code> and to the
-          bottom of the graph (the oldest state) with <code>G</code>.
-        </p>
+    <p>
+      You can move to the top of the graph (the newest state) with <code>gg</code> and to the
+      bottom of the graph (the oldest state) with <code>G</code>.
+    </p>
 
-        <p>
-          As you move between undo states the preview pane will show you a unified diff
-          of the change that state made.
-        </p>
+    <p>
+      As you move between undo states the preview pane will show you a unified diff
+      of the change that state made.
+    </p>
 
-        <p>
-          Pressing <code>return</code> on a state (or double clicking on it) will
-          revert the contents of the file to match that state.
-        </p>
+    <p>
+      Pressing <code>return</code> on a state (or double clicking on it) will
+      revert the contents of the file to match that state.
+    </p>
 
-        <p>
-          You can use <code>p</code> on a state to make the preview window show the
-          diff between your current state and the selected state, instead of a preview
-          of what the selected state changed.
-        </p>
+    <p>
+      You can use <code>p</code> on a state to make the preview window show the
+      diff between your current state and the selected state, instead of a preview
+      of what the selected state changed.
+    </p>
 
-        <p>
-          Pressing <code>P</code> while on a state will initiate "play to" mode targeted at that
-          state. This will replay all the changes between your current state and the
-          target, with a slight pause after each change. It's mostly useless, but can be
-          fun to watch and see where your editing lags &mdash; that might be a good place to
-          define a new mapping to speed up your editing.
-        </p>
+    <p>
+      Pressing <code>P</code> while on a state will initiate "play to" mode targeted at that
+      state. This will replay all the changes between your current state and the
+      target, with a slight pause after each change. It's mostly useless, but can be
+      fun to watch and see where your editing lags &mdash; that might be a good place to
+      define a new mapping to speed up your editing.
+    </p>
 
-        <p>
-          Pressing <code>q</code> while in the undo graph will close it.  You can also just press your
-          toggle mapping key.
-        </p>
-      </section>
-      <section>
-        <a name="configuration"></a>
-        <h1>Configuration</h1>
+    <p>
+      Pressing <code>q</code> while in the undo graph will close it.  You can also just press your
+      toggle mapping key.
+    </p>
+  </section>
+  <section>
+    <a name="configuration"></a>
+    <h1>Configuration</h1>
 
-        <p>
-          You can tweak the behavior of Gundo by setting a few variables
-          in your :vimrc file. For example:
-        </p>
+    <p>
+      You can tweak the behavior of Mundo by setting a few variables
+      in your :vimrc file. For example:
+    </p>
 
 <pre>
-let g:gundo_width = 60
-let g:gundo_preview_height = 40
-let g:gundo_right = 1
+let g:mundo_width = 60
+let g:mundo_preview_height = 40
+let g:mundo_right = 1
 </pre>
 
-        <a name="gundo_width"></a>
-        <h2>g:gundo_width</h2>
+    <a name="mundo_width"></a>
+    <h2>g:mundo_width</h2>
 
-        <p>Set the horizontal width of the Gundo graph (and preview).</p>
+    <p>Set the horizontal width of the Mundo graph (and preview).</p>
 
-        <p>Default: 45</p>
+    <p>Default: 45</p>
 
-        <a name="gundo_preview_height"></a>
-        <h2>g:gundo_preview_height</h2>
+    <a name="mundo_preview_height"></a>
+    <h2>g:mundo_preview_height</h2>
 
-        <p>Set the vertical height of the Gundo preview.</p>
+    <p>Set the vertical height of the Mundo preview.</p>
 
-        <p>Default: 15</p>
+    <p>Default: 15</p>
 
-        <a name="gundo_preview_bottom"></a>
-        <h2>g:gundo_preview_bottom</h2>
+    <a name="mundo_preview_bottom"></a>
+    <h2>g:mundo_preview_bottom</h2>
 
-        <p>
-          Force the preview window below current windows instead of below
-          the graph.  This gives the preview window more space to show the
-          unified diff.
-        </p>
+    <p>
+      Force the preview window below current windows instead of below
+      the graph.  This gives the preview window more space to show the
+      unified diff.
+    </p>
 
-        <p>Example:</p>
+    <p>Example:</p>
 
 <pre>
 +--------+            +--------+
@@ -249,255 +245,154 @@ let g:gundo_right = 1
 +--------+            +--------+
 </pre>
 
-        <p>Default: 0</p>
+    <p>Default: 0</p>
 
-        <a name="gundo_right"></a>
-        <h2>g:gundo_right</h2>
+    <a name="mundo_right"></a>
+    <h2>g:mundo_right</h2>
 
-        <p>
-          Set this to 1 to make the Gundo graph (and preview) open on the
-          right side instead of the left.
-        </p>
+    <p>
+      Set this to 1 to make the Mundo graph (and preview) open on the
+      right side instead of the left.
+    </p>
 
-        <p>Default: 0 (off, open on the left side)</p>
+    <p>Default: 0 (off, open on the left side)</p>
 
-        <a name="gundo_help"></a>
-        <h2>g:gundo_help</h2>
+    <a name="mundo_help"></a>
+    <h2>g:mundo_help</h2>
 
-        <p>Set this to 0 to disable the help text in the Gundo graph window.</p>
+    <p>Set this to 1 to make help text expanded by default.</p>
 
-        <p>Default: 1 (show the help)</p>
+    <p>Default: 0 (non-expanded help)</p>
 
-        <a name="gundo_disable"></a>
-        <h2>g:gundo_disable</h2>
+    <a name="mundo_disable"></a>
+    <h2>g:mundo_disable</h2>
 
-        <p>Set this to 1 to disable Gundo entirely.</p>
+    <p>Set this to 1 to disable Mundo entirely.</p>
 
-        <p>
-          Useful if you use the same <code>~/.vim</code> folder on
-          multiple machines, and some of them may not have Python support.
-        </p>
+    <p>
+      Useful if you use the same <code>~/.vim</code> folder on
+      multiple machines, and some of them may not have Python support.
+    </p>
 
-        <p>Default: 0 (Gundo is enabled as usual)</p>
+    <p>Default: 0 (Mundo is enabled as usual)</p>
 
-        <a name="gundo_map_move"></a>
-        <h2>g:gundo_map_move_[older/newer]</h2>
+    <a name="mundo_map_move"></a>
+    <h2>g:mundo_map_move_[older/newer]</h2>
 
-        <p>
-          These options let you change the keys that navigate the
-          undo graph. This is useful if you use a Dvorak keyboard and
-          have changed your movement keys.
-        </p>
+    <p>
+      These options let you change the keys that navigate the
+      undo graph. This is useful if you use a Dvorak keyboard and
+      have changed your movement keys.
+    </p>
 
-        <p>
-          Default:<br/>
-          gundo_map_move_older: "j"<br/>
-          gundo_map_move_newer: "k"
-        </p>
+    <p>
+      Default:<br/>
+      mundo_map_move_older: "j"<br/>
+      mundo_map_move_newer: "k"
+    </p>
 
-        <a name="gundo_close_on_revert"></a>
-        <h2>g:gundo_close_on_revert</h2>
+    <a name="mundo_close_on_revert"></a>
+    <h2>g:mundo_close_on_revert</h2>
 
-        <p>Set this to 1 to automatically close the Gundo windows when reverting.</p>
+    <p>Set this to 1 to automatically close the Mundo windows when reverting.</p>
 
-        <p>Default: 0 (windows do not automatically close)</p>
+    <p>Default: 0 (windows do not automatically close)</p>
 
-        <a name="gundo_statusline"></a>
-        <h2>g:gundo_[preview/tree]_statusline</h2>
+    <a name="mundo_statusline"></a>
+    <h2>g:mundo_[preview/tree]_statusline</h2>
 
-        <p>
-          Set this to 0 to disable automatically rendering preview diffs as you move
-          through the undo tree (you can still render a specific diff with r).  This can
-          be useful on large files and undo trees to speed up Gundo.
-        </p>
+    <p>
+      Set this to 0 to disable automatically rendering preview diffs as you move
+      through the undo tree (you can still render a specific diff with r).  This can
+      be useful on large files and undo trees to speed up Mundo.
+    </p>
 
-        <p>Default: unset (windows use the default statusline)</p>
+    <p>Default: unset (windows use the default statusline)</p>
 
 
-        <a name="#gundo_auto_preview"></a>
-        <h2>g:gundo_auto_preview</h2>
+    <a name="#mundo_auto_preview"></a>
+    <h2>g:mundo_auto_preview</h2>
 
-        <p>Set this to 1 to rendering diff automatically with cursor move.</p>
+    <p>Set this to 1 to rendering diff automatically with cursor move.</p>
 
-        <p>Default: 1 (auto preview diff)</p>
+    <p>Default: 1 (auto preview diff)</p>
 
-        <a name="#gundo_playback_delay"></a>
-        <h2>g:gundo_playback_delay</h2>
+    <a name="#mundo_playback_delay"></a>
+    <h2>g:mundo_playback_delay</h2>
 
-        <p>
-          This is the delay in milliseconds between each change when running 'play to'
-          mode. Set this to a higher number for a slower playback or to a lower number
-          for a faster playback.
-        </p>
+    <p>
+      This is the delay in milliseconds between each change when running 'play to'
+      mode. Set this to a higher number for a slower playback or to a lower number
+      for a faster playback.
+    </p>
 
-        <p>Default: 60</p>
-      </section>
-      <section>
-        <a name="license"></a>
-        <h1>License</h1>
+    <p>Default: 60</p>
+  </section>
+  <section>
+    <a name="license"></a>
+    <h1>License</h1>
 
-        <p><a href="http://www.opensource.org/licenses/gpl-2.0.php">GPLv2+</a>.</p>
-      </section>
-      <section>
-        <a name="bugs"></a>
-        <h1>Bugs</h1>
+    <p><a href="http://www.opensource.org/licenses/gpl-2.0.php">GPLv2+</a>.</p>
+  </section>
+  <section>
+    <a name="bugs"></a>
+    <h1>Bugs</h1>
 
-        <p>
-          If you find a bug please post it on the
-          <a href="http://bitbucket.org/sjl/gundo.vim/issues?status=new&status=open">issue tracker</a>.
-        </p>
-      </section>
-      <section>
-        <a name="contributing"></a>
-        <h1>Contributing</h1>
+    <p>
+      If you find a bug please post it on the
+      <a href="https://github.com/simnalamburt/vim-mundo/issues">issue tracker</a>.
+    </p>
+  </section>
+  <section>
+    <a name="contributing"></a>
+    <h1>Contributing</h1>
 
-        <p>
-          Fork the repository on
-          <a href="http://bitbucket.org/sjl/gundo.vim/">BitBucket</a>
-          or
-          <a href="http://github.com/sjl/gundo.vim/">GitHub</a>
-          and send a pull request.
-        </p>
+    <p>
+      Fork the repository on
+      <a href="https://github.com/simnalamburt/vim-mundo">GitHub</a>
+      and send a pull request.
+    </p>
 
-        <p>Make sure you document your changes in the following places:</p>
+    <p>Make sure you document your changes in the following places:</p>
 
-        <ul>
-          <li>The <code>README.markdown</code> file.</li>
-          <li>The <code>site/index.html</code> file.</li>
-          <li>The <code>doc/gundo.txt</code> file.</li>
-        </ul>
-      </section>
-      <section>
-        <a name="changelog"></a>
-        <h1>Changelog</h1>
+    <ul>
+      <li>The <code>README.md</code> and <code>doc/mundo.txt</code> file in the
+        <code>master</code> branch.</li>
+      <li>The <code>site/index.html</code> file in the
+        <code>gh-pages</code> branch.</li>
+    </ul>
+  </section>
+  <section>
+    <a name="credits"></a>
+    <h1>Credits</h1>
 
-        <ol class="changelog">
-          <li>v2.5.0
-            <ul>
-              <li>
-                Fix the help window to take custom mappings into account.
-              </li>
-              <li>
-                Add <code>g:gundo_playback_delay</code> option.
-              </li>
-            </ul>
-          </li>
-          <li>v2.4.0
-            <ul>
-              <li>
-                Add auto preview option.
-              </li>
-              <li>
-                Add 'r' mapping to preview current state.
-              </li>
-              <li>
-                Add public <code>gundo#GundoShow()</code> and <code>gundo#GundoHide()</code> functions.
-              </li>
-            </ul>
-          </li>
-          <li>v2.3.0
-            <ul>
-              <li>
-                Add statusline configuration.
-              </li>
-            </ul>
-          </li>
-          <li>v2.2.2
-            <ul>
-              <li>
-                More performance improvements.
-              </li>
-            </ul>
-          </li>
-          <li>v2.2.1
-            <ul>
-              <li>
-                Refactoring and performance improvements.
-              </li>
-            </ul>
-          </li>
-          <li>v2.2.0
-            <ul>
-              <li>
-                Add the <code>g:gundo_close_on_revert</code> setting.
-              </li>
-              <li>
-                Fix a bug with the <code>splitbelow</code> setting.
-              </li>
-            </ul>
-          </li>
-          <li>v2.1.1
-            <ul>
-              <li>
-                Fix a bug with the movement key mappings.
-              </li>
-            </ul>
-          </li>
-          <li>v2.1.0
-            <ul>
-              <li>
-                Warnings about having an incompatible Vim and/or
-                Python installation are now deferred until the
-                first time you try to use Gundo, instead of being
-                displayed on launch.
-              </li>
-              <li>
-                The <code>j</code> and <code>k</code> mappings are
-                now configurable with
-                <code>g:gundo_map_move_older</code> and
-                <code>g:gundo_map_move_newer</code>.
-              </li>
-              <li>
-                The <code>o</code>, <code>Up</code> and
-                <code>Down</code> keys are now mapped in the
-                Gundo pane.
-              </li>
-              <li>
-                Improve and add several unit tests for Gundo.
-              </li>
-            </ul>
-          </li>
-          <li>v2.0.0
-            <ul>
-              <li>
-                Make <code>GundoToggle</code> close the Gundo windows if they're
-                visible but not the current window, instead of moving to them.
-              </li>
-              <li>Add the <code>g:gundo_disable</code> setting.</li>
-              <li>Add the <code>g:gundo_help</code> setting.</li>
-              <li>
-                Add the <code>p</code> mapping to preview the result of
-                reverting to the selected state.
-              </li>
-              <li>Fix movement commands with counts in the graph.</li>
-            </ul>
-          </li>
-          <li>v1.0.0
-            <ul>
-              <li>Initial stable release.</li>
-            </ul>
-          </li>
-        </ol>
-      </section>
-      <section>
-        <a name="credits"></a>
-        <h1>Credits</h1>
+    <p>
+      This project is fork of <a href="https://bitbucket.org/sjl/gundo.vim">gundo.vim</a>.
+      I am really grateful to <a href="https://stevelosh.com">Steve Losh</a> for
+      all his efforts to create gundo.vim.
+    </p>
 
-        <p>
-          The graphing code was all taken from Mercurial, hence the
-          GPLv2+ license.
-        </p>
+    <p>
+      The graphing code was all taken from Mercurial, hence the
+      GPLv2+ license.
+    </p>
 
-        <p>
-          The plugin was heavily inspired by histwin.vim, and the code
-          for scratch.vim helped the author get started.
-        </p>
-      </section>
-      <footer>
-        Gundo was written by
-        <a href="http://stevelosh.com">Steve Losh</a>
-        with a lot of help from others.
-      </footer>
-    </div>
-  </body>
+    <p>
+      The plugin was heavily inspired by <a
+        href="https://github.com/chrisbra/histwin.vim">histwin.vim</a>, and the
+      code for <a href="https://github.com/mtth/scratch.vim">scratch.vim</a>
+      helped the author get started.
+    </p>
+  </section>
+  <footer>
+    Mundo was written by
+    <a href="http://stevelosh.com">Steve Losh</a>,
+    <a href="http://pinedesk.a.willowdesk.info/">Dane Summers</a> and<br>
+    <a href="https://github.com/simnalamburt/vim-mundo/graphs/contributors">all
+      those</a> who helped mundo improve!
+  </footer>
+</div>
+
+
+</body>
 </html>

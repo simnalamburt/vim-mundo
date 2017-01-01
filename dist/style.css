@@ -1,7 +1,4 @@
-@font-face {
-  font-family: "Essays 1743";
-  src: url(Essays1743.ttf);
-}
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans');
 html {
   overflow-y: scroll;
 }
@@ -28,7 +25,7 @@ html h5,
 body h5,
 html h6,
 body h6 {
-  font-family: "Essays 1743", Palatino, serif;
+  font-family: 'Noto Sans', sans-serif;
   line-height: 1;
   margin: 0;
   margin-bottom: 22px;
