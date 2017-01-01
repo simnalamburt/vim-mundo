@@ -2,7 +2,7 @@
 <html lang=en>
 <head>
   <meta charset="UTF-8">
-  <title>Gundo - Visualize your Vim Undo Tree</title>
+  <title>Mundo - Visualize your Vim Undo Tree</title>
   <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
@@ -14,12 +14,12 @@
 
 <div class="wrap">
   <header>
-    <h1>Gundo</h1>
+    <h1>Mundo</h1>
     <h2>Graph your Vim undo tree in style.</h2>
   </header>
   <section>
     <a href="http://www.flickr.com/photos/sjl7678/5093114605/"
-       title="gundo by stevelosh, on Flickr"
+       title="mundo by stevelosh, on Flickr"
     ><img src="screenshot.jpg" width="234" height="240"></a>
 
 
@@ -42,7 +42,7 @@
     </p>
 
     <p>
-      Gundo is a plugin to make browsing this ridiculously powerful undo tree less
+      Mundo is a plugin to make browsing this ridiculously powerful undo tree less
       painful.
     </p>
 
@@ -60,17 +60,17 @@
       <li>
         <a href="#configuration">Configuration</a>
         <ul>
-          <li><a href="#gundo_width">g:gundo_width</a></li>
-          <li><a href="#gundo_preview_height">g:gundo_preview_height</a></li>
-          <li><a href="#gundo_preview_bottom">g:gundo_preview_bottom</a></li>
-          <li><a href="#gundo_right">g:gundo_right</a></li>
-          <li><a href="#gundo_help">g:gundo_help</a></li>
-          <li><a href="#gundo_disable">g:gundo_disable</a></li>
-          <li><a href="#gundo_map_move">g:gundo_map_move_[older/newer]</a></li>
-          <li><a href="#gundo_close_on_revert">g:gundo_close_on_revert</a></li>
-          <li><a href="#gundo_statusline">g:gundo_[preview/tree]_statusline</a></li>
-          <li><a href="#gundo_auto_preview">g:gundo_auto_preview</a></li>
-          <li><a href="#gundo_playback_delay">g:gundo_playback_delay</a></li>
+          <li><a href="#mundo_width">g:mundo_width</a></li>
+          <li><a href="#mundo_preview_height">g:mundo_preview_height</a></li>
+          <li><a href="#mundo_preview_bottom">g:mundo_preview_bottom</a></li>
+          <li><a href="#mundo_right">g:mundo_right</a></li>
+          <li><a href="#mundo_help">g:mundo_help</a></li>
+          <li><a href="#mundo_disable">g:mundo_disable</a></li>
+          <li><a href="#mundo_map_move">g:mundo_map_move_[older/newer]</a></li>
+          <li><a href="#mundo_close_on_revert">g:mundo_close_on_revert</a></li>
+          <li><a href="#mundo_statusline">g:mundo_[preview/tree]_statusline</a></li>
+          <li><a href="#mundo_auto_preview">g:mundo_auto_preview</a></li>
+          <li><a href="#mundo_playback_delay">g:mundo_playback_delay</a></li>
         </ul>
       </li>
       <li><a href="#license">License</a></li>
@@ -85,7 +85,7 @@
     <h1>Requirements</h1>
 
     <p>
-      Gundo requires Vim 7.3+ compiled with Python support, and Python 2.4+.
+      Mundo requires Vim 7.3+ compiled with Python support, and Python 2.4+.
     </p>
   </section>
   <section>
@@ -93,13 +93,13 @@
     <h1>Installation</h1>
 
     <p>Use Pathogen. Don't use pathogen? Start.</p>
-    <pre>hg clone http://bitbucket.org/sjl/gundo.vim ~/.vim/bundle/gundo</pre>
+    <pre>hg clone http://bitbucket.org/sjl/mundo.vim ~/.vim/bundle/mundo</pre>
 
     <p>There's a git mirror if you prefer:</p>
-    <pre>git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo</pre>
+    <pre>git clone http://github.com/sjl/mundo.vim.git ~/.vim/bundle/mundo</pre>
 
     <p>Add a mapping to your ~/.vimrc (change the key to suit your taste):</p>
-    <pre>nnoremap &lt;F5&gt; :GundoToggle&lt;CR&gt;</pre>
+    <pre>nnoremap &lt;F5&gt; :MundoToggle&lt;CR&gt;</pre>
   </section>
   <section>
     <a name="usage"></a>
@@ -111,7 +111,7 @@
       graph:
     </p>
 
-    <pre>nnoremap &lt;F5&gt; :GundoToggle&lt;CR&gt;</pre>
+    <pre>nnoremap &lt;F5&gt; :MundoToggle&lt;CR&gt;</pre>
 
     <p>
       Change the mapped key to suit your taste. We'll stick with <code>&lt;F5&gt;</code> because that's
@@ -126,7 +126,7 @@
 <pre>
 Undo graph                          File
 +-----------------------------------+---------------------------+
-| " Gundo for something.txt [1]     |one                        |
+| " Mundo for something.txt [1]     |one                        |
 | " j/k  - move between undo states |two                        |
 | " &lt;cr&gt; - revert to that state     |three                      |
 |                                   |five                       |
@@ -159,7 +159,7 @@ Preview pane
     </p>
 
     <p>
-      When you toggle open the graph Gundo will put your cursor on your current
+      When you toggle open the graph Mundo will put your cursor on your current
       position in the tree. You can move up and down the graph with the <code>j</code> and
       <code>k</code> keys.
     </p>
@@ -203,32 +203,32 @@ Preview pane
     <h1>Configuration</h1>
 
     <p>
-      You can tweak the behavior of Gundo by setting a few variables
+      You can tweak the behavior of Mundo by setting a few variables
       in your :vimrc file. For example:
     </p>
 
 <pre>
-let g:gundo_width = 60
-let g:gundo_preview_height = 40
-let g:gundo_right = 1
+let g:mundo_width = 60
+let g:mundo_preview_height = 40
+let g:mundo_right = 1
 </pre>
 
-    <a name="gundo_width"></a>
-    <h2>g:gundo_width</h2>
+    <a name="mundo_width"></a>
+    <h2>g:mundo_width</h2>
 
-    <p>Set the horizontal width of the Gundo graph (and preview).</p>
+    <p>Set the horizontal width of the Mundo graph (and preview).</p>
 
     <p>Default: 45</p>
 
-    <a name="gundo_preview_height"></a>
-    <h2>g:gundo_preview_height</h2>
+    <a name="mundo_preview_height"></a>
+    <h2>g:mundo_preview_height</h2>
 
-    <p>Set the vertical height of the Gundo preview.</p>
+    <p>Set the vertical height of the Mundo preview.</p>
 
     <p>Default: 15</p>
 
-    <a name="gundo_preview_bottom"></a>
-    <h2>g:gundo_preview_bottom</h2>
+    <a name="mundo_preview_bottom"></a>
+    <h2>g:mundo_preview_bottom</h2>
 
     <p>
       Force the preview window below current windows instead of below
@@ -249,37 +249,37 @@ let g:gundo_right = 1
 
     <p>Default: 0</p>
 
-    <a name="gundo_right"></a>
-    <h2>g:gundo_right</h2>
+    <a name="mundo_right"></a>
+    <h2>g:mundo_right</h2>
 
     <p>
-      Set this to 1 to make the Gundo graph (and preview) open on the
+      Set this to 1 to make the Mundo graph (and preview) open on the
       right side instead of the left.
     </p>
 
     <p>Default: 0 (off, open on the left side)</p>
 
-    <a name="gundo_help"></a>
-    <h2>g:gundo_help</h2>
+    <a name="mundo_help"></a>
+    <h2>g:mundo_help</h2>
 
-    <p>Set this to 0 to disable the help text in the Gundo graph window.</p>
+    <p>Set this to 0 to disable the help text in the Mundo graph window.</p>
 
     <p>Default: 1 (show the help)</p>
 
-    <a name="gundo_disable"></a>
-    <h2>g:gundo_disable</h2>
+    <a name="mundo_disable"></a>
+    <h2>g:mundo_disable</h2>
 
-    <p>Set this to 1 to disable Gundo entirely.</p>
+    <p>Set this to 1 to disable Mundo entirely.</p>
 
     <p>
       Useful if you use the same <code>~/.vim</code> folder on
       multiple machines, and some of them may not have Python support.
     </p>
 
-    <p>Default: 0 (Gundo is enabled as usual)</p>
+    <p>Default: 0 (Mundo is enabled as usual)</p>
 
-    <a name="gundo_map_move"></a>
-    <h2>g:gundo_map_move_[older/newer]</h2>
+    <a name="mundo_map_move"></a>
+    <h2>g:mundo_map_move_[older/newer]</h2>
 
     <p>
       These options let you change the keys that navigate the
@@ -289,38 +289,38 @@ let g:gundo_right = 1
 
     <p>
       Default:<br/>
-      gundo_map_move_older: "j"<br/>
-      gundo_map_move_newer: "k"
+      mundo_map_move_older: "j"<br/>
+      mundo_map_move_newer: "k"
     </p>
 
-    <a name="gundo_close_on_revert"></a>
-    <h2>g:gundo_close_on_revert</h2>
+    <a name="mundo_close_on_revert"></a>
+    <h2>g:mundo_close_on_revert</h2>
 
-    <p>Set this to 1 to automatically close the Gundo windows when reverting.</p>
+    <p>Set this to 1 to automatically close the Mundo windows when reverting.</p>
 
     <p>Default: 0 (windows do not automatically close)</p>
 
-    <a name="gundo_statusline"></a>
-    <h2>g:gundo_[preview/tree]_statusline</h2>
+    <a name="mundo_statusline"></a>
+    <h2>g:mundo_[preview/tree]_statusline</h2>
 
     <p>
       Set this to 0 to disable automatically rendering preview diffs as you move
       through the undo tree (you can still render a specific diff with r).  This can
-      be useful on large files and undo trees to speed up Gundo.
+      be useful on large files and undo trees to speed up Mundo.
     </p>
 
     <p>Default: unset (windows use the default statusline)</p>
 
 
-    <a name="#gundo_auto_preview"></a>
-    <h2>g:gundo_auto_preview</h2>
+    <a name="#mundo_auto_preview"></a>
+    <h2>g:mundo_auto_preview</h2>
 
     <p>Set this to 1 to rendering diff automatically with cursor move.</p>
 
     <p>Default: 1 (auto preview diff)</p>
 
-    <a name="#gundo_playback_delay"></a>
-    <h2>g:gundo_playback_delay</h2>
+    <a name="#mundo_playback_delay"></a>
+    <h2>g:mundo_playback_delay</h2>
 
     <p>
       This is the delay in milliseconds between each change when running 'play to'
@@ -342,7 +342,7 @@ let g:gundo_right = 1
 
     <p>
       If you find a bug please post it on the
-      <a href="http://bitbucket.org/sjl/gundo.vim/issues?status=new&status=open">issue tracker</a>.
+      <a href="http://bitbucket.org/sjl/mundo.vim/issues?status=new&status=open">issue tracker</a>.
     </p>
   </section>
   <section>
@@ -351,9 +351,9 @@ let g:gundo_right = 1
 
     <p>
       Fork the repository on
-      <a href="http://bitbucket.org/sjl/gundo.vim/">BitBucket</a>
+      <a href="http://bitbucket.org/sjl/mundo.vim/">BitBucket</a>
       or
-      <a href="http://github.com/sjl/gundo.vim/">GitHub</a>
+      <a href="http://github.com/sjl/mundo.vim/">GitHub</a>
       and send a pull request.
     </p>
 
@@ -362,7 +362,7 @@ let g:gundo_right = 1
     <ul>
       <li>The <code>README.markdown</code> file.</li>
       <li>The <code>site/index.html</code> file.</li>
-      <li>The <code>doc/gundo.txt</code> file.</li>
+      <li>The <code>doc/mundo.txt</code> file.</li>
     </ul>
   </section>
   <section>
@@ -376,7 +376,7 @@ let g:gundo_right = 1
             Fix the help window to take custom mappings into account.
           </li>
           <li>
-            Add <code>g:gundo_playback_delay</code> option.
+            Add <code>g:mundo_playback_delay</code> option.
           </li>
         </ul>
       </li>
@@ -389,7 +389,7 @@ let g:gundo_right = 1
             Add 'r' mapping to preview current state.
           </li>
           <li>
-            Add public <code>gundo#GundoShow()</code> and <code>gundo#GundoHide()</code> functions.
+            Add public <code>mundo#MundoShow()</code> and <code>mundo#MundoHide()</code> functions.
           </li>
         </ul>
       </li>
@@ -417,7 +417,7 @@ let g:gundo_right = 1
       <li>v2.2.0
         <ul>
           <li>
-            Add the <code>g:gundo_close_on_revert</code> setting.
+            Add the <code>g:mundo_close_on_revert</code> setting.
           </li>
           <li>
             Fix a bug with the <code>splitbelow</code> setting.
@@ -436,33 +436,33 @@ let g:gundo_right = 1
           <li>
             Warnings about having an incompatible Vim and/or
             Python installation are now deferred until the
-            first time you try to use Gundo, instead of being
+            first time you try to use Mundo, instead of being
             displayed on launch.
           </li>
           <li>
             The <code>j</code> and <code>k</code> mappings are
             now configurable with
-            <code>g:gundo_map_move_older</code> and
-            <code>g:gundo_map_move_newer</code>.
+            <code>g:mundo_map_move_older</code> and
+            <code>g:mundo_map_move_newer</code>.
           </li>
           <li>
             The <code>o</code>, <code>Up</code> and
             <code>Down</code> keys are now mapped in the
-            Gundo pane.
+            Mundo pane.
           </li>
           <li>
-            Improve and add several unit tests for Gundo.
+            Improve and add several unit tests for Mundo.
           </li>
         </ul>
       </li>
       <li>v2.0.0
         <ul>
           <li>
-            Make <code>GundoToggle</code> close the Gundo windows if they're
+            Make <code>MundoToggle</code> close the Mundo windows if they're
             visible but not the current window, instead of moving to them.
           </li>
-          <li>Add the <code>g:gundo_disable</code> setting.</li>
-          <li>Add the <code>g:gundo_help</code> setting.</li>
+          <li>Add the <code>g:mundo_disable</code> setting.</li>
+          <li>Add the <code>g:mundo_help</code> setting.</li>
           <li>
             Add the <code>p</code> mapping to preview the result of
             reverting to the selected state.
@@ -492,7 +492,7 @@ let g:gundo_right = 1
     </p>
   </section>
   <footer>
-    Gundo was written by
+    Mundo was written by
     <a href="http://stevelosh.com">Steve Losh</a>
     with a lot of help from others.
   </footer>
