@@ -174,9 +174,9 @@ Default: 0 (off, open on the left side)
 ------------------------------------------------------------------------------
 3.5 g:mundo_help                                                  *mundo_help*
 
-Set this to 0 to disable the help text in the Mundo graph window.
+Set this to 1 to make help text expanded by default.
 
-Default: 1 (show the help)
+Default: 0 (non-expanded help)
 
 ------------------------------------------------------------------------------
 3.6 g:mundo_disable                                            *mundo_disable*
