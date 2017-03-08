@@ -28,6 +28,8 @@ if g:mundo_prefer_python3 && has('python3')"{{{
     let s:has_supported_python = 2
 elseif has('python')"
     let s:has_supported_python = 1
+elseif has('python3')"
+    let s:has_supported_python = 2
 endif
 
 if !s:has_supported_python
@@ -260,7 +262,7 @@ endfunction"}}}
 
 function! s:MundoOpen()"{{{
     if !exists('g:mundo_py_loaded')
-        if s:has_supported_python == 2 && g:mundo_prefer_python3
+        if s:has_supported_python == 2
             exe 'py3file ' . escape(s:plugin_path, ' ') . '/mundo.py'
             python3 initPythonModule()
         else
@@ -347,7 +349,7 @@ endfunction"}}}
 "{{{ Mundo rendering
 
 function! s:MundoPython(fn)"{{{
-    if s:has_supported_python == 2 && g:mundo_prefer_python3
+    if s:has_supported_python == 2
         exec "python3 ". a:fn
     else
         exec "python ". a:fn
