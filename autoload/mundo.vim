@@ -46,6 +46,14 @@ let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
 
 "{{{ Mundo utility functions
 
+function! s:MundoSetupPythonPath()"{{{
+    if g:mundo_python_path_setup == 0
+        let g:mundo_python_path_setup = 1
+        call s:MundoPython('sys.path.insert(1, "'. s:mundo_path .'")')
+        call s:MundoPython('sys.path.insert(1, "'. s:mundo_path .'/mundo")')
+    end
+endfunction"}}}
+
 function! s:MundoGoToWindowForBufferName(name)"{{{
     if bufwinnr(bufnr(a:name)) != -1
         exe bufwinnr(bufnr(a:name)) . "wincmd w"
@@ -302,11 +310,7 @@ endfunction"}}}
 let s:mundo_path = escape( expand( '<sfile>:p:h' ), '\' )
 
 function! s:MundoToggle()"{{{
-    if g:mundo_python_path_setup == 0
-        let g:mundo_python_path_setup = 1
-        call s:MundoPython('sys.path.insert(1, "'. s:mundo_path .'")')
-        call s:MundoPython('sys.path.insert(1, "'. s:mundo_path .'/mundo")')
-    end
+    call s:MundoSetupPythonPath()
     if s:MundoIsVisible()
         call s:MundoClose()
     else
@@ -317,6 +321,7 @@ function! s:MundoToggle()"{{{
 endfunction"}}}
 
 function! s:MundoShow()"{{{
+    call s:MundoSetupPythonPath()
     if !s:MundoIsVisible()
         let g:mundo_target_n = bufnr('')
         let g:mundo_target_f = @%
@@ -325,6 +330,7 @@ function! s:MundoShow()"{{{
 endfunction"}}}
 
 function! s:MundoHide()"{{{
+    call s:MundoSetupPythonPath()
     if s:MundoIsVisible()
         call s:MundoClose()
     endif
