@@ -479,7 +479,3 @@ def MundoPlayTo():
         util._goto_window_for_buffer(back)
         vim.command('redraw')
         vim.command('sleep %dm' % delay)
-
-def initPythonModule():
-    if sys.version_info[:2] < (2, 4):
-        vim.command('let s:has_supported_python = 0')
