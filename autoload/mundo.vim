@@ -268,14 +268,20 @@ function! s:MundoClose()"{{{
     exe bufwinnr(g:mundo_target_n) . "wincmd w"
 endfunction"}}}
 
+function! s:InitPythonModule(python)
+    exe a:python .' import sys'
+    exe a:python .' if sys.version_info[:2] < (2, 4): vim.command("let s:has_supported_python = 0")'
+endfunction
+
+
 function! s:MundoOpen()"{{{
     if !exists('g:mundo_py_loaded')
         if s:has_supported_python == 2
             exe 'py3file ' . escape(s:plugin_path, ' ') . '/mundo.py'
-            python3 initPythonModule()
+            call s:InitPythonModule('python3')
         else
             exe 'pyfile ' . escape(s:plugin_path, ' ') . '/mundo.py'
-            python initPythonModule()
+            call s:InitPythonModule('python')
         endif
 
         if !s:has_supported_python
