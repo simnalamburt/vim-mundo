@@ -10,7 +10,7 @@ html, body {
   font: normal 16px/22px Palatino, Georgia, serif;
 
   .wrap {
-    width: 599px;
+    width: 800px;
     margin: 48px auto;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -45,11 +45,10 @@ html, body {
     padding: 11px;
   }
   img {
-    border: 1px solid #ccc;
-    padding: 4px;
-    float: right;
-    margin-left: 36px;
-    margin-bottom: 44px;
+    display: block;
+    margin: -15px auto 10px;
+    width: 700px;
+    height: 539px;
   }
 }
 #repos {
