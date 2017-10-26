@@ -1,20 +1,16 @@
 vim-mundo
 =========
+A Vim plugin to visualizes the Vim [undo tree], a fork of [Gundo].
 
-A Vim plugin to visualizes the Vim [undo tree](http://vimdoc.sourceforge.net/htmldoc/undo.html#undo-tree), a fork of
-[Gundo](https://github.com/sjl/gundo.vim).
-
-* [Introductory Video][video]
-* Website [Project Site][site]
+* [Introductory Video]
+* Website [Project Site]
 
 ### How is this different than Gundo?
-
-*   Several new features:
+* Several new features:
   * Ability to search undo history using <kbd>/</kbd>.
   * An 'in line' diff mode.
   * Navigation keys <kbd>J</kbd> and <kbd>K</kbd> to move thru written undos.
-*   [Neovim][neovim] support
-*   Merged upstream [pull requests][upstream-pr]:
+* Merged upstream [pull requests]:
   * [Fix paths with spaces][pr-29]
   * [Display timestamps in ISO format][pr-28]
   * [Real time updates][i-40]
@@ -23,38 +19,31 @@ A Vim plugin to visualizes the Vim [undo tree](http://vimdoc.sourceforge.net/htm
   * [open vimdiff of current buffer][i-28]
   * [Add global_disable option][i-33]
   * [Reduce verbosity][i-31]
+* [Neovim] support
 
 #### What's your further plan?
+* Make faster
+* Automated test
 
-*   Merge more reasonable pull requests
-*   Make faster
-*   Automated test
+<br>
 
 ### Requirements
+* Vim ≥ *7.3* &nbsp; *or* &nbsp; [Neovim]
+* `+python3` or `+python` compile option
+* Python ≥ *2.4*
 
-*   Vim ≥ *7.3* with `+python`
-    <br>&nbsp; &nbsp; *or*<br>
-    [Neovim][]
+Recommended vim settings:
+```vim
+" Enable persistent undo so that undo history persists across vim sessions
+set undofile
+set undodir=~/.vim/undo
+```
 
-*   Python ≥ *2.4*
-
-Recommended `vimrc` settings:
-
-    " Enable persistent undo so that undo history persists across vim sessions
-    set undofile
-    set undodir=~/.vim/undo
-
-### Testing
-
-The tests appear to be broken in tests/. Tests unit tests can be run with
-[nose](https://nose.readthedocs.org/en/latest/):
-
-    cd autoload
-    nosetests
+<br>
 
 ### Contributing to Mundo
 
-**Tagging in the issue tracker**
+#### Tagging in the issue tracker
 
 When submitting pull requests (commonly referred to as "PRs"), include one
 of the following tags prepended to the title:
@@ -68,14 +57,25 @@ no outstanding issues.
 Assuming the above criteria has been met, feel free to change your PR's tag
 yourself, as opposed to waiting for a contributor to do it for you.
 
+#### Unit tests
+Tests unit tests can be run with [nose]:
+```shell
+cd autoload
+nosetests
+```
+
+<br>
+
 --------
 
-[GPLv2+][]
+[GPLv2+]
 
-[upstream-pr]: https://github.com/sjl/gundo.vim/pulls
-[video]: http://screenr.com/M9l
-[site]: //simnalamburt.github.io/vim-mundo
-[neovim]: //neovim.org/
+[pull requests]: https://github.com/sjl/gundo.vim/pulls
+[undo tree]: https://neovim.io/doc/user/undo.html#undo-tree
+[Gundo]: https://github.com/sjl/gundo.vim
+[Introductory Video]: http://screenr.com/M9l
+[Project Site]: https://simnalamburt.github.io/vim-mundo
+[Neovim]: https://neovim.io
 [pr-29]: https://github.com/sjl/gundo.vim/pull/29
 [pr-28]: https://github.com/sjl/gundo.vim/pull/28
 [i-34]: https://bitbucket.org/sjl/gundo.vim/issue/34/show-changes-that-were-saved-onto-disk
@@ -84,4 +84,5 @@ yourself, as opposed to waiting for a contributor to do it for you.
 [i-28]: https://bitbucket.org/sjl/gundo.vim/issue/28/feature-request-open-vimdiff-of-current#comment-3129981
 [i-33]: https://bitbucket.org/sjl/gundo.vim/issue/33/let-g-gundo_disable-0-is-not-available
 [i-31]: https://bitbucket.org/sjl/gundo.vim/issue/31/reduce-verbosity-of-the-list
-[GPLv2+]: http://opensource.org/licenses/gpl-2.0
+[nose]: https://nose.readthedocs.org/en/latest/
+[GPLv2+]: https://opensource.org/licenses/gpl-2.0
