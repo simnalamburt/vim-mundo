@@ -68,7 +68,8 @@ nosetests
 
 --------
 
-[GPLv2+]
+*vim-mundo* is primarily distributed under the terms of the [GNU General Public
+License, version 2] or any later version. See [COPYRIGHT] for details.
 
 [pull requests]: https://github.com/sjl/gundo.vim/pulls
 [undo tree]: https://neovim.io/doc/user/undo.html#undo-tree
@@ -85,4 +86,5 @@ nosetests
 [i-33]: https://bitbucket.org/sjl/gundo.vim/issue/33/let-g-gundo_disable-0-is-not-available
 [i-31]: https://bitbucket.org/sjl/gundo.vim/issue/31/reduce-verbosity-of-the-list
 [nose]: https://nose.readthedocs.org/en/latest/
-[GPLv2+]: https://opensource.org/licenses/gpl-2.0
+[GNU General Public License, version 2]: LICENSE
+[COPYRIGHT]: COPYRIGHT
