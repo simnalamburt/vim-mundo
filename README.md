@@ -1,11 +1,17 @@
 vim-mundo
 =========
-A Vim plugin to visualizes the Vim [undo tree], a fork of [Gundo].
+A Vim plugin to visualizes the Vim [undo tree].
 
+<img src="https://simnalamburt.github.io/vim-mundo/screenshot.png">
+
+* [Official webpage]
 * [Introductory Video]
-* Website [Project Site]
 
-### How is this different than Gundo?
+<br>
+
+### How is this different than other plugins?
+Mundo is a fork of [Gundo], and it has bunch of improvements.
+
 * Several new features:
   * Ability to search undo history using <kbd>/</kbd>.
   * An 'in line' diff mode.
@@ -74,8 +80,8 @@ License, version 2] or any later version. See [COPYRIGHT] for details.
 [pull requests]: https://github.com/sjl/gundo.vim/pulls
 [undo tree]: https://neovim.io/doc/user/undo.html#undo-tree
 [Gundo]: https://github.com/sjl/gundo.vim
-[Introductory Video]: http://screenr.com/M9l
-[Project Site]: https://simnalamburt.github.io/vim-mundo
+[Official webpage]: https://simnalamburt.github.io/vim-mundo
+[Introductory Video]: https://simnalamburt.github.io/vim-mundo/screencast.mp4
 [Neovim]: https://neovim.io
 [pr-29]: https://github.com/sjl/gundo.vim/pull/29
 [pr-28]: https://github.com/sjl/gundo.vim/pull/28
