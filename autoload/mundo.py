@@ -90,7 +90,7 @@ def MundoRenderGraph(force=False):
     mundo_first_visible_line = int(vim.eval("g:mundo_first_visible_line"))
 
     if not force and not nodesData.is_outdated() and (
-                not show_inline_undo or 
+                not show_inline_undo or
                 (
                     mundo_first_visible_line == first_visible_line and
                     mundo_last_visible_line == last_visible_line
@@ -262,7 +262,8 @@ def MundoMove(direction,move_count=1,relative=True,write=False):
     else:
         vim.command("call cursor(0, %d + 1)" % idx3)
 
-    if vim.eval('g:mundo_auto_preview') == '1':
+    if (vim.eval('g:mundo_auto_preview') == '1' and
+            vim.eval("get(g:, 'mundo_auto_preview_delay', 0)") == 0):
         MundoRenderPreview()
 
 

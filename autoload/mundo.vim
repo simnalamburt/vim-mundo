@@ -42,6 +42,7 @@ endif"}}}
 
 
 let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
+let s:auto_preview_timer = -1
 "}}}
 
 "{{{ Mundo utility functions
@@ -409,12 +410,50 @@ function! s:MundoRefresh()"{{{
   call winrestview(winView)
 endfunction"}}}
 
+function! s:MundoUpdateCursor()"{{{
+    if !get(g:, 'mundo_auto_preview_delay_refresh', 0)
+        call s:MundoRefresh()
+    endif
+
+    if !g:mundo_auto_preview || !get(g:, 'mundo_auto_preview_delay', 0)
+        return
+    endif
+
+    call s:MundoRestartCursorTimer()
+endfunction"}}}
+
+function! s:MundoRestartCursorTimer()"{{{
+    call s:MundoStopCursorTimer()
+    let s:auto_preview_timer = timer_start(
+                \ get(g:, 'mundo_auto_preview_delay', 0),
+                \ function('s:MundoRenderPreviewDelayed'))
+endfunction"}}}
+
+function! s:MundoStopCursorTimer()"{{{
+    if s:auto_preview_timer != -1
+        call timer_stop(s:auto_preview_timer)
+        let s:auto_preview_timer = -1
+    endif
+endfunction"}}}
+
+function! s:MundoRenderPreviewDelayed(...)"{{{
+    if mode() != 'n'
+        return s:MundoRestartCursorTimer()
+    endif
+
+    if get(g:, 'mundo_auto_preview_delay_refresh', 0)
+        call s:MundoRefresh()
+    endif
+
+    call s:MundoPython('MundoRenderPreview()')
+endfunction"}}}
+
 augroup MundoAug
     autocmd!
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
-    autocmd CursorHold * call s:MundoRefresh()
-    autocmd CursorMoved * call s:MundoRefresh()
+    autocmd CursorMoved __Mundo__ call s:MundoUpdateCursor()
+    autocmd BufLeave __Mundo__ call s:MundoStopCursorTimer()
     autocmd BufEnter * let b:mundoChangedtick = 0
 augroup END
 
