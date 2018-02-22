@@ -411,12 +411,16 @@ function! s:MundoRefresh()"{{{
 endfunction"}}}
 
 function! s:MundoUpdateCursor()"{{{
-    if !get(g:, 'mundo_auto_preview_delay_refresh', 0)
+    if !g:mundo_auto_preview
+        return s:MundoRefresh()
+    endif
+
+    if !get(g:, 'mundo_inline_undo_delay', 0)
         call s:MundoRefresh()
     endif
 
-    if !g:mundo_auto_preview || !get(g:, 'mundo_auto_preview_delay', 0)
-        return
+    if get(g:, 'mundo_auto_preview_delay', 0) <= 0
+        return s:MundoPython('MundoRenderPreview()')
     endif
 
     call s:MundoRestartCursorTimer()
@@ -437,14 +441,19 @@ function! s:MundoStopCursorTimer()"{{{
 endfunction"}}}
 
 function! s:MundoRenderPreviewDelayed(...)"{{{
+    if s:auto_preview_line == line('.')
+        return
+    endif
+
     if mode() != 'n'
         return s:MundoRestartCursorTimer()
     endif
 
-    if get(g:, 'mundo_auto_preview_delay_refresh', 0)
+    if get(g:, 'mundo_inline_undo_delay', 0)
         call s:MundoRefresh()
     endif
 
+    let s:auto_preview_line = line('.')
     call s:MundoPython('MundoRenderPreview()')
 endfunction"}}}
 
