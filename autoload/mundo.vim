@@ -43,6 +43,7 @@ endif"}}}
 
 let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
 let s:auto_preview_timer = -1
+let s:auto_preview_line = -1
 "}}}
 
 "{{{ Mundo utility functions
