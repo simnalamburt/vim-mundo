@@ -273,7 +273,7 @@ Default: 0 (no inline graph)
 
 When this option is set, inline diff rendering will be delayed until a preview
 diff is rendered. Use this to speed up undo tree traversal when inline diffs
-are enabled.
+and delayed automatic previews are both enabled.
 
 Default: 0 (disabled)
 
