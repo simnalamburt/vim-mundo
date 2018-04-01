@@ -387,51 +387,48 @@ function! mundo#MundoHide()"{{{
 endfunction"}}}
 
 function! mundo#MundoRenderGraph()"{{{
-    call s:MundoPython('MundoRenderGraph()')
-endfunction"}}}
-
-" automatically reload Mundo buffer if open
-function! s:MundoRefresh()"{{{
-  " abort when there were no changes
-
-  let mundoWin    = bufwinnr('__Mundo__')
-  let mundoPreWin = bufwinnr('__Mundo_Preview__')
+  " Save window view information and buffer number
   let currentWin  = bufwinnr('%')
-
-  " abort if Mundo is closed or is current window
-  if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
-    return
-  endif
-
   let winView = winsaveview()
-  :MundoRenderGraph
 
-  " switch back to previous window
+  call s:MundoPython('MundoRenderGraph()')
+
+  " Return to buffer and restore window view
   execute currentWin .'wincmd w'
   call winrestview(winView)
 endfunction"}}}
 
-function! s:MundoUpdateCursor()"{{{
-    if !g:mundo_auto_preview
-        return s:MundoRefresh()
-    endif
+" automatically reload Mundo buffer if open
+function! s:MundoRefresh()"{{{
+  " abort if Mundo is closed or cursor is in the preview window
+  let mundoWin    = bufwinnr('__Mundo__')
+  let mundoPreWin = bufwinnr('__Mundo_Preview__')
+  let currentWin  = bufwinnr('%')
 
-    if !get(g:, 'mundo_inline_undo_delay', 0)
-        call s:MundoRefresh()
-    endif
+  if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+    return
+  endif
 
-    if get(g:, 'mundo_auto_preview_delay', 0) <= 0
-        return s:MundoPython('MundoRenderPreview()')
-    endif
+  " Normal refresh
+  if !get(g:, 'mundo_auto_preview', 0) ||
+        \ get(g:, 'mundo_auto_preview_delay', 0) <= 0
+    return mundo#MundoRenderGraph()
+  endif
 
-    call s:MundoRestartCursorTimer()
+  " Delayed refresh
+  if !get(g:, 'mundo_enable_inline_delay', 0) ||
+        \ !get(g:, 'mundo_inline_undo')
+    call mundo#MundoRenderGraph()
+  endif
+
+  call s:MundoRestartRefreshTimer()
 endfunction"}}}
 
-function! s:MundoRestartCursorTimer()"{{{
+function! s:MundoRestartRefreshTimer()"{{{
     call s:MundoStopCursorTimer()
     let s:auto_preview_timer = timer_start(
                 \ get(g:, 'mundo_auto_preview_delay', 0),
-                \ function('s:MundoRenderPreviewDelayed'))
+                \ function('s:MundoRefreshDelayed'))
 endfunction"}}}
 
 function! s:MundoStopCursorTimer()"{{{
@@ -441,28 +438,45 @@ function! s:MundoStopCursorTimer()"{{{
     endif
 endfunction"}}}
 
-function! s:MundoRenderPreviewDelayed(...)"{{{
-    if s:auto_preview_line == line('.')
-        return
-    endif
+function! s:MundoRefreshDelayed(...)"{{{
+  " abort if Mundo is closed or cursor is in the preview window
+  let mundoWin    = bufwinnr('__Mundo__')
+  let mundoPreWin = bufwinnr('__Mundo_Preview__')
+  let currentWin  = bufwinnr('%')
 
-    if mode() != 'n'
-        return s:MundoRestartCursorTimer()
-    endif
+  if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+    return
+  endif
 
-    if get(g:, 'mundo_inline_undo_delay', 0)
-        call s:MundoRefresh()
-    endif
+  " Handle other windows
+  if currentWin != mundoWin
+    return mundo#MundoRenderGraph()
+  endif
 
-    let s:auto_preview_line = line('.')
-    call s:MundoPython('MundoRenderPreview()')
+  " Handle graph window (__Mundo__)
+  if s:auto_preview_line == line('.')
+    return
+  endif
+
+  if mode() != 'n'
+    return s:MundoRestartRefreshTimer()
+  endif
+
+  if get(g:, 'mundo_enable_inline_delay', 0) && get(g:, 'mundo_inline_undo')
+    call mundo#MundoRenderGraph()
+  endif
+
+  let s:auto_preview_line = line('.')
+  call s:MundoPython('MundoRenderPreview()')
 endfunction"}}}
 
 augroup MundoAug
     autocmd!
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
-    autocmd CursorMoved __Mundo__ call s:MundoUpdateCursor()
+    autocmd CursorHold __Mundo__ call s:MundoRefresh()
+    autocmd CursorMoved __Mundo__ call s:MundoRefresh()
+    autocmd TextChanged * call s:MundoRefresh()
     autocmd BufLeave __Mundo__ call s:MundoStopCursorTimer()
     autocmd BufEnter * let b:mundoChangedtick = 0
 augroup END

@@ -25,7 +25,7 @@ CONTENTS                                                      *Mundo-contents*
         3.13 mundo_playback_delay ...... |mundo_playback_delay|
         3.14 mundo_mirror_graph ........ |mundo_mirror_graph|
         3.15 mundo_inline_undo ......... |mundo_inline_undo|
-        3.16 mundo_inline_undo_delay ... |mundo_inline_undo_delay|
+        3.16 mundo_enable_inline_delay ... |mundo_enable_inline_delay|
         3.17 mundo_return_on_revert .... |mundo_return_on_revert|
     4. License ......................... |MundoLicense|
     5. Bugs ............................ |MundoBugs|
@@ -269,7 +269,7 @@ provides a quick summary of the diff w/o having to navigate.
 Default: 0 (no inline graph)
 
 -----------------------------------------------------------------------------
-3.16 g:mundo_inline_undo_delay                      *mundo_inline_undo_delay*
+3.16 g:mundo_enable_inline_delay                   *mundo_enable_inline_delay*
 
 When this option is set, inline diff rendering will be delayed until a preview
 diff is rendered. Use this to speed up undo tree traversal when inline diffs
