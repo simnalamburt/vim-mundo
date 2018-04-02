@@ -262,7 +262,7 @@ def MundoMove(direction,move_count=1,relative=True,write=False):
     else:
         vim.command("call cursor(0, %d + 1)" % idx3)
 
-    if (vim.eval('g:mundo_auto_preview') == '0' or
+    if (vim.eval('g:mundo_auto_preview') != '0' and
             int(vim.eval("get(g:, 'mundo_auto_preview_delay', 0)")) <= 0):
         MundoRenderPreview()
 
