@@ -272,7 +272,8 @@ endfunction"}}}
 
 function! s:InitPythonModule(python)
     exe a:python .' import sys'
-    exe a:python .' if sys.version_info[:2] < (2, 4): vim.command("let s:has_supported_python = 0")'
+    exe a:python .' if sys.version_info[:2] < (2, 4): '.
+                \ 'vim.command("let s:has_supported_python = 0")'
 endfunction
 
 
@@ -387,51 +388,52 @@ function! mundo#MundoHide()"{{{
 endfunction"}}}
 
 function! mundo#MundoRenderGraph()"{{{
-  " Save window view information and buffer number
-  let currentWin  = bufwinnr('%')
-  let winView = winsaveview()
+    " Save window view information and buffer number
+    let currentWin  = bufwinnr('%')
+    let winView = winsaveview()
 
-  call s:MundoPython('MundoRenderGraph()')
+    call s:MundoPython('MundoRenderGraph()')
 
-  " Return to buffer and restore window view
-  execute currentWin .'wincmd w'
-  call winrestview(winView)
+    " Return to buffer and restore window view
+    execute currentWin .'wincmd w'
+    call winrestview(winView)
 endfunction"}}}
 
 " automatically reload Mundo buffer if open
 function! s:MundoRefresh()"{{{
-  " abort if Mundo is closed or cursor is in the preview window
-  let mundoWin    = bufwinnr('__Mundo__')
-  let mundoPreWin = bufwinnr('__Mundo_Preview__')
-  let currentWin  = bufwinnr('%')
+    " abort if Mundo is closed or cursor is in the preview window
+    let mundoWin    = bufwinnr('__Mundo__')
+    let mundoPreWin = bufwinnr('__Mundo_Preview__')
+    let currentWin  = bufwinnr('%')
 
-  if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
-    return
-  endif
+    if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+        return
+    endif
 
-  " Normal refresh
-  if !get(g:, 'mundo_auto_preview', 0) ||
-        \ get(g:, 'mundo_auto_preview_delay', 0) <= 0
-    return mundo#MundoRenderGraph()
-  endif
+    " Normal refresh
+    if !get(g:, 'mundo_auto_preview', 0) ||
+                \ get(g:, 'mundo_auto_preview_delay', 0) <= 0
+        return mundo#MundoRenderGraph()
+    endif
 
-  " Delayed refresh
-  if !get(g:, 'mundo_enable_inline_delay', 0) ||
-        \ !get(g:, 'mundo_inline_undo')
-    call mundo#MundoRenderGraph()
-  endif
+    " Delayed refresh
+    if !get(g:, 'mundo_enable_inline_delay', 0) ||
+                \ !get(g:, 'mundo_inline_undo')
+        call mundo#MundoRenderGraph()
+    endif
 
-  call s:MundoRestartRefreshTimer()
+    call s:MundoRestartRefreshTimer()
 endfunction"}}}
 
 function! s:MundoRestartRefreshTimer()"{{{
-    call s:MundoStopCursorTimer()
+    call s:MundoStopRefreshTimer()
     let s:auto_preview_timer = timer_start(
                 \ get(g:, 'mundo_auto_preview_delay', 0),
-                \ function('s:MundoRefreshDelayed'))
+                \ function('s:MundoRefreshDelayed')
+                \ )
 endfunction"}}}
 
-function! s:MundoStopCursorTimer()"{{{
+function! s:MundoStopRefreshTimer()"{{{
     if s:auto_preview_timer != -1
         call timer_stop(s:auto_preview_timer)
         let s:auto_preview_timer = -1
@@ -439,45 +441,44 @@ function! s:MundoStopCursorTimer()"{{{
 endfunction"}}}
 
 function! s:MundoRefreshDelayed(...)"{{{
-  " abort if Mundo is closed or cursor is in the preview window
-  let mundoWin    = bufwinnr('__Mundo__')
-  let mundoPreWin = bufwinnr('__Mundo_Preview__')
-  let currentWin  = bufwinnr('%')
+    " abort if Mundo is closed or cursor is in the preview window
+    let mundoWin    = bufwinnr('__Mundo__')
+    let mundoPreWin = bufwinnr('__Mundo_Preview__')
+    let currentWin  = bufwinnr('%')
 
-  if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
-    return
-  endif
+    if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+        return
+    endif
 
-  " Handle other windows
-  if currentWin != mundoWin
-    return mundo#MundoRenderGraph()
-  endif
+    " Handle other windows
+    if currentWin != mundoWin
+        return mundo#MundoRenderGraph()
+    endif
 
-  " Handle graph window (__Mundo__)
-  if s:auto_preview_line == line('.')
-    return
-  endif
+    " Handle graph window (__Mundo__)
+    if s:auto_preview_line == line('.')
+        return
+    endif
 
-  if mode() != 'n'
-    return s:MundoRestartRefreshTimer()
-  endif
+    if mode() != 'n'
+        return s:MundoRestartRefreshTimer()
+    endif
 
-  if get(g:, 'mundo_enable_inline_delay', 0) && get(g:, 'mundo_inline_undo')
-    call mundo#MundoRenderGraph()
-  endif
+    if get(g:, 'mundo_enable_inline_delay', 0) && get(g:, 'mundo_inline_undo')
+        call mundo#MundoRenderGraph()
+    endif
 
-  let s:auto_preview_line = line('.')
-  call s:MundoPython('MundoRenderPreview()')
+    let s:auto_preview_line = line('.')
+    call s:MundoPython('MundoRenderPreview()')
 endfunction"}}}
 
 augroup MundoAug
     autocmd!
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
-    autocmd CursorHold __Mundo__ call s:MundoRefresh()
-    autocmd CursorMoved __Mundo__ call s:MundoRefresh()
-    autocmd TextChanged * call s:MundoRefresh()
-    autocmd BufLeave __Mundo__ call s:MundoStopCursorTimer()
+    autocmd CursorHold * call s:MundoRefresh()
+    autocmd CursorMoved * call s:MundoRefresh()
+    autocmd BufLeave __Mundo__ call s:MundoStopRefreshTimer()
     autocmd BufEnter * let b:mundoChangedtick = 0
 augroup END
 
