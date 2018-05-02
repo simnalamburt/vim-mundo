@@ -34,7 +34,7 @@ class Nodes(object):
         self.diff_has_oneline = {}
 
     def _check_version_location(self):
-        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
+        util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
         target_f = util.vim().eval('g:mundo_target_f')
         if target_f != self.target_f:
             self._clear_cache()
@@ -46,14 +46,15 @@ class Nodes(object):
             if alt:
                 curhead = 'curhead' in alt
                 saved = 'save' in alt
-                node = Node(n=alt['seq'], parent=p, time=alt['time'], curhead=curhead, saved=saved)
+                node = Node(n=alt['seq'], parent=p, time=alt['time'],
+                            curhead=curhead, saved=saved)
                 nodes.append(node)
                 if alt.get('alt'):
                     self._make_nodes(alt['alt'], nodes, p)
                 p = node
 
     def is_outdated(self):
-        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
+        util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
         current_changedtick = util.vim().eval('b:changedtick')
         return self.changedtick != current_changedtick
 
@@ -114,7 +115,7 @@ class Nodes(object):
         if key in self.diffs:
             return self.diffs[key]
 
-        util._goto_window_for_buffer(util.vim().eval('g:mundo_target_n'))
+        util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
         before_lines = self._get_lines(before)
         after_lines = self._get_lines(after)
 
@@ -183,12 +184,15 @@ class Nodes(object):
             after_time = self._fmt_time(after.time)
 
         if unified:
-            self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
-                                             before_name, after_name,
-                                             before_time, after_time))
+            self.diffs[key] = list(
+                difflib.unified_diff(before_lines, after_lines, before_name,
+                                     after_name, before_time, after_time)
+            )
         elif inline:
             maxwidth = int(util.vim().eval("winwidth(0)"))
-            self.diffs[key] = diff.one_line_diff_str('\n'.join(before_lines),'\n'.join(after_lines),maxwidth)
+            self.diffs[key] = diff.one_line_diff_str(
+                '\n'.join(before_lines),'\n'.join(after_lines), maxwidth
+            )
             self.diff_has_oneline[key] = True
         else:
             self.diffs[key] = ""

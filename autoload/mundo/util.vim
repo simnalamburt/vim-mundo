@@ -93,6 +93,8 @@ call mundo#util#set_default(
             \ 'g:mundo_return_on_revert', 1,
             \ 'g:gundo_return_on_revert')
 
+call mundo#util#set_default('g:mundo_auto_preview_delay', 250)
+
 function! mundo#util#init() abort
 
 endfunction
