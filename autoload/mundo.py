@@ -10,7 +10,6 @@
 # ============================================================================
 
 import re
-import sys
 import tempfile
 import vim
 
