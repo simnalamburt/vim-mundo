@@ -62,6 +62,10 @@ call mundo#util#set_default(
             \ 'g:gundo_map_move_newer')
 
 call mundo#util#set_default(
+            \ 'g:mundo_map_up_down', 1,
+            \ 'g:gundo_map_up_down')
+
+call mundo#util#set_default(
             \ 'g:mundo_close_on_revert', 0,
             \ 'g:gundo_close_on_revert')
 

@@ -88,8 +88,10 @@ function! s:MundoMapGraph()"{{{
     exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer . " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
     nnoremap <script> <silent> <buffer> <CR>          :call <sid>MundoPython('MundoRevert()')<CR>
     nnoremap <script> <silent> <buffer> o             :call <sid>MundoPython('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>
-    nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>
+    if g:mundo_map_up_down
+        nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>
+        nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>
+    endif
     nnoremap <script> <silent> <buffer> J             :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .',True,True)')<CR>
     nnoremap <script> <silent> <buffer> K             :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .',True,True)')<CR>
     nnoremap <script> <silent> <buffer> gg            gg:<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>

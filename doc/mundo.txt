@@ -25,6 +25,7 @@ CONTENTS                                                      *Mundo-contents*
         3.13 mundo_mirror_graph ........ |mundo_mirror_graph|
         3.14 mundo_inline_undo ......... |mundo_inline_undo|
         3.15 mundo_return_on_revert .... |mundo_return_on_revert|
+        3.16 mundo_map_up_down ......... |mundo_map_up_down|
     4. License ......................... |MundoLicense|
     5. Bugs ............................ |MundoBugs|
     6. Contributing .................... |MundoContributing|
@@ -260,6 +261,14 @@ Default: 0 (no inline graph)
 3.15 g:mundo_return_on_revert                         *mundo_return_on_revert*
 
 Set this to 0 to keep focus in the Mundo window after a revert.
+
+Default: 1
+
+------------------------------------------------------------------------------
+3.16 g:mundo_map_up_down                                   *mundo_map_up_down*
+
+By default, <Up> and <Down> are mapped to navigate up and down the undo graph.
+Set this to 0 to prevent these mappings.
 
 Default: 1
 
