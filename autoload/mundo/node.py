@@ -20,6 +20,7 @@ class Node(object):
 
 class Nodes(object):
     def __init__(self):
+        self.target_n_last = None
         self._clear_cache()
 
     def _clear_cache(self):
@@ -33,25 +34,34 @@ class Nodes(object):
         self.diffs = {}
         self.diff_has_oneline = {}
 
-    def _check_version_location(self):
-        util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
+    def _validate_cache(self):
+        """ Checks if the target file or buffer has changed, and if so
+            clears all cached data.
+        """
+        target_n = int(util.vim().eval('g:mundo_target_n'))
         target_f = util.vim().eval('g:mundo_target_f')
-        if target_f != self.target_f:
+
+        if self.target_n_last != target_n or target_f != self.target_f:
             self._clear_cache()
+            self.target_n_last = target_n
 
     def _make_nodes(self,alts, nodes, parent=None):
         p = parent
 
         for alt in alts:
-            if alt:
-                curhead = 'curhead' in alt
-                saved = 'save' in alt
-                node = Node(n=alt['seq'], parent=p, time=alt['time'],
-                            curhead=curhead, saved=saved)
-                nodes.append(node)
-                if alt.get('alt'):
-                    self._make_nodes(alt['alt'], nodes, p)
-                p = node
+            if not alt:
+                continue
+
+            curhead = 'curhead' in alt
+            saved = 'save' in alt
+            node = Node(n=alt['seq'], parent=p, time=alt['time'],
+                        curhead=curhead, saved=saved)
+            nodes.append(node)
+
+            if alt.get('alt'):
+                self._make_nodes(alt['alt'], nodes, p)
+
+            p = node
 
     def is_outdated(self):
         util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
@@ -59,12 +69,14 @@ class Nodes(object):
         return self.changedtick != current_changedtick
 
     def make_nodes(self):
+        # Clear cache if it is invalid
+        self._validate_cache()
+
         # If the current changedtick is unchanged, we don't need to do
         # anything:
         if not self.is_outdated():
             return self.nodes_made
 
-        self._check_version_location()
         target_f = util.vim().eval('g:mundo_target_f')
         ut = util.vim().eval('undotree()')
         entries = ut['entries']
@@ -88,13 +100,15 @@ class Nodes(object):
 
     def current(self):
         """ Return the number of the current change. """
-        self._check_version_location()
+        self._validate_cache()
         nodes, nmap = self.make_nodes()
         _curhead_l = list(itertools.dropwhile(lambda n: not n.curhead, nodes))
+
         if _curhead_l:
             current = _curhead_l[0].parent.n
         else:
             current = int(util.vim().eval('changenr()'))
+
         return current
 
     def _fmt_time(self,t):
@@ -102,16 +116,19 @@ class Nodes(object):
 
     def _get_lines(self,node):
         n = 0
+
         if node:
             n = node.n
         if n not in self.lines:
             util._undo_to(n)
             self.lines[n] = util.vim().current.buffer[:]
+
         return self.lines[n]
 
-    def change_preview_diff(self,before,after):
-        self._check_version_location()
+    def change_preview_diff(self, before, after):
+        self._validate_cache()
         key = "%s-%s-cpd"%(before.n,after.n)
+
         if key in self.diffs:
             return self.diffs[key]
 
@@ -127,8 +144,8 @@ class Nodes(object):
         util._undo_to(self.current())
 
         self.diffs[key] = list(difflib.unified_diff(before_lines, after_lines,
-                                         before_name, after_name,
-                                         before_time, after_time))
+                                                    before_name, after_name,
+                                                    before_time, after_time))
         return self.diffs[key]
 
     def preview_diff(self, before, after, unified=True, inline=False):
@@ -143,9 +160,11 @@ class Nodes(object):
           unified - If True, generate a unified diff
           inline - Generate a one line summary line.
         """
-        self._check_version_location()
+        self._validate_cache()
+
         bn = 0
         an = 0
+
         if not after.n:    # we're at the original file
             pass
         elif not before.n: # we're at a pseudo-root state
@@ -153,8 +172,10 @@ class Nodes(object):
         else:
             bn = before.n
             an = after.n
+
         key = "%s-%s-pd-%s"%(bn,an,unified)
         needs_oneline = inline and key not in self.diff_has_oneline
+
         if key in self.diffs and not needs_oneline:
             return self.diffs[key]
 

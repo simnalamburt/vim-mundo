@@ -60,12 +60,15 @@ endfunction"}}}
 " an integer buffer number or a string file-pattern; for a detailed description
 " see :h bufname. Returns 1 if successful, 0 otherwise.
 function! s:MundoGoToWindowForBuffer(expr)"{{{
-    if bufwinnr(bufnr(a:expr)) != -1
-        exe bufwinnr(bufnr(a:expr)) . "wincmd w"
-        return 1
+    let l:winnr = bufwinnr(bufnr(a:expr))
+
+    if l:winnr == -1
+        return 0
+    elseif l:winnr != winnr()
+        exe l:winnr . "wincmd w"
     endif
 
-    return 0
+    return 1
 endfunction"}}}
 
 " Similar to MundoGoToWindowForBuffer, but considers windows in all tabs.
@@ -319,7 +322,7 @@ function! s:MundoOpen() abort "{{{
     " Validate and target buffer, store buffer number & file
     let is_valid_reason = s:MundoIsValidBuffer()
 
-    if ! is_valid_reason
+    if !is_valid_reason
         echom 'Current buffer ('.bufnr('').') is not a valid target for Mundo'.
                     \ ' (Reason: '.is_valid_reason.')'
         return
@@ -366,20 +369,18 @@ function! s:MundoOpen() abort "{{{
     let &splitbelow = 0
 
     call s:MundoOpenPreview()
-"    exe bufwinnr(g:mundo_target_n) . "wincmd w"
     call s:MundoGoToWindowForBuffer(g:mundo_target_n)
     call s:MundoOpenGraph()
-
     call mundo#MundoRenderGraph()
 
-    " Move cursor to the graph if the window was created
+    " If necessary, move the graph window cursor to the first node
     if line('.') == 1
         call s:MundoPython('MundoMove(1, 1)')
     endif
 
     call mundo#MundoRenderPreview()
 
-    " Restore `splitbelow` value.
+    " Restore `splitbelow`
     let &splitbelow = saved_splitbelow
 endfunction"}}}
 

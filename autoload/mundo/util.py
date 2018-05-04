@@ -12,7 +12,6 @@ def vim():
     import vim
     return vim
 
-
 def _goto_window_for_buffer(expr):
     """ Moves the cursor to the first window associated with buffer b in the
         current tab page (only).
