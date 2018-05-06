@@ -397,8 +397,9 @@ def MundoGetChangesForLine():# {{{
 # }}}
 
 def MundoRenderChangePreview():# {{{
-    """ Render the selected undo level with the current file.
-    Return True on success, False on failure. """
+    """ Render a diff of the target buffer and the selected undo
+        tree node. Returns True on success, False otherwise.
+    """
     if not _check_sanity():
         return
 
