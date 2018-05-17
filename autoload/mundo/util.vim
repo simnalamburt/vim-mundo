@@ -55,7 +55,7 @@ endfunction"}}}
 
 " Set var to val only if var has not been set by the user. Optionally takes a
 " deprecated name and shows a warning if a matching option has been set.
-function! mundo#util#SetOptionDefault(var, val, ...)"{{{
+function! mundo#util#set_default(var, val, ...)"{{{
     if !exists(a:var)
         let {a:var} = a:val
     endif

@@ -185,6 +185,9 @@ def MundoRenderPreview():# {{{
 
     vim.command('call s:MundoOpenPreview()')
     util._output_preview_text(nodesData.preview_diff(node_before, node_after))
+
+    # Mark the preview as up-to-date
+    vim.command('call mundo#MundoAutoPreviewUpdate(0)')
 # }}}
 
 def MundoGetTargetState():# {{{
@@ -287,6 +290,9 @@ def MundoMove(direction,move_count=1,relative=True,write=False):# {{{
         vim.command("call cursor(0, %d + 1)" % idx2)
     else:
         vim.command("call cursor(0, %d + 1)" % idx3)
+
+    # Mark the preview as outdated
+    vim.command('call mundo#MundoAutoPreviewUpdate(1)')
 # }}}
 
 def MundoSearch():# {{{
@@ -405,8 +411,10 @@ def MundoRenderChangePreview():# {{{
 
     vim.command('call s:MundoOpenPreview()')
     util._output_preview_text(MundoGetChangesForLine())
-
     util._goto_window_for_buffer('__Mundo__')
+
+    # Mark the preview as up-to-date
+    vim.command('call mundo#MundoAutoPreviewUpdate(0)')
 
     return True
 # }}}
@@ -456,7 +464,8 @@ def MundoRevert():# {{{
     util._goto_window_for_buffer(back)
     util._undo_to(target_n)
 
-    vim.command('MundoRenderGraph')
+    MundoRenderGraph()
+
     if int(vim.eval('g:mundo_return_on_revert')):
         util._goto_window_for_buffer(back)
 
@@ -516,11 +525,10 @@ def MundoPlayTo():# {{{
 
     for node in branch:
         util._undo_to(node.n)
-        vim.command('MundoRenderGraph')
+        MundoRenderGraph()
         util.normal('zz')
         util._goto_window_for_buffer(back)
-        vim.command('redraw')
-        vim.command('sleep %dm' % delay)
+        vim.command('redraw | sleep %dm' % delay)
 # }}}
 
 #  vim: set ts=4 sw=4 tw=79 fdm=marker et :

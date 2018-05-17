@@ -26,6 +26,7 @@ CONTENTS                                                      *Mundo-contents*
         3.14 mundo_mirror_graph ........ |mundo_mirror_graph|
         3.15 mundo_inline_undo ......... |mundo_inline_undo|
         3.16 mundo_return_on_revert .... |mundo_return_on_revert|
+        3.17 mundo_map_up_down ......... |mundo_map_up_down|
     4. License ......................... |MundoLicense|
     5. Bugs ............................ |MundoBugs|
     6. Contributing .................... |MundoContributing|
@@ -227,8 +228,8 @@ Default: 1 (automatically preview diffs)
 
 3.11 g:mundo_auto_preview_delay                     *mundo_auto_preview_delay*
 
-This is the delay in milliseconds before a preview diff is automatically 
-rendered. The delay is reset whenever the cursor moves. Use this to speed up 
+This is the delay in milliseconds before a preview diff is automatically
+rendered. The delay is reset whenever the cursor moves. Use this to speed up
 undo tree traversal when automatic previews are enabled. Set this to 0 to
 disable the feature.
 
@@ -262,8 +263,8 @@ Default: 1 (mirror graph)
 ------------------------------------------------------------------------------
 3.15 g:mundo_inline_undo                                   *mundo_inline_undo*
 
-When enabled, a small one line diff is displayed to the right of the graph 
-undo. Although not as detailed as a full diff provided in the preview window, 
+When enabled, a small one line diff is displayed to the right of the graph
+undo. Although not as detailed as a full diff provided in the preview window,
 it provides a quick summary of the diff w/o having to navigate.
 
 Default: 0 (no inline graph)
@@ -272,6 +273,14 @@ Default: 0 (no inline graph)
 3.16 g:mundo_return_on_revert                         *mundo_return_on_revert*
 
 Set this to 0 to keep focus in the Mundo window after a revert.
+
+Default: 1
+
+------------------------------------------------------------------------------
+3.17 g:mundo_map_up_down                                   *mundo_map_up_down*
+
+By default, <Up> and <Down> are mapped to navigate up and down the undo graph.
+Set this to 0 to prevent these mappings.
 
 Default: 1
 
@@ -302,7 +311,16 @@ GitHub: https://github.com/simnalamburt/vim-mundo
 
 
 v3.1.0
-    * Added g:mundo_auto_preview_delay setting.
+    * Adds g:mundo_auto_preview_delay and g:mundo_map_up_down settings.
+    * Adds validation for target buffer when attempting to open Mundo.
+    * Fix runtime error when entering embedded terminal windows in neovim.
+    * Fix multiple issues associated with Mundo windows in different tabs.
+    * Fix default option values overriding user-set values in certain cases.
+    * Fix cursor initially being positioned above the graph.
+    * Fix graph and preview mapping bugs occuring when v:count was set.
+    * Fix some graph mappings moving the cursor to the target buffer.
+    * Reduced delay associated with animated playback for neovim.
+    * Code cleanup and refactoring.
 v3.0.1
     * Made inline diff mode much faster(e.g. 300x)
     * Fix inline diffs not updating after scroll.

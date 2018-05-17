@@ -17,77 +17,81 @@ let loaded_mundo = 1"}}}
 
 " Default option values{{{
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_auto_preview', 1,
             \ 'g:gundo_auto_preview')
 
-call mundo#util#SetOptionDefault('g:mundo_auto_preview_delay', 250)
+call mundo#util#set_default('g:mundo_auto_preview_delay', 250)
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_close_on_revert', 0,
             \ 'g:gundo_close_on_revert')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_first_visible_line', 0,
             \ 'g:gundo_first_visible_line')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_help', 0,
             \ 'g:gundo_help')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_inline_undo', 0,
             \ 'g:gundo_inline_undo')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_last_visible_line', 0,
             \ 'g:gundo_last_visible_line')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_map_move_newer', 'k',
             \ 'g:gundo_map_move_newer')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_map_move_older', 'j',
             \ 'g:gundo_map_move_older')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
+            \ 'g:mundo_map_up_down', 1,
+            \ 'g:gundo_map_up_down')
+
+call mundo#util#set_default(
             \ 'g:mundo_mirror_graph', 0,
             \ 'g:gundo_mirror_graph')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_playback_delay', 60,
             \ 'g:gundo_playback_delay')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_prefer_python3', 0,
             \ 'g:gundo_prefer_python3')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_preview_bottom', 0,
             \ 'g:gundo_preview_bottom')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_preview_height', 15,
             \ 'g:gundo_preview_height')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_python_path_setup', 0,
             \ 'g:gundo_python_path_setup')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_return_on_revert', 1,
             \ 'g:gundo_return_on_revert')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_right', 0,
             \ 'g:gundo_right')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_verbose_graph', 1,
             \ 'g:gundo_verbose_graph')
 
-call mundo#util#SetOptionDefault(
+call mundo#util#set_default(
             \ 'g:mundo_width', 45,
             \ 'g:gundo_width')
 

@@ -16,10 +16,9 @@ set cpo&vim
 
 " Initialise global vars
 let s:auto_preview_timer = -1"{{{
-let s:auto_preview_line = -1
-let s:exec_python = 0
+let s:auto_preview_update = 1
 let s:has_supported_python = 0
-let s:has_timers = 1
+let s:has_timers = 0
 let s:init_error = 'Initialisation failed due to an unknown error. '
             \ . 'Please submit a bug report :)'
 
@@ -29,19 +28,15 @@ let s:plugin_path = escape(expand('<sfile>:p:h'), '\')"}}}
 " Default to placeholder functions for exposed methods
 function! mundo#MundoToggle()"{{{
     call mundo#util#Message("WarningMsg",
-                \ 'Initialisation error: ' . s:init_error)
+                \ 'Mundo init error: ' . s:init_error)
 endfunction
 function! mundo#MundoShow()
     call mundo#util#Message("WarningMsg",
-                \ 'Initialisation error: ' . s:init_error)
+                \ 'Mundo init error: ' . s:init_error)
 endfunction
 function! mundo#MundoHide()
     call mundo#util#Message("WarningMsg"
-                \ 'Initialisation error: ' . s:init_error)
-endfunction
-function! mundo#MundoRenderGraph()
-    call mundo#util#Message("WarningMsg"
-                \ 'Initialisation error: ' . s:init_error)
+                \ 'Mundo init error: ' . s:init_error)
 endfunction"}}}
 
 " Check vim version
@@ -49,8 +44,8 @@ if v:version < '703'"{{{
     let s:init_error = 'Vim version 7.03+ or later is required.'
     let &cpo = s:save_cpo
     finish
-elseif v:version < '800' || !has('timers')
-    let s:has_timers = 0
+elseif v:version >= '800' && has('timers')
+    let s:has_timers = 1
 endif"}}}
 
 " Check python version
@@ -88,32 +83,39 @@ endfunction"}}}
 "{{{ Mundo buffer settings
 
 function! s:MundoMapGraph()"{{{
-    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_older . " :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>"
-    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer . " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
-    nnoremap <script> <silent> <buffer> <CR>          :call <sid>MundoPython('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> o             :call <sid>MundoPython('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>
-    nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>
-    nnoremap <script> <silent> <buffer> J             :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .',True,True)')<CR>
-    nnoremap <script> <silent> <buffer> K             :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .',True,True)')<CR>
-    nnoremap <script> <silent> <buffer> gg            gg:<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>
-    nnoremap <script> <silent> <buffer> P             :call <sid>MundoPython('MundoPlayTo()')<CR>
-    nnoremap <script> <silent> <buffer> d             :call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>
-    nnoremap <script> <silent> <buffer> i             :call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>
-    nnoremap <script> <silent> <buffer> /             :call <sid>MundoPython('MundoSearch()')<CR>
-    nnoremap <script> <silent> <buffer> n             :call <sid>MundoPython('MundoNextMatch()')<CR>
-    nnoremap <script> <silent> <buffer> N             :call <sid>MundoPython('MundoPrevMatch()')<CR>
-    nnoremap <script> <silent> <buffer> p             :call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>
-    nnoremap <script> <silent> <buffer> r             :call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>:call mundo#util#MundoGoToWindowForBuffer('__Mundo__')<CR>
-    nnoremap <script> <silent> <buffer> ?             :call <sid>MundoPython('MundoToggleHelp()')<CR>
-    nnoremap <script> <silent> <buffer> q             :call <sid>MundoClose()<CR>
+    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_older .
+                \ " :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>"
+    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer .
+                \ " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
+    nnoremap <script> <silent> <buffer> <CR>          :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> o             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
+    nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
+    if g:mundo_map_up_down
+        nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
+        nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
+    endif
+    nnoremap <script> <silent> <buffer> J             :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.',True,True)')<CR>
+    nnoremap <script> <silent> <buffer> K             :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.',True,True)')<CR>
+    nnoremap <script> <silent> <buffer> gg            gg:<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
+    nnoremap <script> <silent> <buffer> G             G:<C-u>call <sid>MundoPython('MundoMove(1,0)')<CR>
+    nnoremap <script> <silent> <buffer> P             :<C-u>call <sid>MundoPythonRestoreView('MundoPlayTo()')<CR>zz
+    nnoremap <script> <silent> <buffer> d             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>
+    nnoremap <script> <silent> <buffer> i             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>
+    nnoremap <script> <silent> <buffer> /             :<C-u>call <sid>MundoPython('MundoSearch()')<CR>
+    nnoremap <script> <silent> <buffer> n             :<C-u>call <sid>MundoPython('MundoNextMatch()')<CR>
+    nnoremap <script> <silent> <buffer> N             :<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>
+    nnoremap <script> <silent> <buffer> p             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>
+    nnoremap <script> <silent> <buffer> r             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>
+    nnoremap <script> <silent> <buffer> ?             :<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>
+    nnoremap <script> <silent> <buffer> q             :<C-u>call <sid>MundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>MundoClose()
     cabbrev  <script> <silent> <buffer> quit          call <sid>MundoClose()
-    nnoremap <script> <silent> <buffer> <2-LeftMouse> :call <sid>MundoMouseDoubleClick()<CR>
+    nnoremap <script> <silent> <buffer> <2-LeftMouse> :<C-u>call <sid>MundoMouseDoubleClick()<CR>
 endfunction"}}}
 
 function! s:MundoMapPreview()"{{{
-    nnoremap <script> <silent> <buffer> q     :call <sid>MundoClose()<CR>
+    nnoremap <script> <silent> <buffer> q     :<C-u>call <sid>MundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q     call <sid>MundoClose()
     cabbrev  <script> <silent> <buffer> quit  call <sid>MundoClose()
 endfunction"}}}
@@ -190,6 +192,7 @@ function! s:MundoOpenGraph()"{{{
                     \ '__Mundo_Preview__'))
         let existing_mundo_buffer = bufnr("__Mundo__")
 
+        " Build and execute appropriate command
         if existing_mundo_buffer == -1
             execute 'new __Mundo__ | set fdm=manual | '
                         \ .'wincmd '
@@ -208,10 +211,11 @@ function! s:MundoOpenGraph()"{{{
     endif
 endfunction"}}}
 
-" Open or create the preview window.
 function! s:MundoOpenPreview()"{{{
     if !mundo#util#MundoGoToWindowForBuffer("__Mundo_Preview__")
         let existing_preview_buffer = bufnr("__Mundo_Preview__")
+
+        " Build and execute appropriate command
         let pos = g:mundo_preview_bottom || g:mundo_right ? 'botright' :
                     \ 'topleft'
         let vert = g:mundo_preview_bottom ? '' : 'v'
@@ -231,11 +235,13 @@ endfunction"}}}
 function! s:MundoClose() abort "{{{
     let [l:tabid, l:winid] = win_id2tabwin(win_getid())
 
+    " Close all graph and preview windows
     while mundo#util#MundoGoToWindowForBufferGlobal('__Mundo__') ||
                 \ mundo#util#MundoGoToWindowForBufferGlobal('__Mundo_Preview__')
         quit
     endwhile
 
+    " Attempt to return to previous window / tab or target buffer
     if win_gotoid(l:winid)
         return
     elseif l:tabid != 0 && l:tabid <= tabpagenr('$')
@@ -265,7 +271,6 @@ function! s:MundoIsVisible()"{{{
                 \ bufwinnr(bufnr("__Mundo_Preview__")) != -1
 endfunction"}}}
 
-" Returns the current length of the inline help text
 function! s:MundoInlineHelpLength()"{{{
     if g:mundo_help
         return 10
@@ -281,19 +286,19 @@ function! s:MundoOpen() abort "{{{
     let is_valid_reason = s:MundoIsValidBuffer()
 
     if !is_valid_reason
-        mundo#util#Message('None',
+        call mundo#util#Message('None',
                     \ 'Current buffer ('.bufnr('').') is not a valid target '
-                    \ .'for Mundo (Reason: '.is_valid_reason.')'
+                    \ .'for Mundo (Reason: '.is_valid_reason.')')
         return
     endif
 
     let g:mundo_target_n = bufnr('')
     let g:mundo_target_f = @%
 
-    " Close *all* existing Mundo windows
+    " Close any existing Mundo windows
     call s:MundoClose()
 
-    " Load python
+    " Initialise python module, if necessary
     if !exists('g:mundo_py_loaded')
         " Add Mundo to python path
         call s:MundoSetupPythonPath()
@@ -307,18 +312,6 @@ function! s:MundoOpen() abort "{{{
             call s:InitPythonModule('python')
         endif
 
-        " Won't ever get here if python hasn't loaded
-"        if !s:has_supported_python
-"            function! s:MundoDidNotLoad()
-"                call mundo#util#Message('WarningMsg',
-"                            \ "Mundo unavailable: requires Vim 7.3+")
-"            endfunction
-"
-"            command! -nargs=0 MundoToggle call s:MundoDidNotLoad()
-"            call s:MundoDidNotLoad()
-"            return
-"        endif
-
         let g:mundo_py_loaded = 1
     endif
 
@@ -329,12 +322,13 @@ function! s:MundoOpen() abort "{{{
 
     call s:MundoOpenPreview()
     call mundo#util#MundoGoToWindowForBuffer(g:mundo_target_n)
+
     call s:MundoOpenGraph()
-    call mundo#MundoRenderGraph()
+    call s:MundoPythonRestoreView('MundoRenderGraph()')
 
     " If necessary, move the graph window cursor to the first node
     if line('.') <= s:MundoInlineHelpLength() + 1
-        call s:MundoPython('MundoMove(1, 1)')
+        call s:MundoPython('MundoMove(1,1)')
     endif
 
     call s:MundoRenderPreview()
@@ -374,7 +368,7 @@ function! s:MundoMouseDoubleClick()"{{{
     if stridx(start_line, '[') == -1
         return
     else
-        call <sid>MundoPython('MundoRevert()')
+        call <sid>MundoPythonRestoreView('MundoRevert()')
     endif
 endfunction"}}}
 
@@ -383,29 +377,38 @@ endfunction"}}}
 "{{{ Mundo rendering
 
 function! s:MundoPython(fn)"{{{
-    if s:has_supported_python == 2
-        exec "python3 ". a:fn
-    else
-        exec "python ". a:fn
-    endif
+    try
+        exec "python".(s:has_supported_python == 2 ? '3' : '')." ". a:fn
+    catch 
+        call mundo#util#Message('WarningMsg',
+                    \ 'Warning: Exception '.v:exception.' occured while '
+                    \ .'executing Mundo python function "'.a:fn.'".')
+    endtry
 endfunction"}}}
 
 " Wrapper for MundoPython() that restores the window state and prevents other
 " Mundo autocommands (with the exception of BufNewFile) from triggering.
 function! s:MundoPythonRestoreView(fn)"{{{
-    " Save current window and view
     let currentWin  = winnr()
     let winView = winsaveview()
+    let eventignoreBack = &eventignore
+    set eventignore=BufLeave,BufEnter,CursorHold,CursorMoved,TextChanged
+                \,InsertLeave
 
-    " Eventignore does not seem to work here..?
-    let s:exec_python = 1 | call s:MundoPython(a:fn) | let s:exec_python = 0
+    call s:MundoPython(a:fn)
 
-    " Restore window / view
     execute currentWin .'wincmd w'
     call winrestview(winView)
+    exec 'set eventignore='.eventignoreBack
 endfunction"}}}
 
-function! s:MundoRenderPreview()"{{{
+" Render a preview for the selected graph node if the preview is outdated.
+" Optionally accepts an integer argument which will force rendering if nonzero.
+function! s:MundoRenderPreview(...)"{{{
+    if !s:auto_preview_update && (a:0 < 1 || !a:1)
+        return
+    endif
+
     call s:MundoPythonRestoreView('MundoRenderPreview()')
 endfunction"}}}
 
@@ -420,7 +423,7 @@ function! s:MundoRefresh()"{{{
     let mundoPreWin = bufwinnr('__Mundo_Preview__')
     let currentWin  = bufwinnr('%')
 
-    if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+    if mundoWin == -1 || mundoPreWin == -1 || mundoPreWin == currentWin
         return
     endif
 
@@ -431,13 +434,14 @@ function! s:MundoRefresh()"{{{
                     \ 'The "g:mundo_auto_preview_delay" option requires'
                     \ .' support for timers. Please upgrade to either vim 8.0+'
                     \ .' (with +timers) or neovim to use this feature.')
+        return
     endif
 
     " Handle normal refresh
     if get(g:, 'mundo_auto_preview_delay', 0) <= 0
-        call mundo#MundoRenderGraph()
+        call s:MundoPythonRestoreView('MundoRenderGraph()')
 
-        if get(g:, 'mundo_auto_preview', 0) && (currentWin == mundoWin)
+        if get(g:, 'mundo_auto_preview', 0) && currentWin == mundoWin
                     \ && mode() == 'n'
             call s:MundoRenderPreview()
         endif
@@ -469,18 +473,16 @@ function! s:MundoRefreshDelayed(...)"{{{
     let mundoPreWin = bufwinnr('__Mundo_Preview__')
     let currentWin  = bufwinnr('%')
 
-    if (mundoWin == -1) || (mundoPreWin == -1) || (mundoPreWin == currentWin)
+    if mundoWin == -1 || mundoPreWin == -1 || mundoPreWin == currentWin
         return
     endif
 
-    call mundo#MundoRenderGraph()
+    " Update graph
+    call s:MundoPythonRestoreView('MundoRenderGraph()')
 
+    " Update preview
     if currentWin != mundoWin || !get(g:, 'mundo_auto_preview', 0)
-                \ || currentWin != mundoWin
-        return
-    endif
-
-    if s:auto_preview_line == line('.')
+                \ || !s:auto_preview_update
         return
     endif
 
@@ -489,20 +491,20 @@ function! s:MundoRefreshDelayed(...)"{{{
         return
     endif
 
-    let s:auto_preview_line = line('.')
     call s:MundoRenderPreview()
 endfunction"}}}
 
 augroup MundoAug"{{{
     autocmd!
+    autocmd BufEnter __Mundo__ let s:auto_preview_update = 1
+    autocmd BufLeave __Mundo__
+                \ if s:auto_preview_update |
+                    \ call s:MundoPythonRestoreView('MundoRenderPreview()') |
+                \ endif |
+                \ call s:MundoStopRefreshTimer()
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
-    autocmd CursorHold,CursorMoved,TextChanged,InsertLeave *
-                \ if !s:exec_python | call s:MundoRefresh() | endif
-    autocmd BufLeave __Mundo__
-                \ if !s:exec_python | call s:MundoStopRefreshTimer() | endif
-    autocmd BufEnter __Mundo__
-                \ if !s:exec_python | let s:auto_preview_line = -1 | endif
+    autocmd CursorHold,CursorMoved,TextChanged,InsertLeave * call s:MundoRefresh()
 augroup END"}}}
 
 "}}}
@@ -523,6 +525,15 @@ endfunction"}}}
 
 function! mundo#MundoRenderGraph()"{{{
     call s:MundoPythonRestoreView('MundoRenderGraph()')
+endfunction"}}}
+
+" Schedules/cancels an automatic preview or preview timer reset.
+function! mundo#MundoAutoPreviewUpdate(state)"{{{
+    if s:auto_preview_update && !a:state
+        call s:MundoStopRefreshTimer()
+    endif
+
+    let s:auto_preview_update = a:state
 endfunction"}}}
 
 "}}}
