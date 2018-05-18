@@ -102,7 +102,6 @@ call mundo#util#set_default(
 command! -nargs=0 MundoToggle call mundo#MundoToggle()
 command! -nargs=0 MundoShow call mundo#MundoShow()
 command! -nargs=0 MundoHide call mundo#MundoHide()
-command! -nargs=0 MundoRenderGraph call mundo#MundoRenderGraph()
 command! -nargs=0 GundoToggle call mundo#util#MundoToggle()
 command! -nargs=0 GundoShow call mundo#util#MundoShow()
 command! -nargs=0 GundoHide call mundo#util#MundoHide()

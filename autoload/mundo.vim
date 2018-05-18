@@ -27,15 +27,15 @@ let s:plugin_path = escape(expand('<sfile>:p:h'), '\')"}}}
 
 " Default to placeholder functions for exposed methods
 function! mundo#MundoToggle()"{{{
-    call mundo#util#Message("WarningMsg",
+    call mundo#util#Echo("WarningMsg",
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
 function! mundo#MundoShow()
-    call mundo#util#Message("WarningMsg",
+    call mundo#util#Echo("WarningMsg",
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
 function! mundo#MundoHide()
-    call mundo#util#Message("WarningMsg"
+    call mundo#util#Echo("WarningMsg"
                 \ 'Mundo init error: ' . s:init_error)
 endfunction"}}}
 
@@ -175,10 +175,10 @@ endfunction"}}}
 "{{{ Mundo buffer/window management
 
 function! s:MundoResizeBuffers(backto)"{{{
-    call mundo#util#MundoGoToWindowForBuffer('__Mundo__')
+    call mundo#util#GoToBuffer('__Mundo__')
     exe "vertical resize " . g:mundo_width
 
-    call mundo#util#MundoGoToWindowForBuffer('__Mundo_Preview__')
+    call mundo#util#GoToBuffer('__Mundo_Preview__')
     exe "resize " . g:mundo_preview_height
 
     exe a:backto . "wincmd w"
@@ -187,15 +187,13 @@ endfunction"}}}
 " Open or create the graph window. Assumes that the preview window is open.
 function! s:MundoOpenGraph()"{{{
 
-    if !mundo#util#MundoGoToWindowForBuffer("__Mundo__")
-        call assert_true(mundo#util#MundoGoToWindowForBuffer(
-                    \ '__Mundo_Preview__'))
+    if !mundo#util#GoToBuffer("__Mundo__")
+        call assert_true(mundo#util#GoToBuffer('__Mundo_Preview__'))
         let existing_mundo_buffer = bufnr("__Mundo__")
 
         " Build and execute appropriate command
         if existing_mundo_buffer == -1
-            execute 'new __Mundo__ | set fdm=manual | '
-                        \ .'wincmd '
+            execute 'new __Mundo__ | set fdm=manual | wincmd '
                         \ .(g:mundo_preview_bottom && g:mundo_right ? 'L':'H')
         else
             execute (g:mundo_preview_bottom ?
@@ -212,18 +210,17 @@ function! s:MundoOpenGraph()"{{{
 endfunction"}}}
 
 function! s:MundoOpenPreview()"{{{
-    if !mundo#util#MundoGoToWindowForBuffer("__Mundo_Preview__")
+    if !mundo#util#GoToBuffer("__Mundo_Preview__")
         let existing_preview_buffer = bufnr("__Mundo_Preview__")
 
         " Build and execute appropriate command
-        let pos = g:mundo_preview_bottom || g:mundo_right ? 'botright' :
-                    \ 'topleft'
+        let pos = g:mundo_preview_bottom || g:mundo_right? 'botright':'topleft'
         let vert = g:mundo_preview_bottom ? '' : 'v'
-        let buf = vert.(existing_preview_buffer == -1 ?
+        let buf = vert . (existing_preview_buffer == -1 ?
                     \ 'new __Mundo_Preview__' :
                     \ 'split +buffer' . existing_preview_buffer)
 
-        execute pos.' keepalt '.buf
+        execute pos . ' keepalt ' . buf
     endif
 
     if exists("g:mundo_preview_statusline")
@@ -236,8 +233,8 @@ function! s:MundoClose() abort "{{{
     let [l:tabid, l:winid] = win_id2tabwin(win_getid())
 
     " Close all graph and preview windows
-    while mundo#util#MundoGoToWindowForBufferGlobal('__Mundo__') ||
-                \ mundo#util#MundoGoToWindowForBufferGlobal('__Mundo_Preview__')
+    while mundo#util#GoToBufferGlobal('__Mundo__') ||
+                \ mundo#util#GoToBufferGlobal('__Mundo_Preview__')
         quit
     endwhile
 
@@ -248,21 +245,25 @@ function! s:MundoClose() abort "{{{
         execute 'normal! ' . l:tabid . 'gt'
     endif
 
-    call mundo#util#MundoGoToWindowForBuffer(get(g:, 'mundo_target_n', -1))
+    call mundo#util#GoToBuffer(get(g:, 'mundo_target_n', -1))
 endfunction"}}}
 
 " Returns 1 if the current buffer is a valid target buffer for Mundo, or a
 " (falsy) string indicating the reason if otherwise.
-function! s:MundoIsValidBuffer()"{{{
+function! s:MundoValidateBuffer()"{{{
     if !&modifiable
-        return 'is not modifiable'
+        let reason = 'is not modifiable'
     elseif &previewwindow
-        return 'is a preview window'
+        let reason = 'is a preview window'
     elseif &buftype != '' && &buftype != 'acwrite'
-        return 'has invalid buffer type "'.&buftype.'"'
+        let reason = 'has invalid buffer type "'.&buftype.'"'
+    else
+        return 1
     endif
 
-    return 1
+    call mundo#util#Echo('None', 'Current buffer ('.bufnr('').') is not a '
+                \ .'valid target for Mundo (Reason: '.reason.')')
+    return 0
 endfunction "}}}
 
 " Returns True if the graph or preview windows are open in the current tab.
@@ -271,39 +272,21 @@ function! s:MundoIsVisible()"{{{
                 \ bufwinnr(bufnr("__Mundo_Preview__")) != -1
 endfunction"}}}
 
-function! s:MundoInlineHelpLength()"{{{
-    if g:mundo_help
-        return 10
-    else
-        return 0
-    endif
-endfunction"}}}
-
 " Open/reopen Mundo for the current buffer, initialising the python module if
 " necessary.
 function! s:MundoOpen() abort "{{{
-    " Validate and target buffer, store buffer number & file
-    let is_valid_reason = s:MundoIsValidBuffer()
-
-    if !is_valid_reason
-        call mundo#util#Message('None',
-                    \ 'Current buffer ('.bufnr('').') is not a valid target '
-                    \ .'for Mundo (Reason: '.is_valid_reason.')')
+    " Validate current buffer
+    if !s:MundoValidateBuffer()
         return
     endif
 
     let g:mundo_target_n = bufnr('')
-    let g:mundo_target_f = @%
-
-    " Close any existing Mundo windows
     call s:MundoClose()
 
-    " Initialise python module, if necessary
+    " Initialise python module if necessary
     if !exists('g:mundo_py_loaded')
-        " Add Mundo to python path
         call s:MundoSetupPythonPath()
 
-        " Initialise python module
         if s:has_supported_python == 2
             exe 'py3file ' . escape(s:plugin_path, ' ') . '/mundo.py'
             call s:InitPythonModule('python3')
@@ -315,26 +298,27 @@ function! s:MundoOpen() abort "{{{
         let g:mundo_py_loaded = 1
     endif
 
-    " Save `splitbelow` value and set it to default to avoid problems with
-    " positioning new windows.
+    " Save and reset `splitbelow` to avoid window positioning problems
     let saved_splitbelow = &splitbelow
     let &splitbelow = 0
 
+    " Temporarily disable automatic previews until Mundo is opened
+    let saved_auto_preview = g:mundo_auto_preview
+    let g:mundo_auto_preview = 0
+
+    " Create / open graph and preview windows
     call s:MundoOpenPreview()
-    call mundo#util#MundoGoToWindowForBuffer(g:mundo_target_n)
-
+    call mundo#util#GoToBuffer(g:mundo_target_n)
     call s:MundoOpenGraph()
-    call s:MundoPythonRestoreView('MundoRenderGraph()')
 
-    " If necessary, move the graph window cursor to the first node
-    if line('.') <= s:MundoInlineHelpLength() + 1
-        call s:MundoPython('MundoMove(1,1)')
-    endif
-
+    " Render the graph and preview, ensure the cursor is on a graph node
+    call s:MundoPythonRestoreView('MundoRenderGraph(True)')
     call s:MundoRenderPreview()
+    call s:MundoPython('MundoMove(0,0)')
 
-    " Restore `splitbelow`
+    " Restore `splitbelow` and automatic preview option
     let &splitbelow = saved_splitbelow
+    let g:mundo_auto_preview = saved_auto_preview
 endfunction"}}}
 
 function! s:MundoToggle()"{{{
@@ -377,29 +361,32 @@ endfunction"}}}
 "{{{ Mundo rendering
 
 function! s:MundoPython(fn)"{{{
-    try
-        exec "python".(s:has_supported_python == 2 ? '3' : '')." ". a:fn
-    catch 
-        call mundo#util#Message('WarningMsg',
-                    \ 'Warning: Exception '.v:exception.' occured while '
-                    \ .'executing Mundo python function "'.a:fn.'".')
-    endtry
+    exec "python".(s:has_supported_python == 2 ? '3' : '')." ". a:fn
 endfunction"}}}
 
 " Wrapper for MundoPython() that restores the window state and prevents other
 " Mundo autocommands (with the exception of BufNewFile) from triggering.
 function! s:MundoPythonRestoreView(fn)"{{{
-    let currentWin  = winnr()
+    " Store view data, mode, window and 'evntignore' value
+    let currentmode = mode()
+    let currentWin = winnr()
     let winView = winsaveview()
     let eventignoreBack = &eventignore
     set eventignore=BufLeave,BufEnter,CursorHold,CursorMoved,TextChanged
                 \,InsertLeave
 
+    " Call python function
     call s:MundoPython(a:fn)
 
+    " Restore view data
     execute currentWin .'wincmd w'
     call winrestview(winView)
     exec 'set eventignore='.eventignoreBack
+
+    " Re-select previous visual selection
+    if currentmode == 'v'
+        execute 'normal! gv'
+    endif
 endfunction"}}}
 
 " Render a preview for the selected graph node if the preview is outdated.
@@ -430,7 +417,7 @@ function! s:MundoRefresh()"{{{
     " Disable the automatic preview delay if vim lacks support for timers
     if get(g:, 'mundo_auto_preview_delay', 0) > 0 && !s:has_timers
         let g:mundo_auto_preview_delay = 0
-        call mundo#util#Message('WarningMsg',
+        call mundo#util#Echo('WarningMsg',
                     \ 'The "g:mundo_auto_preview_delay" option requires'
                     \ .' support for timers. Please upgrade to either vim 8.0+'
                     \ .' (with +timers) or neovim to use this feature.')
@@ -504,7 +491,8 @@ augroup MundoAug"{{{
                 \ call s:MundoStopRefreshTimer()
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
-    autocmd CursorHold,CursorMoved,TextChanged,InsertLeave * call s:MundoRefresh()
+    autocmd CursorHold,CursorMoved,TextChanged,InsertLeave *
+                \ call s:MundoRefresh()
 augroup END"}}}
 
 "}}}
@@ -521,10 +509,6 @@ endfunction"}}}
 
 function! mundo#MundoHide()"{{{
     call s:MundoHide()
-endfunction"}}}
-
-function! mundo#MundoRenderGraph()"{{{
-    call s:MundoPythonRestoreView('MundoRenderGraph()')
 endfunction"}}}
 
 " Schedules/cancels an automatic preview or preview timer reset.

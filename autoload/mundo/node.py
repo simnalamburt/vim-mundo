@@ -20,14 +20,15 @@ class Node(object):
 
 class Nodes(object):
     def __init__(self):
-        self.target_n_last = None
-        self._clear_cache()
+        self.clear_cache()
 
-    def _clear_cache(self):
-        self.nodes_made = None
-        self.target_f = None
+    def clear_cache(self):
         self.changedtick = None
         self.lines = {}
+        self.nodes_made = None
+        self.target_n = None
+        self.seq_last = None
+
         self.clear_oneline_diffs()
 
     def clear_oneline_diffs(self):
@@ -35,17 +36,17 @@ class Nodes(object):
         self.diff_has_oneline = {}
 
     def _validate_cache(self):
-        """ Checks if the target file or buffer has changed, and if so
-            clears all cached data.
+        """ Checks if the targeted buffer number has changed, and if so
+            clears all cached data and stores the new target buffer number.
         """
         target_n = int(util.vim().eval('g:mundo_target_n'))
-        target_f = util.vim().eval('g:mundo_target_f')
 
-        if self.target_n_last != target_n or target_f != self.target_f:
-            self._clear_cache()
-            self.target_n_last = target_n
+        if self.target_n != target_n:
+            self.clear_cache()
+            self.clear_oneline_diffs()
+            self.target_n = target_n
 
-    def _make_nodes(self,alts, nodes, parent=None):
+    def _make_nodes(self, alts, nodes, parent=None):
         p = parent
 
         for alt in alts:
@@ -64,9 +65,11 @@ class Nodes(object):
             p = node
 
     def is_outdated(self):
+        """ Checks if the target buffer undo tree has changed since the last
+            update. Note that this moves to the target buffer.
+        """
         util._goto_window_for_buffer(int(util.vim().eval('g:mundo_target_n')))
-        current_changedtick = util.vim().eval('b:changedtick')
-        return self.changedtick != current_changedtick
+        return self.changedtick != util.vim().eval('b:changedtick')
 
     def make_nodes(self):
         # Clear cache if it is invalid
@@ -77,24 +80,19 @@ class Nodes(object):
         if not self.is_outdated():
             return self.nodes_made
 
-        target_f = util.vim().eval('g:mundo_target_f')
         ut = util.vim().eval('undotree()')
-        entries = ut['entries']
-        seq_last = ut['seq_last']
-        current_changedtick = util.vim().eval('b:changedtick')
 
-        root = Node(0, None, False, 0, 0)
-        nodes = []
         # TODO only compute new values (not all values)
-        self._make_nodes(entries, nodes, root)
+        nodes = []
+        root = Node(0, None, False, 0, 0)
+        self._make_nodes(ut['entries'], nodes, root)
         nodes.append(root)
         nmap = dict((node.n, node) for node in nodes)
 
         # cache values for later use
-        self.target_f = target_f
-        self.seq_last = seq_last
+        self.seq_last = ut['seq_last']
         self.nodes_made = (nodes, nmap)
-        self.changedtick = current_changedtick
+        self.changedtick = util.vim().eval('b:changedtick')
 
         return self.nodes_made
 

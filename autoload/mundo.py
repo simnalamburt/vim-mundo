@@ -168,18 +168,17 @@ def MundoRenderPreview():# {{{
         return
 
     target_state = MundoGetTargetState()
-    # Check that there's an undo state. There may not be if we're talking about
-    # a buffer with no changes yet.
-    if target_state is None:
-        util._goto_window_for_buffer('__Mundo__')
+    target_n = int(vim.eval('g:mundo_target_n'))
+
+    # If there's no target state or the buffer has changed, update the cached
+    # undo tree data, redraw the graph and abort preview rendering
+    if target_state is None or nodesData.target_n != target_n:
+        nodesData.make_nodes()
+        MundoRenderGraph(True)
         return
-    else:
-        target_state = int(target_state)
 
-    util._goto_window_for_buffer(int(vim.eval('g:mundo_target_n')))
-
+    util._goto_window_for_buffer(target_n)
     nodes, nmap = nodesData.make_nodes()
-
     node_after = nmap[target_state]
     node_before = node_after.parent
 

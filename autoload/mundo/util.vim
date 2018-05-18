@@ -18,7 +18,7 @@ endif
 " Moves to the first window in the current tab corresponding to expr. Accepts
 " an integer buffer number or a string file-pattern; for a detailed description
 " see :h bufname. Returns 1 if successful, 0 otherwise.
-function! mundo#util#MundoGoToWindowForBuffer(expr)"{{{
+function! mundo#util#GoToBuffer(expr)"{{{
     let l:winnr = bufwinnr(bufnr(a:expr))
 
     if l:winnr == -1
@@ -30,10 +30,10 @@ function! mundo#util#MundoGoToWindowForBuffer(expr)"{{{
     return 1
 endfunction"}}}
 
-" Similar to MundoGoToWindowForBuffer, but considers windows in all tabs.
+" Similar to MundoGoToBuffer, but considers windows in all tabs.
 " Prioritises matches in the current tab.
-function! mundo#util#MundoGoToWindowForBufferGlobal(expr)"{{{
-    if mundo#util#MundoGoToWindowForBuffer(a:expr)
+function! mundo#util#GoToBufferGlobal(expr)"{{{
+    if mundo#util#GoToBuffer(a:expr)
         return 1
     endif
 
@@ -48,8 +48,8 @@ function! mundo#util#MundoGoToWindowForBufferGlobal(expr)"{{{
 endfunction"}}}
 
 " Prints a given message with a given highlight group.
-function! mundo#util#Message(higroup, text)"{{{
-    exec 'echohl ' . a:higroup . ' | echomsg ' . '"' . a:text
+function! mundo#util#Echo(higroup, text)"{{{
+    exec 'echohl ' . a:higroup . ' | echomsg ' . '"' . escape(a:text, '"')
                 \ . '" | echohl None'
 endfunction"}}}
 
@@ -63,7 +63,7 @@ function! mundo#util#set_default(var, val, ...)"{{{
     let old_var = get(a:000, 0, '')
 
     if exists(old_var)
-        call mundo#util#Message(
+        call mundo#util#Echo(
                     \ 'WarningMsg',
                     \ "{".old_var."}is deprecated! "
                     \ ."Please change your setting to {"
@@ -79,26 +79,26 @@ endfunction"}}}
 
 " Placeholder functions for deprecated Gundo commands{{{
 
-function! mundo#util#MundoToggle()
-    return mundo#util#Message('WarningMsg', 'GundoToggle commands are '
+function! mundo#util#Toggle()
+    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
                 \ . 'deprecated. Please change to their corresponding '
                 \ . 'MundoToggle command.')
 endf
 
-function! mundo#util#MundoShow()
-    return mundo#util#Message('WarningMsg', 'GundoToggle commands are '
+function! mundo#util#Show()
+    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
                 \ . 'deprecated. Please change to their corresponding '
                 \ . 'MundoShow command.')
 endf
 
-function! mundo#util#MundoHide()
-    return mundo#util#Message('WarningMsg', 'GundoToggle commands are '
+function! mundo#util#Hide()
+    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
                 \ . 'deprecated. Please change to their corresponding '
                 \ . 'MundoHide command.')
 endf
 
-function! mundo#util#MundoRenderGraph()
-    return mundo#util#Message('WarningMsg', 'GundoToggle commands are '
+function! mundo#util#RenderGraph()
+    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
                 \ . 'deprecated. Please change to their corresponding '
                 \ . 'MundoRenderGraph command.')
 endf
