@@ -91,8 +91,6 @@ function! s:MundoMapGraph()"{{{
                 \ " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
     nnoremap <script> <silent> <buffer> <CR>          :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
     nnoremap <script> <silent> <buffer> o             :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
-    nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
     if g:mundo_map_up_down
         nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
         nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
