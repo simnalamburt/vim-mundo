@@ -153,7 +153,6 @@ endfunction"}}}
 
 function! s:MundoSyntaxGraph()"{{{
     let b:current_syntax = 'mundo'
-
     syn match MundoCurrentLocation '@'
     syn match MundoHelp '\v^".*$'
     syn match MundoNumberField '\v\[[0-9]+\]'
@@ -161,7 +160,6 @@ function! s:MundoSyntaxGraph()"{{{
     syn region MundoDiff start=/\v<ago> / end=/$/
     syn match MundoDiffAdd '\v\+[^+-]+\+' contained containedin=MundoDiff
     syn match MundoDiffDelete '\v-[^+-]+-' contained containedin=MundoDiff
-
     hi def link MundoCurrentLocation Keyword
     hi def link MundoHelp Comment
     hi def link MundoNumberField Comment
