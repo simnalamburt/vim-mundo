@@ -311,14 +311,19 @@ GitHub: https://github.com/simnalamburt/vim-mundo
 
 
 v3.1.0
-    * Adds g:mundo_auto_preview_delay and g:mundo_map_up_down settings.
-    * Adds validation for target buffer when attempting to open Mundo.
-    * Fix runtime error when entering embedded terminal windows in neovim.
+    * Adds g:mundo_map_up_down setting.
+    * Adds g:mundo_auto_preview_delay setting.
+    * Adds validation for target buffers.
+    * Adds 'G' mapping to graph.
+    * Fix a runtime error when entering embedded terminal windows in neovim.
     * Fix multiple issues associated with Mundo windows in different tabs.
     * Fix default option values overriding user-set values in certain cases.
     * Fix cursor initially being positioned above the graph.
-    * Fix graph and preview mapping bugs occuring when v:count was set.
+    * Fix some mappings not working correctly when preceded with a count.
     * Fix some graph mappings moving the cursor to the target buffer.
+    * Fix airline plugin ignoring custom status lines.
+    * Fix Escape and Ctrl+c not being handled correctly in the search prompt.
+    * Fix MundoGetTargetState returning invalid results with some inline diffs.
     * Reduced delay associated with animated playback for neovim.
     * Code cleanup and refactoring.
 v3.0.1

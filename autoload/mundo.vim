@@ -16,7 +16,7 @@ set cpo&vim
 
 " Initialise global vars
 let s:auto_preview_timer = -1"{{{
-let s:auto_preview_update = 1
+let s:preview_outdated = 1
 let s:has_supported_python = 0
 let s:has_timers = 0
 let s:init_error = 'Initialisation failed due to an unknown error. '
@@ -30,10 +30,12 @@ function! mundo#MundoToggle()"{{{
     call mundo#util#Echo("WarningMsg",
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
+
 function! mundo#MundoShow()
     call mundo#util#Echo("WarningMsg",
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
+
 function! mundo#MundoHide()
     call mundo#util#Echo("WarningMsg"
                 \ 'Mundo init error: ' . s:init_error)
@@ -87,8 +89,8 @@ function! s:MundoMapGraph()"{{{
                 \ " :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>"
     exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer .
                 \ " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
-    nnoremap <script> <silent> <buffer> <CR>          :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> o             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> <CR>          :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
+    nnoremap <script> <silent> <buffer> o             :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
     nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
     nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
     if g:mundo_map_up_down
@@ -98,7 +100,7 @@ function! s:MundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> J             :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.',True,True)')<CR>
     nnoremap <script> <silent> <buffer> K             :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.',True,True)')<CR>
     nnoremap <script> <silent> <buffer> gg            gg:<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
-    nnoremap <script> <silent> <buffer> G             G:<C-u>call <sid>MundoPython('MundoMove(1,0)')<CR>
+    nnoremap <script> <silent> <buffer> G             G:<C-u>call <sid>MundoPython('MundoMove(0,0)')<CR>:<C-u>call <sid>MundoRefresh()<CR>
     nnoremap <script> <silent> <buffer> P             :<C-u>call <sid>MundoPythonRestoreView('MundoPlayTo()')<CR>zz
     nnoremap <script> <silent> <buffer> d             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>
     nnoremap <script> <silent> <buffer> i             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>
@@ -106,7 +108,7 @@ function! s:MundoMapGraph()"{{{
     nnoremap <script> <silent> <buffer> n             :<C-u>call <sid>MundoPython('MundoNextMatch()')<CR>
     nnoremap <script> <silent> <buffer> N             :<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>
     nnoremap <script> <silent> <buffer> p             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>
-    nnoremap <script> <silent> <buffer> r             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPreview()')<CR>
+    nnoremap <script> <silent> <buffer> r             :<C-u>call <sid>MundoRenderPreview(1)<CR>
     nnoremap <script> <silent> <buffer> ?             :<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>
     nnoremap <script> <silent> <buffer> q             :<C-u>call <sid>MundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q             call <sid>MundoClose()
@@ -184,21 +186,27 @@ function! s:MundoResizeBuffers(backto)"{{{
     exe a:backto . "wincmd w"
 endfunction"}}}
 
-" Open or create the graph window. Assumes that the preview window is open.
+" Open the graph window. Assumes that the preview window is open.
 function! s:MundoOpenGraph()"{{{
-
     if !mundo#util#GoToBuffer("__Mundo__")
         call assert_true(mundo#util#GoToBuffer('__Mundo_Preview__'))
         let existing_mundo_buffer = bufnr("__Mundo__")
 
-        " Build and execute appropriate command
         if existing_mundo_buffer == -1
-            execute 'new __Mundo__ | set fdm=manual | wincmd '
-                        \ .(g:mundo_preview_bottom && g:mundo_right ? 'L':'H')
+            " Create buffer
+            silent new __Mundo__
+
+            if g:mundo_preview_bottom
+                execute 'wincmd ' . (g:mundo_right ? 'L' : 'H')
+            endif
         else
-            execute (g:mundo_preview_bottom ?
-                        \ (g:mundo_right ? 'botright ' : 'topleft ').'v' : '')
-                        \ .'split +buffer' . existing_mundo_buffer
+            " Open a window for existing buffer
+            if g:mundo_preview_bottom
+                let pos = (g:mundo_right ? 'botright' : 'topleft')
+                silent execute pos.' vsplit +buffer' . existing_mundo_buffer
+            else
+                silent execute 'split +buffer' . existing_mundo_buffer
+            endif
         endif
 
         call s:MundoResizeBuffers(winnr())
@@ -213,14 +221,25 @@ function! s:MundoOpenPreview()"{{{
     if !mundo#util#GoToBuffer("__Mundo_Preview__")
         let existing_preview_buffer = bufnr("__Mundo_Preview__")
 
-        " Build and execute appropriate command
-        let pos = g:mundo_preview_bottom || g:mundo_right? 'botright':'topleft'
-        let vert = g:mundo_preview_bottom ? '' : 'v'
-        let buf = vert . (existing_preview_buffer == -1 ?
-                    \ 'new __Mundo_Preview__' :
-                    \ 'split +buffer' . existing_preview_buffer)
-
-        execute pos . ' keepalt ' . buf
+        if existing_preview_buffer == -1
+            " Create buffer
+            if g:mundo_preview_bottom
+                silent botright keepalt new __Mundo_Preview__
+            else
+                let pos = (g:mundo_right ? 'botright' : 'topleft')
+                silent execute pos.' keepalt vnew __Mundo_Preview__'
+            endif
+        else
+            " Open a window for existing buffer
+            if g:mundo_preview_bottom
+                silent execute 'botright keepalt split +buffer' .
+                            \ existing_preview_buffer
+            else
+                let pos = (g:mundo_right ? 'botright' : 'topleft')
+                silent execute pos.' keepalt vsplit +buffer' .
+                            \ existing_preview_buffer
+            endif
+        endif
     endif
 
     if exists("g:mundo_preview_statusline")
@@ -383,16 +402,15 @@ function! s:MundoPythonRestoreView(fn)"{{{
     call winrestview(winView)
     exec 'set eventignore='.eventignoreBack
 
-    " Re-select previous visual selection
-    if currentmode == 'v'
+    " Re-select visual selection
+    if currentmode == 'v' || currentmode == 'V' || currentmode == ''
         execute 'normal! gv'
     endif
 endfunction"}}}
 
-" Render a preview for the selected graph node if the preview is outdated.
-" Optionally accepts an integer argument which will force rendering if nonzero.
+" Accepts an optional integer that forces rendering if nonzero.
 function! s:MundoRenderPreview(...)"{{{
-    if !s:auto_preview_update && (a:0 < 1 || !a:1)
+    if !s:preview_outdated && (a:0 < 1 || !a:1)
         return
     endif
 
@@ -415,21 +433,23 @@ function! s:MundoRefresh()"{{{
     endif
 
     " Disable the automatic preview delay if vim lacks support for timers
-    if get(g:, 'mundo_auto_preview_delay', 0) > 0 && !s:has_timers
+    if g:mundo_auto_preview_delay > 0 && !s:has_timers
         let g:mundo_auto_preview_delay = 0
         call mundo#util#Echo('WarningMsg',
                     \ 'The "g:mundo_auto_preview_delay" option requires'
                     \ .' support for timers. Please upgrade to either vim 8.0+'
-                    \ .' (with +timers) or neovim to use this feature.')
-        return
+                    \ .' (with +timers) or neovim to use this feature. Press '
+                    \ .'any key to continue.')
+
+        " Prevent the warning being cleared
+        call getchar()
     endif
 
     " Handle normal refresh
-    if get(g:, 'mundo_auto_preview_delay', 0) <= 0
+    if g:mundo_auto_preview_delay <= 0
         call s:MundoPythonRestoreView('MundoRenderGraph()')
 
-        if get(g:, 'mundo_auto_preview', 0) && currentWin == mundoWin
-                    \ && mode() == 'n'
+        if g:mundo_auto_preview && currentWin == mundoWin && mode() == 'n'
             call s:MundoRenderPreview()
         endif
         return
@@ -468,8 +488,7 @@ function! s:MundoRefreshDelayed(...)"{{{
     call s:MundoPythonRestoreView('MundoRenderGraph()')
 
     " Update preview
-    if currentWin != mundoWin || !get(g:, 'mundo_auto_preview', 0)
-                \ || !s:auto_preview_update
+    if currentWin != mundoWin || !g:mundo_auto_preview
         return
     endif
 
@@ -481,14 +500,23 @@ function! s:MundoRefreshDelayed(...)"{{{
     call s:MundoRenderPreview()
 endfunction"}}}
 
+" Mark the preview as being up-to-date (0) or outdated (1)
+function! mundo#MundoPreviewOutdated(outdated)"{{{
+    if s:preview_outdated && !a:outdated
+        call s:MundoStopRefreshTimer()
+    endif
+
+    let s:preview_outdated = a:outdated
+endfunction"}}}
+
 augroup MundoAug"{{{
     autocmd!
-    autocmd BufEnter __Mundo__ let s:auto_preview_update = 1
+    autocmd BufEnter __Mundo__ call mundo#MundoPreviewOutdated(1)
     autocmd BufLeave __Mundo__
-                \ if s:auto_preview_update |
-                    \ call s:MundoPythonRestoreView('MundoRenderPreview()') |
+                \ if g:mundo_auto_preview |
+                    \ call s:MundoRenderPreview() |
+                    \ call s:MundoStopRefreshTimer() |
                 \ endif |
-                \ call s:MundoStopRefreshTimer()
     autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
     autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
     autocmd CursorHold,CursorMoved,TextChanged,InsertLeave *
@@ -509,15 +537,6 @@ endfunction"}}}
 
 function! mundo#MundoHide()"{{{
     call s:MundoHide()
-endfunction"}}}
-
-" Schedules/cancels an automatic preview or preview timer reset.
-function! mundo#MundoAutoPreviewUpdate(state)"{{{
-    if s:auto_preview_update && !a:state
-        call s:MundoStopRefreshTimer()
-    endif
-
-    let s:auto_preview_update = a:state
 endfunction"}}}
 
 "}}}

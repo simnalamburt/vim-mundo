@@ -186,14 +186,14 @@ def MundoRenderPreview():# {{{
     util._output_preview_text(nodesData.preview_diff(node_before, node_after))
 
     # Mark the preview as up-to-date
-    vim.command('call mundo#MundoAutoPreviewUpdate(0)')
+    vim.command('call mundo#MundoPreviewOutdated(0)')
 # }}}
 
 def MundoGetTargetState():# {{{
     """ Get the current undo number that mundo is at. """
     util._goto_window_for_buffer('__Mundo__')
     target_line = vim.eval("getline('.')")
-    matches = re.match('^.* \[([0-9]+)\] .*$',target_line)
+    matches = re.match('^[^\[]* \[([0-9]+)\] .*$', target_line)
     if matches:
         return int(matches.group(1))
     return 0
@@ -291,11 +291,18 @@ def MundoMove(direction,move_count=1,relative=True,write=False):# {{{
         vim.command("call cursor(0, %d + 1)" % idx3)
 
     # Mark the preview as outdated
-    vim.command('call mundo#MundoAutoPreviewUpdate(1)')
+    vim.command('call mundo#MundoPreviewOutdated(1)')
 # }}}
 
 def MundoSearch():# {{{
-    search = vim.eval("input('/')")
+    try:
+        search = vim.eval("input('/')")
+    except:
+        return
+
+    if len(search) == 0:
+        return
+
     vim.command('let @/="%s"' % search.replace("\\", "\\\\").replace('"', '\\"'))
     MundoNextMatch()
 # }}}
@@ -413,7 +420,7 @@ def MundoRenderChangePreview():# {{{
     util._goto_window_for_buffer('__Mundo__')
 
     # Mark the preview as up-to-date
-    vim.command('call mundo#MundoAutoPreviewUpdate(0)')
+    vim.command('call mundo#MundoPreviewOutdated(0)')
 
     return True
 # }}}
@@ -483,31 +490,29 @@ def MundoPlayTo():# {{{
     back = int(vim.eval('g:mundo_target_n'))
     delay = int(vim.eval('g:mundo_playback_delay'))
 
-    vim.command('echo "%s"' % back)
-
     util._goto_window_for_buffer(back)
-    util.normal('zR')
+    util.normal('zn')
 
     nodes, nmap = nodesData.make_nodes()
-
     start = nmap[nodesData.current()]
     end = nmap[target_n]
+
     def _walk_branch(origin, dest):# {{{
         rev = origin.n < dest.n
-
         nodes = []
+
         if origin.n > dest.n:
             current, final = origin, dest
         else:
             current, final = dest, origin
 
-        while current.n >= final.n:
-            if current.n == final.n:
-                break
+        while current.n > final.n:
             nodes.append(current)
             current = current.parent
-        else:
+
+        if current.n != final.n:
             return None
+
         nodes.append(current)
 
         if rev:
@@ -520,6 +525,7 @@ def MundoPlayTo():# {{{
 
     if not branch:
         vim.command('unsilent echo "No path to that node from here!"')
+        util.normal('zN')
         return
 
     for node in branch:
@@ -528,6 +534,8 @@ def MundoPlayTo():# {{{
         util.normal('zz')
         util._goto_window_for_buffer(back)
         vim.command('redraw | sleep %dm' % delay)
+
+    util.normal('zN')
 # }}}
 
 #  vim: set ts=4 sw=4 tw=79 fdm=marker et :

@@ -47,14 +47,15 @@ function! mundo#util#GoToBufferGlobal(expr)"{{{
     return 1
 endfunction"}}}
 
-" Prints a given message with a given highlight group.
+" Prints a highlighted string.
 function! mundo#util#Echo(higroup, text)"{{{
-    exec 'echohl ' . a:higroup . ' | echomsg ' . '"' . escape(a:text, '"')
-                \ . '" | echohl None'
+    execute 'echohl ' . a:higroup
+    execute 'unsilent echomsg ' . '"' . escape(a:text, '"') . '"'
+    echohl None
 endfunction"}}}
 
 " Set var to val only if var has not been set by the user. Optionally takes a
-" deprecated name and shows a warning if a matching option has been set.
+" deprecated option name and shows a warning if a variable with this name exists.
 function! mundo#util#set_default(var, val, ...)"{{{
     if !exists(a:var)
         let {a:var} = a:val
