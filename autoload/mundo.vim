@@ -270,8 +270,8 @@ function! s:MundoValidateBuffer()"{{{
         let reason = 'is not modifiable'
     elseif &previewwindow
         let reason = 'is a preview window'
-    elseif &buftype != '' && &buftype != 'acwrite'
-        let reason = 'has invalid buffer type "'.&buftype.'"'
+    elseif &buftype == 'help' || &buftype == 'quickfix' || &buftype == 'terminal'
+        let reason = 'is a '.&buftype.' window'
     else
         return 1
     endif
