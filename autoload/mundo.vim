@@ -244,7 +244,7 @@ function! s:MundoOpenPreview()"{{{
 endfunction"}}}
 
 " Quits *all* open Mundo graph and preview windows.
-function! s:MundoClose() abort "{{{
+function! s:MundoClose() abort
     let [l:tabid, l:winid] = win_id2tabwin(win_getid())
 
     " Close all graph and preview windows
@@ -261,7 +261,7 @@ function! s:MundoClose() abort "{{{
     endif
 
     call mundo#util#GoToBuffer(get(g:, 'mundo_target_n', -1))
-endfunction"}}}
+endfunction
 
 " Returns 1 if the current buffer is a valid target buffer for Mundo, or a
 " (falsy) string indicating the reason if otherwise.
@@ -505,7 +505,7 @@ function! mundo#MundoPreviewOutdated(outdated)"{{{
     let s:preview_outdated = a:outdated
 endfunction"}}}
 
-augroup MundoAug"{{{
+augroup MundoAug
     autocmd!
     autocmd BufEnter __Mundo__ call mundo#MundoPreviewOutdated(1)
     autocmd BufLeave __Mundo__
@@ -513,11 +513,11 @@ augroup MundoAug"{{{
                     \ call s:MundoRenderPreview() |
                     \ call s:MundoStopRefreshTimer() |
                 \ endif |
-    autocmd BufNewFile __Mundo__ call s:MundoSettingsGraph()
-    autocmd BufNewFile __Mundo_Preview__ call s:MundoSettingsPreview()
+    autocmd BufEnter __Mundo__ call s:MundoSettingsGraph()
+    autocmd BufEnter __Mundo_Preview__ call s:MundoSettingsPreview()
     autocmd CursorHold,CursorMoved,TextChanged,InsertLeave *
                 \ call s:MundoRefresh()
-augroup END"}}}
+augroup END
 
 "}}}
 
