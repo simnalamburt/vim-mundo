@@ -95,6 +95,34 @@ call mundo#util#set_default(
             \ 'g:mundo_width', 45,
             \ 'g:gundo_width')
 
+" Set up the default mappings, unless a g:mundo_mappings has already been
+" provided
+if mundo#util#set_default('g:mundo_mappings', {})
+    let g:mundo_mappings = {
+                \ '<CR>': 'preview',
+                \ 'o': 'preview',
+                \ 'J': 'move_older_write',
+                \ 'K': 'move_newer_write',
+                \ 'gg': 'move_top',
+                \ 'G': 'move_bottom',
+                \ 'P': 'play_to',
+                \ 'd': 'diff',
+                \ 'i': 'toggle_inline',
+                \ '/': 'search',
+                \ 'n': 'next_match',
+                \ 'N': 'previous_match',
+                \ 'p': 'diff_current_buffer',
+                \ 'r': 'diff',
+                \ '?': 'toggle_help',
+                \ 'q': 'quit',
+                \ '<2-LeftMouse>': 'mouse_click' }
+    let g:mundo_mappings[g:mundo_map_move_older] = 'move_older'
+    let g:mundo_mappings[g:mundo_map_move_newer] = 'move_newer'
+    if g:mundo_map_up_down
+        let g:mundo_mappings['<down>'] = 'move_newer'
+        let g:mundo_mappings['<up>'] = 'move_older'
+    endif
+endif
 "}}}
 
 "{{{ Create commands

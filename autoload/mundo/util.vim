@@ -59,6 +59,7 @@ endfunction"}}}
 function! mundo#util#set_default(var, val, ...)"{{{
     if !exists(a:var)
         let {a:var} = a:val
+        return 1
     endif
 
     let old_var = get(a:000, 0, '')
@@ -74,7 +75,10 @@ function! mundo#util#set_default(var, val, ...)"{{{
                     \ .'}'
         )
     endif
-endfunction"}}}
+
+    return 0
+endfunction
+"}}}
 
 "}}}
 

@@ -55,9 +55,10 @@ def _check_sanity():
 
     return True
 
+
 INLINE_HELP = '''\
 " Mundo (%d) - Press ? for Help:
-" %s/%s  - Next/Prev undo state.
+" j/k  - Next/Prev undo state.
 " J/K  - Next/Prev write state.
 " i    - Toggle 'inline diff' mode.
 " /    - Find changes that match string.
@@ -96,9 +97,7 @@ def MundoRenderGraph(force=False):# {{{
     last_visible_line = int(vim.eval("line('w$')"))
 
     verbose = vim.eval('g:mundo_verbose_graph') == "1"
-    target = (int(vim.eval('g:mundo_target_n')),
-                vim.eval('g:mundo_map_move_older'),
-                vim.eval('g:mundo_map_move_newer'))
+    target = int(vim.eval('g:mundo_target_n'))
 
     if int(vim.eval('g:mundo_help')):
         header = (INLINE_HELP % target).splitlines()

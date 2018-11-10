@@ -9,8 +9,8 @@
 " ============================================================================
 
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 "{{{ Init
 
@@ -26,27 +26,28 @@ let s:init_error = 'Initialisation failed due to an unknown error. '
 let s:plugin_path = escape(expand('<sfile>:p:h'), '\')"}}}
 
 " Default to placeholder functions for exposed methods
-function! mundo#MundoToggle()"{{{
-    call mundo#util#Echo("WarningMsg",
+function! mundo#MundoToggle() abort "{{{
+    call mundo#util#Echo('WarningMsg',
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
 
-function! mundo#MundoShow()
-    call mundo#util#Echo("WarningMsg",
+function! mundo#MundoShow() abort
+    call mundo#util#Echo('WarningMsg',
                 \ 'Mundo init error: ' . s:init_error)
 endfunction
 
-function! mundo#MundoHide()
-    call mundo#util#Echo("WarningMsg"
+function! mundo#MundoHide() abort
+    call mundo#util#Echo('WarningMsg',
                 \ 'Mundo init error: ' . s:init_error)
-endfunction"}}}
+endfunction
+"}}}
 
 " Check vim version
-if v:version < '703'"{{{
+if v:version <? '703'"{{{
     let s:init_error = 'Vim version 7.03+ or later is required.'
-    let &cpo = s:save_cpo
+    let &cpoptions = s:save_cpo
     finish
-elseif v:version >= '800' && has('timers')
+elseif v:version >=? '800' && has('timers')
     let s:has_timers = 1
 endif"}}}
 
@@ -61,7 +62,7 @@ endif
 
 if !s:has_supported_python
     let s:init_error = 'A supported python version was not found.'
-    let &cpo = s:save_cpo
+    let &cpoptions = s:save_cpo
     finish
 endif"}}}
 
@@ -79,39 +80,58 @@ function! s:MundoSetupPythonPath()"{{{
         call s:MundoPython('sys.path.insert(1, "'. s:plugin_path .'/mundo")')
     end
 endfunction"}}}
-
 "}}}
 
 "{{{ Mundo buffer settings
 
+function! s:MundoMakeMapping(mapping, action)
+    exec 'nnoremap <script> <silent> <buffer> ' . a:mapping .' '. a:action
+endfunction
+
 function! s:MundoMapGraph()"{{{
-    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_older .
-                \ " :<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>"
-    exec 'nnoremap <script> <silent> <buffer> ' . g:mundo_map_move_newer .
-                \ " :<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>"
-    nnoremap <script> <silent> <buffer> <CR>          :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
-    nnoremap <script> <silent> <buffer> o             :<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>
-    if g:mundo_map_up_down
-        nnoremap <script> <silent> <buffer> <down>        :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
-        nnoremap <script> <silent> <buffer> <up>          :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.')')<CR>
-    endif
-    nnoremap <script> <silent> <buffer> J             :<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.',True,True)')<CR>
-    nnoremap <script> <silent> <buffer> K             :<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.',True,True)')<CR>
-    nnoremap <script> <silent> <buffer> gg            gg:<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>
-    nnoremap <script> <silent> <buffer> G             G:<C-u>call <sid>MundoPython('MundoMove(0,0)')<CR>:<C-u>call <sid>MundoRefresh()<CR>
-    nnoremap <script> <silent> <buffer> P             :<C-u>call <sid>MundoPythonRestoreView('MundoPlayTo()')<CR>zz
-    nnoremap <script> <silent> <buffer> d             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>
-    nnoremap <script> <silent> <buffer> i             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>
-    nnoremap <script> <silent> <buffer> /             :<C-u>call <sid>MundoPython('MundoSearch()')<CR>
-    nnoremap <script> <silent> <buffer> n             :<C-u>call <sid>MundoPython('MundoNextMatch()')<CR>
-    nnoremap <script> <silent> <buffer> N             :<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>
-    nnoremap <script> <silent> <buffer> p             :<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>
-    nnoremap <script> <silent> <buffer> r             :<C-u>call <sid>MundoRenderPreview(1)<CR>
-    nnoremap <script> <silent> <buffer> ?             :<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>
-    nnoremap <script> <silent> <buffer> q             :<C-u>call <sid>MundoClose()<CR>
-    cabbrev  <script> <silent> <buffer> q             call <sid>MundoClose()
-    cabbrev  <script> <silent> <buffer> quit          call <sid>MundoClose()
-    nnoremap <script> <silent> <buffer> <2-LeftMouse> :<C-u>call <sid>MundoMouseDoubleClick()<CR>
+    for key in keys(g:mundo_mappings)
+        let a:value = g:mundo_mappings[key]
+        if a:value == "move_older"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>")
+        elseif a:value == "move_newer"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>")
+        elseif a:value == "preview"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>")
+        elseif a:value == "move_older_write"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.',True,True)')<CR>")
+        elseif a:value == "move_newer_write"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.',True,True)')<CR>")
+        elseif a:value == "move_top"
+            call s:MundoMakeMapping(key, "gg:<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>")
+        elseif a:value == "move_bottom"
+            call s:MundoMakeMapping(key, "G:<C-u>call <sid>MundoPython('MundoMove(0,0)')<CR>:<C-u>call <sid>MundoRefresh()<CR>")
+        elseif a:value == "play_to"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoPlayTo()')<CR>zz")
+        elseif a:value == "diff"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>")
+        elseif a:value == "toggle_inline"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>")
+        elseif a:value == "search"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoSearch()')<CR>")
+        elseif a:value == "next_match"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoNextMatch()')<CR>")
+        elseif a:value == "previous_match"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>")
+        elseif a:value == "diff_current_buffer"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>")
+        elseif a:value == "diff"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoRenderPreview(1)<CR>")
+        elseif a:value == "toggle_help"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>")
+        elseif a:value == "quit"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoClose()<CR>")
+        elseif a:value == "mouse_click"
+            call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoMouseDoubleClick()<CR>")
+        endif
+    endfor
+
+    cabbrev  <script> <silent> <buffer> q     call <sid>MundoClose()
+    cabbrev  <script> <silent> <buffer> quit  call <sid>MundoClose()
 endfunction"}}}
 
 function! s:MundoMapPreview()"{{{
@@ -537,5 +557,5 @@ endfunction"}}}
 
 "}}}
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
