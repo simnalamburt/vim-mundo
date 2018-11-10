@@ -1,39 +1,46 @@
 let s:undolevels_save = &undolevels
 
 function! g:Goto(buffername)"{{{
-    exec bufwinnr(bufnr(a:buffername)) . 'wincmd w'
+    let l:winnr = bufwinnr(a:buffername)
+
+    if l:winnr == -1
+        return
+    endif
+
+    execute l:winnr . 'wincmd w'
 endfunction"}}}
 
 function! g:GotoLineContaining(text)"{{{
-    exe "silent! normal gg/\\M" . a:text . "\n"
+    let index = match(getline(1, '$'), '\V' . escape(a:text, '\'))
+
+    if index == -1
+        return
+    endif
+
+    call cursor(index + 1, 0)
 endfunction"}}}
 
 function! g:CurrentLineContains(text)"{{{
-    if stridx(getline('.'), a:text) != -1
-        return 1
-    else
-        return 0
-    endif
+    return stridx(getline('.'), a:text) != -1
 endfunction"}}}
 
 function! g:Contains(text)"{{{
-    call g:GotoLineContaining(a:text)
-    return g:CurrentLineContains(a:text)
+    return match(getline(1, '$'), '\V' . escape(a:text, '\')) != -1
 endfunction"}}}
 
 function! g:TypeLine(text)"{{{
-    exe "normal i" . a:text . "\<C-g>u\n\e"
+    execute "normal i" . a:text . "\<C-g>u\n\e"
 endfunction"}}}
 
 function! g:TypeLineDone(text)"{{{
-    exe "normal i" . a:text . "\n\e"
+    execute "normal i" . a:text . "\n\e"
 
     " Break the undo chain
     let &undolevels = s:undolevels_save
 endfunction"}}}
 
 function! g:PrintTheFuckingBuffer()"{{{
-    echo join(getline(1, 100000), "\n")
+    echo join(getline(1, '$'), "\n")
     echo "SOMETIMES I HATE YOU VIM"
 endfunction"}}}
 

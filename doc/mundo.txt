@@ -20,12 +20,13 @@ CONTENTS                                                      *Mundo-contents*
         3.9  mundo_preview_statusline .. |mundo_preview_statusline|
              mundo_tree_statusline ..... |mundo_tree_statusline|
         3.10 mundo_auto_preview ........ |mundo_auto_preview|
-        3.11 mundo_verbose_graph ....... |mundo_verbose_graph|
-        3.12 mundo_playback_delay ...... |mundo_playback_delay|
-        3.13 mundo_mirror_graph ........ |mundo_mirror_graph|
-        3.14 mundo_inline_undo ......... |mundo_inline_undo|
-        3.15 mundo_return_on_revert .... |mundo_return_on_revert|
-        3.16 mundo_map_up_down ......... |mundo_map_up_down|
+        3.11 mundo_auto_preview_delay .. |mundo_auto_preview_delay|
+        3.12 mundo_verbose_graph ....... |mundo_verbose_graph|
+        3.13 mundo_playback_delay ...... |mundo_playback_delay|
+        3.14 mundo_mirror_graph ........ |mundo_mirror_graph|
+        3.15 mundo_inline_undo ......... |mundo_inline_undo|
+        3.16 mundo_return_on_revert .... |mundo_return_on_revert|
+        3.17 mundo_map_up_down ......... |mundo_map_up_down|
     4. License ......................... |MundoLicense|
     5. Bugs ............................ |MundoBugs|
     6. Contributing .................... |MundoContributing|
@@ -224,7 +225,18 @@ be useful on large files and undo trees to speed up Mundo.
 Default: 1 (automatically preview diffs)
 
 ------------------------------------------------------------------------------
-3.11 g:mundo_verbose_graph                               *mundo_verbose_graph*
+
+3.11 g:mundo_auto_preview_delay                     *mundo_auto_preview_delay*
+
+This is the delay in milliseconds before a preview diff is automatically
+rendered. The delay is reset whenever the cursor moves. Use this to speed up
+undo tree traversal when automatic previews are enabled. Set this to 0 to
+disable the feature.
+
+Default: 250
+
+------------------------------------------------------------------------------
+3.12 g:mundo_verbose_graph                               *mundo_verbose_graph*
 
 Set this to 0 to create shorter graphs: the 'o' characters will only be used
 when multiple branches exist, and extra lines of '|' are suppressed making for
@@ -233,7 +245,7 @@ a graph half as long.
 Default: 1 (verbose graphs)
 
 ------------------------------------------------------------------------------
-3.12 g:mundo_playback_delay                             *mundo_playback_delay*
+3.13 g:mundo_playback_delay                             *mundo_playback_delay*
 
 This is the delay in milliseconds between each change when running 'play to'
 mode. Set this to a higher number for a slower playback or to a lower number
@@ -242,30 +254,30 @@ for a faster playback.
 Default: 60
 
 ------------------------------------------------------------------------------
-3.13 g:mundo_mirror_graph                                *mundo_mirror_graph*
+3.14 g:mundo_mirror_graph                                 *mundo_mirror_graph*
 
 Set this to 0 to align the graph to the left; set to 1 to align to the right.
 
 Default: 1 (mirror graph)
 
 ------------------------------------------------------------------------------
-3.14 g:mundo_inline_undo                                 *mundo_inline_undo*
+3.15 g:mundo_inline_undo                                   *mundo_inline_undo*
 
-When enabled, a small one line diff is displayed to the right of the graph undo.
-Although not as detailed as a full diff provided in the preview window, it
-provides a quick summary of the diff w/o having to navigate.
+When enabled, a small one line diff is displayed to the right of the graph
+undo. Although not as detailed as a full diff provided in the preview window,
+it provides a quick summary of the diff w/o having to navigate.
 
 Default: 0 (no inline graph)
 
 ------------------------------------------------------------------------------
-3.15 g:mundo_return_on_revert                         *mundo_return_on_revert*
+3.16 g:mundo_return_on_revert                         *mundo_return_on_revert*
 
 Set this to 0 to keep focus in the Mundo window after a revert.
 
 Default: 1
 
 ------------------------------------------------------------------------------
-3.16 g:mundo_map_up_down                                   *mundo_map_up_down*
+3.17 g:mundo_map_up_down                                   *mundo_map_up_down*
 
 By default, <Up> and <Down> are mapped to navigate up and down the undo graph.
 Set this to 0 to prevent these mappings.
@@ -290,11 +302,30 @@ https://github.com/simnalamburt/vim-mundo/issues
 Think you can make this plugin better? Awesome. Fork it on BitBucket or GitHub
 and send a pull request.
 
+Version numbers should roughly follow Semantic Versioning.
+
 GitHub: https://github.com/simnalamburt/vim-mundo
 
 ==============================================================================
 7. Changelog                                                  *MundoChangelog*
 
+
+v3.1.0
+    * Adds g:mundo_map_up_down setting.
+    * Adds g:mundo_auto_preview_delay setting.
+    * Adds validation for target buffers.
+    * Adds 'G' mapping to graph.
+    * Fix a runtime error when entering embedded terminal windows in neovim.
+    * Fix multiple issues associated with Mundo windows in different tabs.
+    * Fix default option values overriding user-set values in certain cases.
+    * Fix cursor initially being positioned above the graph.
+    * Fix some mappings not working correctly when preceded with a count.
+    * Fix some graph mappings moving the cursor to the target buffer.
+    * Fix airline plugin ignoring custom status lines.
+    * Fix Escape and Ctrl+c not being handled correctly in the search prompt.
+    * Fix MundoGetTargetState returning invalid results with some inline diffs.
+    * Reduced delay associated with animated playback for neovim.
+    * Code cleanup and refactoring.
 v3.0.1
     * Made inline diff mode much faster(e.g. 300x)
     * Fix inline diffs not updating after scroll.
@@ -329,8 +360,8 @@ v2.2.0
     * Fix a bug with the splitbelow setting.
 v2.1.1
     * Fix a bug with the movement key mappings.
-v2.1.0
     * Warnings about having an incompatible Vim and/or Python installation
+v2.1.0
       are now deferred until the first time you try to use Mundo, instead
       of being displayed on launch.
     * The <j> and <k> mappings are now configurable with
