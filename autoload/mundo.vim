@@ -90,42 +90,42 @@ endfunction
 
 function! s:MundoMapGraph()"{{{
     for key in keys(g:mundo_mappings)
-        let a:value = g:mundo_mappings[key]
-        if a:value == "move_older"
+        let l:value = g:mundo_mappings[key]
+        if l:value == "move_older"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(1,'. v:count .')')<CR>")
-        elseif a:value == "move_newer"
+        elseif l:value == "move_newer"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(-1,'. v:count .')')<CR>")
-        elseif a:value == "preview"
+        elseif l:value == "preview"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoRenderPreview(1)<CR>:<C-u> call <sid>MundoPythonRestoreView('MundoRevert()')<CR>")
-        elseif a:value == "move_older_write"
+        elseif l:value == "move_older_write"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.',True,True)')<CR>")
-        elseif a:value == "move_newer_write"
+        elseif l:value == "move_newer_write"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoMove(-1,'.v:count.',True,True)')<CR>")
-        elseif a:value == "move_top"
+        elseif l:value == "move_top"
             call s:MundoMakeMapping(key, "gg:<C-u>call <sid>MundoPython('MundoMove(1,'.v:count.')')<CR>")
-        elseif a:value == "move_bottom"
+        elseif l:value == "move_bottom"
             call s:MundoMakeMapping(key, "G:<C-u>call <sid>MundoPython('MundoMove(0,0)')<CR>:<C-u>call <sid>MundoRefresh()<CR>")
-        elseif a:value == "play_to"
+        elseif l:value == "play_to"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoPlayTo()')<CR>zz")
-        elseif a:value == "diff"
+        elseif l:value == "diff"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderPatchdiff()')<CR>")
-        elseif a:value == "toggle_inline"
+        elseif l:value == "toggle_inline"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderToggleInlineDiff()')<CR>")
-        elseif a:value == "search"
+        elseif l:value == "search"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoSearch()')<CR>")
-        elseif a:value == "next_match"
+        elseif l:value == "next_match"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoNextMatch()')<CR>")
-        elseif a:value == "previous_match"
+        elseif l:value == "previous_match"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>")
-        elseif a:value == "diff_current_buffer"
+        elseif l:value == "diff_current_buffer"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>")
-        elseif a:value == "diff"
+        elseif l:value == "diff"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoRenderPreview(1)<CR>")
-        elseif a:value == "toggle_help"
+        elseif l:value == "toggle_help"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>")
-        elseif a:value == "quit"
+        elseif l:value == "quit"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoClose()<CR>")
-        elseif a:value == "mouse_click"
+        elseif l:value == "mouse_click"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoMouseDoubleClick()<CR>")
         endif
     endfor
