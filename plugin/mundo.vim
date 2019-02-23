@@ -119,8 +119,8 @@ if mundo#util#set_default('g:mundo_mappings', {})
     let g:mundo_mappings[g:mundo_map_move_older] = 'move_older'
     let g:mundo_mappings[g:mundo_map_move_newer] = 'move_newer'
     if g:mundo_map_up_down
-        let g:mundo_mappings['<down>'] = 'move_newer'
-        let g:mundo_mappings['<up>'] = 'move_older'
+        let g:mundo_mappings['<down>'] = 'move_older'
+        let g:mundo_mappings['<up>'] = 'move_newer'
     endif
 endif
 "}}}
