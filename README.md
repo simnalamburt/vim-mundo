@@ -47,22 +47,6 @@ set undodir=~/.vim/undo
 
 <br>
 
-### Contributing to Mundo
-
-#### Tagging in the issue tracker
-
-When submitting pull requests (commonly referred to as "PRs"), include one
-of the following tags prepended to the title:
-
-- [WIP] - Work In Progress: the PR will change, so while there is no immediate
-need for review, the submitter still might appreciate it.
-- [RFC] - Request For Comment: the PR needs reviewing and/or comments.
-- [RDY] - Ready: the PR has been reviewed by at least one other person and has
-no outstanding issues.
-
-Assuming the above criteria has been met, feel free to change your PR's tag
-yourself, as opposed to waiting for a contributor to do it for you.
-
 #### Unit tests
 Tests unit tests can be run with [nose]:
 ```shell
