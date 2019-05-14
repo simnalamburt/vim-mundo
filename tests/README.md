@@ -1,13 +1,17 @@
+Mundo Tests
+========
 This is Mundo's test suite.  In case you didn't know, unit testing vim plugins
 is a horrible experience.
 
-Mundo bundles Luc Hermitte's [UT][] framework to make the process less painful.
+Mundo bundles Luc Hermitte's [UT] framework to make the process less painful.
 
-[UT]: http://code.google.com/p/lh-vim/wiki/UT
+[UT]: https://github.com/LucHermitte/vim-UT
 
 To run a test, `cd` into the `tests` directory and use:
 
-    ./run-tests.sh [[some-test.vim] ...]
+```sh
+./run-tests.sh [[some-test.vim] ...]
+```
 
 The script will run the console vim command with its own vimrc and .vim
 directory, so none of your other plugins should interfere. The result of the
