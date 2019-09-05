@@ -47,6 +47,39 @@ set undodir=~/.vim/undo
 
 <br>
 
+### Installation
+
+It is recommended to use one of the popular plugin managers for Vim. There are
+many and you probably already have a preferred one, but a few examples for your
+copy-and-paste convenience:
+
+#### Pathogen
+
+    $ git clone https://github.com/simnalamburt/vim-mundo ~/.vim/bundle/mundo.vim
+
+#### Vundle
+
+```vim
+Plugin 'simnalamburt/vim-mundo'
+```
+
+#### NeoBundle
+
+```vim
+NeoBundle 'simnalamburt/vim-mundo'
+```
+
+#### Vim-Plug
+
+```vim
+Plug 'simnalamburt/vim-mundo'
+```
+
+#### Manual (not recommended)
+
+[Download](releases) the plugin and extract it in `~/.vim/` (or
+`%PROGRAMFILES%/Vim/vimfiles` on Windows).
+
 #### Unit tests
 Tests unit tests can be run with [nose]:
 ```shell
