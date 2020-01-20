@@ -281,7 +281,10 @@ def MundoMove(direction,move_count=1,relative=True,write=False):# {{{
         idxs.append(idx2)
     if idx3 != -1:
         idxs.append(idx3)
-    minidx = min(idxs)
+    if len(idxs)==0:
+        minidx=0
+    else:
+        minidx=min(idxs)
     if idx1 == minidx:
         vim.command("call cursor(0, %d + 1)" % idx1)
     elif idx2 == minidx:
