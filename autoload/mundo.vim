@@ -546,8 +546,16 @@ augroup MundoAug
                     \ call s:MundoRenderPreview() |
                     \ call s:MundoStopRefreshTimer() |
                 \ endif |
-    autocmd BufEnter __Mundo__ call s:MundoSettingsGraph()
-    autocmd BufEnter __Mundo_Preview__ call s:MundoSettingsPreview()
+
+    " Re-applying syntax highlights and remapping keymaps at both BufNewFile and
+    " BufEnter. See references for the further details
+    "
+    " References:
+    "   https://github.com/simnalamburt/vim-mundo/pull/74
+    "   https://github.com/simnalamburt/vim-mundo/issues/92
+    autocmd BufNewFile,BufEnter __Mundo__ call s:MundoSettingsGraph()
+    autocmd BufNewFile,BufEnter __Mundo_Preview__ call s:MundoSettingsPreview()
+
     autocmd CursorHold,CursorMoved,TextChanged,InsertLeave *
                 \ call s:MundoRefresh()
 augroup END
