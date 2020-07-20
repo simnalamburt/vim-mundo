@@ -99,10 +99,12 @@ def MundoRenderGraph(force=False):# {{{
     verbose = vim.eval('g:mundo_verbose_graph') == "1"
     target = int(vim.eval('g:mundo_target_n'))
 
-    if int(vim.eval('g:mundo_help')):
-        header = (INLINE_HELP % target).splitlines()
-    else:
-        header = [(INLINE_HELP % target).splitlines()[0], '\n']
+    header = []
+    if int(vim.eval('g:mundo_header')):
+        if int(vim.eval('g:mundo_help')):
+            header = (INLINE_HELP % target).splitlines()
+        else:
+            header = [(INLINE_HELP % target).splitlines()[0], '\n']
 
     show_inline_undo = int(vim.eval("g:mundo_inline_undo")) == 1
     mundo_last_visible_line = int(vim.eval("g:mundo_last_visible_line"))
@@ -260,8 +262,10 @@ def MundoMove(direction,move_count=1,relative=True,write=False):# {{{
         target_n = GetNextLine(updown,abs(MundoGetTargetState()-direction),write)
 
     # Bound the movement to the graph.
-    help_lines = 3
-    if int(vim.eval('g:mundo_help')):
+    help_lines = 0
+    if int(vim.eval('g:mundo_header')):
+        help_lines = 3
+    elif int(vim.eval('g:mundo_help')):
         help_lines = len(INLINE_HELP.split('\n'))
     if target_n <= help_lines:
         vim.command("call cursor(%d, 0)" % help_lines)

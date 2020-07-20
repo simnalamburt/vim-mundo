@@ -31,6 +31,8 @@ call mundo#util#set_default(
             \ 'g:mundo_first_visible_line', 0,
             \ 'g:gundo_first_visible_line')
 
+call mundo#util#set_default('g:mundo_header', 1)
+
 call mundo#util#set_default(
             \ 'g:mundo_help', 0,
             \ 'g:gundo_help')
