@@ -409,7 +409,11 @@ function! s:MundoPythonRestoreView(fn)"{{{
     let eventignoreBack = &eventignore
     set eventignore=BufLeave,BufEnter,CursorHold,CursorMoved,TextChanged
                 \,InsertLeave
-
+    if has('popupwin')
+        if type(currentWin) == type(0) && currentWin == 0
+            return
+        endif
+    endif
     " Call python function
     call s:MundoPython(a:fn)
 
