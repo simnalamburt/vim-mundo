@@ -381,7 +381,8 @@ def MundoRenderPatchdiff():# {{{
         # save the __Mundo_Preview__ buffer to a temp file.
         util._goto_window_for_buffer('__Mundo_Preview__')
         (handle,filename) = tempfile.mkstemp()
-        vim.command('silent! w %s' % (filename))
+        # use w! instead of w to force the writing of file 'filename'
+        vim.command('silent! w! %s' % (filename))
         # exit the __Mundo_Preview__ window
         vim.command('bdelete')
         # diff the temp file
