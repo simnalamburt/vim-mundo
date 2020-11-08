@@ -114,7 +114,7 @@ if mundo#util#set_default('g:mundo_mappings', {})
                 \ 'n': 'next_match',
                 \ 'N': 'previous_match',
                 \ 'p': 'diff_current_buffer',
-                \ 'r': 'diff',
+                \ 'r': 'rdiff',
                 \ '?': 'toggle_help',
                 \ 'q': 'quit',
                 \ '<2-LeftMouse>': 'mouse_click' }

@@ -119,7 +119,7 @@ function! s:MundoMapGraph()"{{{
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoPrevMatch()')<CR>")
         elseif l:value == "diff_current_buffer"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPythonRestoreView('MundoRenderChangePreview()')<CR>")
-        elseif l:value == "diff"
+        elseif l:value == "rdiff"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoRenderPreview(1)<CR>")
         elseif l:value == "toggle_help"
             call s:MundoMakeMapping(key, ":<C-u>call <sid>MundoPython('MundoToggleHelp()')<CR>")
