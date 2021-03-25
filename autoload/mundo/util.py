@@ -38,7 +38,7 @@ def _output_preview_text(lines):
     """ Output a list of lines to the mundo preview window. """
     _goto_window_for_buffer('__Mundo_Preview__')
     vim().command('setlocal modifiable')
-    vim().current.buffer[:] = [line.rstrip() for line in lines]
+    vim().current.buffer[:] = [line.rstrip('\n') for line in lines]
     vim().command('setlocal nomodifiable')
 
 
