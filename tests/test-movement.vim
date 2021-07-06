@@ -1,10 +1,10 @@
 UTSuite [Mundo] Testing Movement
 
-function! s:Setup()"{{{
+function! s:Setup() "{{{
     exec 'edit test'
     call g:Goto('test')
-endfunction"}}}
-function! s:Teardown()"{{{
+endfunction "}}}
+function! s:Teardown() "{{{
     if bufwinnr(bufnr('__Mundo__')) != -1
         exec bufwinnr(bufnr('__Mundo__')) . 'wincmd w'
         quit
@@ -25,9 +25,9 @@ function! s:Teardown()"{{{
     if bufnr('test2') != -1
         exec 'bwipeout! ' . bufnr('test2')
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestMovementBasic()"{{{
+function! s:TestMovementBasic() "{{{
     " Make three linear changes
     call g:TypeLineDone("ONE")
     call g:TypeLineDone("TWO")
@@ -88,9 +88,9 @@ function! s:TestMovementBasic()"{{{
     " Move up
     exec "normal \<up>"
     Assert g:CurrentLineContains("[3]")
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestMovementLinear()"{{{
+function! s:TestMovementLinear() "{{{
     " Make four changes:
     "
     " o    [4]
@@ -147,4 +147,4 @@ function! s:TestMovementLinear()"{{{
     " Move up
     normal k
     Assert g:CurrentLineContains("[4]")
-endfunction"}}}
+endfunction "}}}

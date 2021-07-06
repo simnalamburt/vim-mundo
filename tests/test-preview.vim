@@ -1,10 +1,10 @@
 UTSuite [Mundo] Testing Preview Pane
 
-function! s:Setup()"{{{
+function! s:Setup() "{{{
     exec 'edit test'
     call g:Goto('test')
-endfunction"}}}
-function! s:Teardown()"{{{
+endfunction "}}}
+function! s:Teardown() "{{{
     if bufwinnr(bufnr('__Mundo__')) != -1
         exec bufwinnr(bufnr('__Mundo__')) . 'wincmd w'
         quit
@@ -25,9 +25,9 @@ function! s:Teardown()"{{{
     if bufnr('test2') != -1
         exec 'bwipeout! ' . bufnr('test2')
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestPreviewBasic()"{{{
+function! s:TestPreviewBasic() "{{{
     " Make three linear changes, then a change that deletes the last line
     call g:TypeLineDone("ONE")
     call g:TypeLineDone("TWO")
@@ -77,9 +77,9 @@ function! s:TestPreviewBasic()"{{{
     call g:Goto("__Mundo_Preview__")
     call g:GotoLineContaining("THREE")
     Assert g:CurrentLineContains("-THREE")
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestPreviewLinear()"{{{
+function! s:TestPreviewLinear() "{{{
     " Make four non-linear changes
     "
     " o   [4]
@@ -128,4 +128,4 @@ function! s:TestPreviewLinear()"{{{
     Assert g:CurrentLineContains("+TWO")
     call g:GotoLineContaining("ONE")
     Assert g:CurrentLineContains("ONE")
-endfunction"}}}
+endfunction "}}}
