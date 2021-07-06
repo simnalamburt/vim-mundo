@@ -73,7 +73,7 @@ function! mundo#util#set_default(var, val, ...) "{{{
                     \ .':'
                     \ .substitute(split(old_var,':')[1],'gundo_','mundo_','g')
                     \ .'}'
-        )
+                    \ )
     endif
 
     return 0
