@@ -1,8 +1,8 @@
-import diff
+import mundo.diff as diff
 import difflib
 import itertools
 import time
-import util
+import mundo.util as util
 
 # Python undo tree data structures and functions ----------------------------------
 class Node(object):

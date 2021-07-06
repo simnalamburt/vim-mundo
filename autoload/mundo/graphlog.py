@@ -1,5 +1,5 @@
 import time
-import util
+import mundo.util as util
 
 
 # Mercurial's graphlog code -------------------------------------------------------
