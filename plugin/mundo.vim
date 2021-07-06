@@ -9,11 +9,11 @@
 " ============================================================================
 
 if !exists('g:mundo_debug') && (exists('g:mundo_disable') &&
-            \ g:mundo_disable == 1 || exists('loaded_mundo') || &cp)"{{{
+            \ g:mundo_disable == 1 || exists('loaded_mundo') || &cp) "{{{
     finish
 endif
 
-let loaded_mundo = 1"}}}
+let loaded_mundo = 1 "}}}
 
 " Default option values{{{
 

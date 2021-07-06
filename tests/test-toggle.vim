@@ -1,10 +1,10 @@
 UTSuite [Mundo] Testing Toggling
 
-function! s:Setup()"{{{
+function! s:Setup() "{{{
     exec 'edit test'
     call g:Goto('test')
-endfunction"}}}
-function! s:Teardown()"{{{
+endfunction "}}}
+function! s:Teardown() "{{{
     if bufwinnr(bufnr('__Mundo__')) != -1
         exec bufwinnr(bufnr('__Mundo__')) . 'wincmd w'
         quit
@@ -25,9 +25,9 @@ function! s:Teardown()"{{{
     if bufnr('test2') != -1
         exec 'bwipeout ' . bufnr('test2')
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestToggleBasic()"{{{
+function! s:TestToggleBasic() "{{{
     " Make sure we're starting from scratch.
     Assert bufnr('__Mundo__') == -1
     Assert bufnr('__Mundo_Preview__') == -1
@@ -54,9 +54,9 @@ function! s:TestToggleBasic()"{{{
     Assert bufnr('__Mundo_Preview__') != -1
     Assert bufwinnr(bufnr('__Mundo__')) == -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestToggleWhenMoved()"{{{
+function! s:TestToggleWhenMoved() "{{{
     " Make sure we're starting from scratch.
     Assert bufnr('__Mundo__') == -1
     Assert bufnr('__Mundo_Preview__') == -1
@@ -92,9 +92,9 @@ function! s:TestToggleWhenMoved()"{{{
     Assert bufnr('__Mundo_Preview__') != -1
     Assert bufwinnr(bufnr('__Mundo__')) == -1
     Assert bufwinnr(bufnr('__Mundo_Preview__')) == -1
-endfunction"}}}
+endfunction "}}}
 
-function! s:TestToggleReturnToTarget()"{{{
+function! s:TestToggleReturnToTarget() "{{{
     " Make sure we're starting from scratch.
     Assert bufnr('__Mundo__') == -1
     Assert bufnr('__Mundo_Preview__') == -1
@@ -120,4 +120,4 @@ function! s:TestToggleReturnToTarget()"{{{
 
     " We should be returned to test2
     Assert expand('%') == 'test2'
-endfunction"}}}
+endfunction "}}}

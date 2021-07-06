@@ -15,7 +15,7 @@ set cpoptions&vim
 "{{{ Init
 
 " Initialise global vars
-let s:auto_preview_timer = -1"{{{
+let s:auto_preview_timer = -1 "{{{
 let s:preview_outdated = 1
 let s:has_supported_python = 0
 let s:has_timers = 0
@@ -23,7 +23,7 @@ let s:init_error = 'Initialisation failed due to an unknown error. '
             \ . 'Please submit a bug report :)'
 
 " This has to be outside of a function, otherwise it just picks up the CWD
-let s:plugin_path = escape(expand('<sfile>:p:h'), '\')"}}}
+let s:plugin_path = escape(expand('<sfile>:p:h'), '\') "}}}
 
 " Default to placeholder functions for exposed methods
 function! mundo#MundoToggle() abort "{{{
@@ -43,16 +43,16 @@ endfunction
 "}}}
 
 " Check vim version
-if v:version <? '703'"{{{
+if v:version <? '703' "{{{
     let s:init_error = 'Vim version 7.03+ or later is required.'
     let &cpoptions = s:save_cpo
     finish
 elseif v:version >=? '800' && has('timers')
     let s:has_timers = 1
-endif"}}}
+endif "}}}
 
 " Check python version
-if g:mundo_prefer_python3 && has('python3')"{{{
+if g:mundo_prefer_python3 && has('python3') "{{{
     let s:has_supported_python = 2
 elseif has('python')"
     let s:has_supported_python = 1
@@ -64,22 +64,22 @@ if !s:has_supported_python
     let s:init_error = 'A supported python version was not found.'
     let &cpoptions = s:save_cpo
     finish
-endif"}}}
+endif "}}}
 
 " Python init methods
-function! s:InitPythonModule(python)"{{{
+function! s:InitPythonModule(python) "{{{
     exe a:python .' import sys'
     exe a:python .' if sys.version_info[:2] < (2, 4): '.
                 \ 'vim.command("let s:has_supported_python = 0")'
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoSetupPythonPath()"{{{
+function! s:MundoSetupPythonPath() "{{{
     if g:mundo_python_path_setup == 0
         let g:mundo_python_path_setup = 1
         call s:MundoPython('sys.path.insert(1, "'. s:plugin_path .'")')
         call s:MundoPython('sys.path.insert(1, "'. s:plugin_path .'/mundo")')
     end
-endfunction"}}}
+endfunction "}}}
 "}}}
 
 "{{{ Mundo buffer settings
@@ -88,7 +88,7 @@ function! s:MundoMakeMapping(mapping, action)
     exec 'nnoremap <script> <silent> <buffer> ' . a:mapping .' '. a:action
 endfunction
 
-function! s:MundoMapGraph()"{{{
+function! s:MundoMapGraph() "{{{
     for key in keys(g:mundo_mappings)
         let l:value = g:mundo_mappings[key]
         if l:value == "move_older"
@@ -132,15 +132,15 @@ function! s:MundoMapGraph()"{{{
 
     cabbrev  <script> <silent> <buffer> q     call <sid>MundoClose()
     cabbrev  <script> <silent> <buffer> quit  call <sid>MundoClose()
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoMapPreview()"{{{
+function! s:MundoMapPreview() "{{{
     nnoremap <script> <silent> <buffer> q     :<C-u>call <sid>MundoClose()<CR>
     cabbrev  <script> <silent> <buffer> q     call <sid>MundoClose()
     cabbrev  <script> <silent> <buffer> quit  call <sid>MundoClose()
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoSettingsGraph()"{{{
+function! s:MundoSettingsGraph() "{{{
     setlocal buftype=nofile
     setlocal bufhidden=hide
     setlocal noswapfile
@@ -153,9 +153,9 @@ function! s:MundoSettingsGraph()"{{{
     setlocal nowrap
     call s:MundoSyntaxGraph()
     call s:MundoMapGraph()
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoSettingsPreview()"{{{
+function! s:MundoSettingsPreview() "{{{
     setlocal buftype=nofile
     setlocal bufhidden=hide
     setlocal noswapfile
@@ -169,9 +169,9 @@ function! s:MundoSettingsPreview()"{{{
     setlocal foldlevel=20
     setlocal foldmethod=diff
     call s:MundoMapPreview()
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoSyntaxGraph()"{{{
+function! s:MundoSyntaxGraph() "{{{
     let b:current_syntax = 'mundo'
     syn match MundoCurrentLocation '@'
     syn match MundoHelp '\v^".*$'
@@ -186,13 +186,13 @@ function! s:MundoSyntaxGraph()"{{{
     hi def link MundoNumber Identifier
     hi def link MundoDiffAdd DiffAdd
     hi def link MundoDiffDelete DiffDelete
-endfunction"}}}
+endfunction "}}}
 
 "}}}
 
 "{{{ Mundo buffer/window management
 
-function! s:MundoResizeBuffers(backto)"{{{
+function! s:MundoResizeBuffers(backto) "{{{
     call mundo#util#GoToBuffer('__Mundo__')
     exe "vertical resize " . g:mundo_width
 
@@ -200,10 +200,10 @@ function! s:MundoResizeBuffers(backto)"{{{
     exe "resize " . g:mundo_preview_height
 
     exe a:backto . "wincmd w"
-endfunction"}}}
+endfunction "}}}
 
 " Open the graph window. Assumes that the preview window is open.
-function! s:MundoOpenGraph()"{{{
+function! s:MundoOpenGraph() "{{{
     if !mundo#util#GoToBuffer("__Mundo__")
         call assert_true(mundo#util#GoToBuffer('__Mundo_Preview__'))
         let existing_mundo_buffer = bufnr("__Mundo__")
@@ -231,9 +231,9 @@ function! s:MundoOpenGraph()"{{{
     if exists("g:mundo_tree_statusline")
         let &l:statusline = g:mundo_tree_statusline
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoOpenPreview()"{{{
+function! s:MundoOpenPreview() "{{{
     if !mundo#util#GoToBuffer("__Mundo_Preview__")
         let existing_preview_buffer = bufnr("__Mundo_Preview__")
 
@@ -261,7 +261,7 @@ function! s:MundoOpenPreview()"{{{
     if exists("g:mundo_preview_statusline")
         let &l:statusline = g:mundo_preview_statusline
     endif
-endfunction"}}}
+endfunction "}}}
 
 " Quits *all* open Mundo graph and preview windows.
 function! s:MundoClose() abort
@@ -285,7 +285,7 @@ endfunction
 
 " Returns 1 if the current buffer is a valid target buffer for Mundo, or a
 " (falsy) string indicating the reason if otherwise.
-function! s:MundoValidateBuffer()"{{{
+function! s:MundoValidateBuffer() "{{{
     if !&modifiable
         let reason = 'is not modifiable'
     elseif &previewwindow
@@ -302,10 +302,10 @@ function! s:MundoValidateBuffer()"{{{
 endfunction "}}}
 
 " Returns True if the graph or preview windows are open in the current tab.
-function! s:MundoIsVisible()"{{{
+function! s:MundoIsVisible() "{{{
     return bufwinnr(bufnr("__Mundo__")) != -1 ||
                 \ bufwinnr(bufnr("__Mundo_Preview__")) != -1
-endfunction"}}}
+endfunction "}}}
 
 " Open/reopen Mundo for the current buffer, initialising the python module if
 " necessary.
@@ -354,34 +354,34 @@ function! s:MundoOpen() abort "{{{
     " Restore `splitbelow` and automatic preview option
     let &splitbelow = saved_splitbelow
     let g:mundo_auto_preview = saved_auto_preview
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoToggle()"{{{
+function! s:MundoToggle() "{{{
     if s:MundoIsVisible()
         call s:MundoClose()
     else
         call s:MundoOpen()
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoShow()"{{{
+function! s:MundoShow() "{{{
     if !s:MundoIsVisible()
         call s:MundoOpen()
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoHide()"{{{
+function! s:MundoHide() "{{{
     call s:MundoSetupPythonPath()
     if s:MundoIsVisible()
         call s:MundoClose()
     endif
-endfunction"}}}
+endfunction "}}}
 
 "}}}
 
 "{{{ Mundo mouse handling
 
-function! s:MundoMouseDoubleClick()"{{{
+function! s:MundoMouseDoubleClick() "{{{
     let start_line = getline('.')
 
     if stridx(start_line, '[') == -1
@@ -389,19 +389,19 @@ function! s:MundoMouseDoubleClick()"{{{
     else
         call <sid>MundoPythonRestoreView('MundoRevert()')
     endif
-endfunction"}}}
+endfunction "}}}
 
 "}}}
 
 "{{{ Mundo rendering
 
-function! s:MundoPython(fn)"{{{
+function! s:MundoPython(fn) "{{{
     exec "python".(s:has_supported_python == 2 ? '3' : '')." ". a:fn
-endfunction"}}}
+endfunction "}}}
 
 " Wrapper for MundoPython() that restores the window state and prevents other
 " Mundo autocommands (with the exception of BufNewFile) from triggering.
-function! s:MundoPythonRestoreView(fn)"{{{
+function! s:MundoPythonRestoreView(fn) "{{{
     " Store view data, mode, window and 'evntignore' value
     let currentmode = mode()
     let currentWin = winnr()
@@ -429,23 +429,23 @@ function! s:MundoPythonRestoreView(fn)"{{{
     if currentmode == 'v' || currentmode == 'V' || currentmode == ''
         execute 'normal! gv'
     endif
-endfunction"}}}
+endfunction "}}}
 
 " Accepts an optional integer that forces rendering if nonzero.
-function! s:MundoRenderPreview(...)"{{{
+function! s:MundoRenderPreview(...) "{{{
     if !s:preview_outdated && (a:0 < 1 || !a:1)
         return
     endif
 
     call s:MundoPythonRestoreView('MundoRenderPreview()')
-endfunction"}}}
+endfunction "}}}
 
 "}}}
 
 "{{{ Misc
 
 " automatically reload Mundo buffer if open
-function! s:MundoRefresh()"{{{
+function! s:MundoRefresh() "{{{
     " abort if Mundo is closed or cursor is in the preview window
     let mundoWin    = bufwinnr('__Mundo__')
     let mundoPreWin = bufwinnr('__Mundo_Preview__')
@@ -480,24 +480,24 @@ function! s:MundoRefresh()"{{{
 
     " Handle delayed refresh
     call s:MundoRestartRefreshTimer()
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoRestartRefreshTimer()"{{{
+function! s:MundoRestartRefreshTimer() "{{{
     call s:MundoStopRefreshTimer()
     let s:auto_preview_timer = timer_start(
                 \ get(g:, 'mundo_auto_preview_delay', 0),
                     \ function('s:MundoRefreshDelayed')
                 \ )
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoStopRefreshTimer()"{{{
+function! s:MundoStopRefreshTimer() "{{{
     if s:auto_preview_timer != -1
         call timer_stop(s:auto_preview_timer)
         let s:auto_preview_timer = -1
     endif
-endfunction"}}}
+endfunction "}}}
 
-function! s:MundoRefreshDelayed(...)"{{{
+function! s:MundoRefreshDelayed(...) "{{{
     " abort if Mundo is closed or cursor is in the preview window
     let mundoWin    = bufwinnr('__Mundo__')
     let mundoPreWin = bufwinnr('__Mundo_Preview__')
@@ -521,16 +521,16 @@ function! s:MundoRefreshDelayed(...)"{{{
     endif
 
     call s:MundoRenderPreview()
-endfunction"}}}
+endfunction "}}}
 
 " Mark the preview as being up-to-date (0) or outdated (1)
-function! mundo#MundoPreviewOutdated(outdated)"{{{
+function! mundo#MundoPreviewOutdated(outdated) "{{{
     if s:preview_outdated && !a:outdated
         call s:MundoStopRefreshTimer()
     endif
 
     let s:preview_outdated = a:outdated
-endfunction"}}}
+endfunction "}}}
 
 augroup MundoAug
     autocmd!
@@ -550,17 +550,17 @@ augroup END
 
 " Exposed functions{{{
 
-function! mundo#MundoToggle()"{{{
+function! mundo#MundoToggle() "{{{
     call s:MundoToggle()
-endfunction"}}}
+endfunction "}}}
 
-function! mundo#MundoShow()"{{{
+function! mundo#MundoShow() "{{{
     call s:MundoShow()
-endfunction"}}}
+endfunction "}}}
 
-function! mundo#MundoHide()"{{{
+function! mundo#MundoHide() "{{{
     call s:MundoHide()
-endfunction"}}}
+endfunction "}}}
 
 "}}}
 
