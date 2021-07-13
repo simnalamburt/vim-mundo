@@ -58,17 +58,17 @@ def _check_sanity():
 
 INLINE_HELP = '''\
 " Mundo (%d) - Press ? for Help:
-" j/k  - Next/Prev undo state.
-" J/K  - Next/Prev write state.
-" i    - Toggle 'inline diff' mode.
-" /    - Find changes that match string.
-" n/N  - Next/Prev undo that matches search.
-" P    - Play current state to selected undo.
-" d    - Vert diff of undo with current state.
-" p    - Diff of selected undo and current state.
-" r    - Diff of selected undo and prior undo.
-" q    - Quit!
-" <cr> - Revert to selected state.
+" j/k   Next/Prev undo state.
+" J/K   Next/Prev write state.
+" i     Toggle 'inline diff' mode.
+" /     Find changes that match string.
+" n/N   Next/Prev undo that matches search.
+" P     Play current state to selected undo.
+" d     Vert diff of undo with current state.
+" p     Diff selected undo and current state.
+" r     Diff selected undo and prior undo.
+" q     Quit!
+" <cr>  Revert to selected state.
 
 '''
 
