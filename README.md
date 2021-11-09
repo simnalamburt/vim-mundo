@@ -34,8 +34,8 @@ Mundo is a fork of [Gundo], and it has bunch of improvements.
 <br>
 
 ### Requirements
-* Vim ≥ *7.3* &nbsp; *or* &nbsp; [Neovim]
-* `+python3` or `+python` compile option
+* Vim ≥ *7.3* with `+python3` or `+python` options
+* [Neovim] with [pynvim] installed
 * Python ≥ *2.4*
 
 Recommended vim settings:
@@ -100,6 +100,7 @@ License, version 2] or any later version. See [COPYRIGHT] for details.
 [Official webpage]: https://simnalamburt.github.io/vim-mundo
 [Introductory Video]: https://simnalamburt.github.io/vim-mundo/screencast.mp4
 [Neovim]: https://neovim.io
+[pynvim]: https://github.com/neovim/pynvim
 [pr-29]: https://github.com/sjl/gundo.vim/pull/29
 [pr-28]: https://github.com/sjl/gundo.vim/pull/28
 [i-34]: https://bitbucket.org/sjl/gundo.vim/issue/34/show-changes-that-were-saved-onto-disk
