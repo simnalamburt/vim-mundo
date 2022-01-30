@@ -85,26 +85,23 @@ endfunction
 " Placeholder functions for deprecated Gundo commands{{{
 
 function! mundo#util#Toggle()
-    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
-                \ . 'deprecated. Please change to their corresponding '
-                \ . 'MundoToggle command.')
+    return mundo#util#Echo('WarningMsg', 'GundoToggle command is deprecated. '
+                \ . 'Please change to corresponding MundoToggle command.')
 endf
 
 function! mundo#util#Show()
-    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
-                \ . 'deprecated. Please change to their corresponding '
-                \ . 'MundoShow command.')
+    return mundo#util#Echo('WarningMsg', 'GundoShow command is deprecated. '
+                \ . 'Please change to corresponding MundoShow command.')
 endf
 
 function! mundo#util#Hide()
-    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
-                \ . 'deprecated. Please change to their corresponding '
-                \ . 'MundoHide command.')
+    return mundo#util#Echo('WarningMsg', 'GundoHide command is deprecated. '
+                \ . 'Please change to corresponding MundoHide command.')
 endf
 
 function! mundo#util#RenderGraph()
-    return mundo#util#Echo('WarningMsg', 'GundoToggle commands are '
-                \ . 'deprecated. Please change to their corresponding '
+    return mundo#util#Echo('WarningMsg', 'GundoRenderGraph command is '
+                \ . 'deprecated. Please change to corresponding '
                 \ . 'MundoRenderGraph command.')
 endf
 
