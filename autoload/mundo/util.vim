@@ -101,8 +101,7 @@ endf
 
 function! mundo#util#RenderGraph()
     return mundo#util#Echo('WarningMsg', 'GundoRenderGraph command is '
-                \ . 'deprecated. Please change to corresponding '
-                \ . 'MundoRenderGraph command.')
+                \ . 'deprecated.')
 endf
 
 "}}}
