@@ -408,7 +408,7 @@ function! s:MundoPythonRestoreView(fn) "{{{
     let winView = winsaveview()
     let eventignoreBack = &eventignore
     set eventignore=BufLeave,BufEnter,CursorHold,CursorMoved,TextChanged
-                \,InsertLeave
+                \,InsertLeave,WinLeave,WinEnter
 
     " Don't show undotree of a preview window
     " Reference: https://github.com/simnalamburt/vim-mundo/pull/102
