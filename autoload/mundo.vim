@@ -145,6 +145,7 @@ function! s:MundoSettingsGraph() "{{{
     setlocal bufhidden=hide
     setlocal noswapfile
     setlocal nobuflisted
+    setlocal nofoldenable
     setlocal nomodifiable
     setlocal filetype=Mundo
     setlocal nolist

@@ -387,7 +387,7 @@ def MundoRenderPatchdiff():# {{{
         vim.command('bdelete')
         # diff the temp file
         vim.command('silent! keepalt vert diffpatch %s' % (filename))
-        vim.command('set buftype=nofile bufhidden=delete')
+        vim.command('setlocal buftype=nofile bufhidden=delete')
         return True
     return False
 # }}}
