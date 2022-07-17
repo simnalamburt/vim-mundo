@@ -202,10 +202,8 @@ def generate(verbose, num_header_lines, first_visible_line, last_visible_line, i
             char = 'w'
         else:
             char = 'o'
-        compute_preview = line_number >= first_visible_line and line_number <= last_visible_line
-        preview_diff = '...'
-        if compute_preview:
-            preview_diff = nodesData.preview_diff(node.parent, node, False, inline_graph)
+        show_inine_diff = inline_graph and line_number >= first_visible_line and line_number <= last_visible_line
+        preview_diff = nodesData.preview_diff(node.parent, node, False, show_inine_diff)
         line = '[%s] %-10s %s' % (node.n, age_label, preview_diff)
         new_lines = ascii(state, 'C', char, [line], asciiedges(seen, node, parents), verbose)
         line_number += len(new_lines)
