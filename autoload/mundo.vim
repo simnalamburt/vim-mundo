@@ -85,7 +85,7 @@ endfunction "}}}
 "{{{ Mundo buffer settings
 
 function! s:MundoMakeMapping(mapping, action)
-    exec 'nnoremap <script> <silent> <buffer> ' . a:mapping .' '. a:action
+    exec 'nnoremap <script> <silent> <buffer> <nowait> ' . a:mapping .' '. a:action
 endfunction
 
 function! s:MundoMapGraph() "{{{
