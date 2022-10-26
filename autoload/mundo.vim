@@ -406,6 +406,7 @@ function! s:MundoPythonRestoreView(fn) "{{{
     " Store view data, mode, window and 'evntignore' value
     let currentmode = mode()
     let currentWin = winnr()
+    let currentWinId = win_getid()
     let winView = winsaveview()
     let eventignoreBack = &eventignore
     set eventignore=BufLeave,BufEnter,CursorHold,CursorMoved,TextChanged
@@ -421,9 +422,13 @@ function! s:MundoPythonRestoreView(fn) "{{{
     " Call python function
     call s:MundoPython(a:fn)
 
-    " Restore view data
-    execute currentWin .'wincmd w'
-    call winrestview(winView)
+    " Restore view data if the window is still open
+    let currentWin = win_id2win(currentWinId)
+    if currentWin > 0
+      execute currentWin .'wincmd w'
+      call winrestview(winView)
+    endif
+
     exec 'set eventignore='.eventignoreBack
 
     " Re-select visual selection
