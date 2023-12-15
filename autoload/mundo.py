@@ -194,7 +194,7 @@ def MundoGetTargetState():# {{{
     """ Get the current undo number that mundo is at. """
     util._goto_window_for_buffer('__Mundo__')
     target_line = vim.eval("getline('.')")
-    matches = re.match('^[^\[]* \[([0-9]+)\] .*$', target_line)
+    matches = re.match(r'^[^\[]* \[([0-9]+)\] .*$', target_line)
     if matches:
         return int(matches.group(1))
     return 0
