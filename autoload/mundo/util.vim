@@ -8,11 +8,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-if exists('g:Mundo_PluginLoaded')
-    let &cpo = s:save_cpo
-    finish
-endif
-
 " Utility functions{{{
 
 " Moves to the first window in the current tab corresponding to expr. Accepts
@@ -105,8 +100,6 @@ function! mundo#util#RenderGraph()
 endf
 
 "}}}
-
-let g:Mundo_PluginLoaded = 1
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
